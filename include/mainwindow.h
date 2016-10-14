@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QString>
+#include <QColor>
 #include <QCloseEvent>
 #include <QDesktopWidget>
 #include <QMessageBox>
@@ -18,6 +19,7 @@
 
 #include "customdialog.h"
 #include "eventtimer.h"
+#include "serialterminallineedit.h"
 #include "qserialterminalstrings.h"
 #include "qserialterminalicons.h"
 #include "qserialterminalutilities.h"
@@ -46,24 +48,38 @@ public:
     int xPlacement() const;
     int yPlacement() const;
     void begin();
+    void keyPressEvent(QKeyEvent *qke);
 
 
 private slots:
-    void onCustomDialogClosed();
-    void onSduiOkayButtonClicked();
-    void onSduiCancelButtonClicked();
-    void onSendButtonClicked();
-    void onActionPortSettingsTriggered();
     void checkSerialReceive();
     void checkDisconnectedSerialPorts();
     void onStatusBarMessageChanged(QString newMessage);
-    void onPortNameComboBoxIndexChanged(QString newIndex);
-    void onEnterKeyPressed();
+    void onActionConnectTriggered();
+    void onActionDisconnectTriggered();
+
+    void onSendButtonClicked();
+    void onReturnKeyPressed(SerialTerminalLineEdit *stle);
+    void onUpArrowPressed(SerialTerminalLineEdit *stle);
+    void onDownArrowPressed(SerialTerminalLineEdit *stle);
+    void onEscapeKeyPressed(SerialTerminalLineEdit *stle);
+    void onAltKeyPressed(SerialTerminalLineEdit *stle);
+    void onCtrlAPressed(SerialTerminalLineEdit *stle);
+    void onCtrlEPressed(SerialTerminalLineEdit *stle);
+    void onCtrlUPressed(SerialTerminalLineEdit *stle);
+    void onCtrlGPressed(SerialTerminalLineEdit *stle);
+    void onReturnKeyPressed();
+    void onUpArrowPressed();
+    void onDownArrowPressed();
+    void onEscapeKeyPressed();
+    void onAltKeyPressed();
+    void onCtrlAPressed();
+    void onCtrlEPressed();
+    void onCtrlUPressed();
+    void onCtrlGPressed();
 
 private:
     std::shared_ptr<Ui::MainWindow> m_uiPtr;
-    std::shared_ptr<Ui::SettingsDialog> m_sduiPtr;
-    std::shared_ptr<CustomDialog>  m_portSettingsDialog;
     std::unique_ptr<QTimer> m_checkPortDisconnectTimer;
     std::unique_ptr<QTimer> m_checkSerialPortReceiveTimer;
     std::unique_ptr<EventTimer> m_serialReceiveTimer;
@@ -72,20 +88,25 @@ private:
     std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
     std::vector<std::string> m_serialPortNames;
     std::string m_temporarySerialPortBuffer;
+    std::vector<QString> m_commandHistory;
+    unsigned int m_currentHistoryIndex;
     int m_xPlacement;
     int m_yPlacement;
 
-    void setupSettingsDialog();
     void beginCommunication();
     void pauseCommunication();
     void stopCommunication();
     void calculateXYPlacement();
+    void setupSettingsDialog();
+    void appendReceivedString(const std::string &str);
+    void appendTransmittedString(const QString &str);
 
     static const int s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT;
     static const int s_SERIAL_TIMEOUT;
     static const int s_TASKBAR_HEIGHT;
     static const int s_CHECK_PORT_DISCONNECT_TIMEOUT;
     static const int s_CHECK_PORT_RECEIVE_TIMEOUT;
+    static const int s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT;
 };
 
 #endif //SERIALTERMINAL_MAINWINDOW_H

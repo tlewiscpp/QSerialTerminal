@@ -22,17 +22,16 @@ SOURCES += src/main.cpp\
     src/qserialterminalicons.cpp \
     src/qserialterminalstrings.cpp \
     src/qserialterminalutilities.cpp \
-    src/customlineedit.cpp
+    src/serialterminallineedit.cpp
 
 HEADERS  += include/mainwindow.h\
             include/customdialog.h \
     include/qserialterminalicons.h \
     include/qserialterminalstrings.h \
     include/qserialterminalutilities.h \
-    include/customlineedit.h
+    include/serialterminallineedit.h
 
-FORMS    += forms/mainwindow.ui \
-            forms/settings-dialog.ui
+FORMS    += forms/mainwindow.ui
 
 RESOURCES += resources/icons.qrc
 
