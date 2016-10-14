@@ -2,12 +2,12 @@
 #include "ui_mainwindow.h"
 #include "ui_settings-dialog.h"
 
-const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{500};
+const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SERIAL_TIMEOUT{400};
 const int MainWindow::s_TASKBAR_HEIGHT{15};
 const int MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT{750};
 const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{50};
-const int MainWindow::s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT{500};
+const int MainWindow::s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT{5000};
 
 MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
                        std::shared_ptr<QSerialTerminalIcons> qstiPtr,
@@ -16,11 +16,9 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     m_uiPtr{std::make_shared<Ui::MainWindow>()},
     m_checkPortDisconnectTimer{std::make_unique<QTimer>()},
     m_checkSerialPortReceiveTimer{std::make_unique<QTimer>()},
-    m_serialReceiveTimer{std::make_unique<EventTimer>()},
     m_qstiPtr{qstiPtr},
     m_qDesktopWidget{qDesktopWidget},
     m_serialPortNames{SerialPort::availableSerialPorts()},
-    m_temporarySerialPortBuffer{""},
     m_currentHistoryIndex{0},
     m_xPlacement{0},
     m_yPlacement{0}
@@ -61,12 +59,16 @@ void MainWindow::appendReceivedString(const std::string &str)
 void MainWindow::appendTransmittedString(const QString &str)
 {
     using namespace QSerialTerminalStrings;
-    this->m_commandHistory.emplace_back(this->m_uiPtr->sendBox->text());
-    this->m_currentHistoryIndex++;
-    this->m_uiPtr->terminal->setTextColor(QColor(BLUE_COLOR_STRING));
-    this->m_uiPtr->terminal->append(QString::fromStdString(TERMINAL_TRANSMIT_BASE_STRING) + str);
-    this->m_serialPort->writeString(str.toStdString());
-    this->m_uiPtr->sendBox->clear();
+    if (this->m_serialPort) {
+        if (this->m_serialPort->isOpen()) {
+            this->m_commandHistory.emplace_back(this->m_uiPtr->sendBox->text());
+            this->m_currentHistoryIndex++;
+            this->m_uiPtr->terminal->setTextColor(QColor(BLUE_COLOR_STRING));
+            this->m_uiPtr->terminal->append(QString::fromStdString(TERMINAL_TRANSMIT_BASE_STRING) + str);
+            this->m_serialPort->writeString(str.toStdString());
+            this->m_uiPtr->sendBox->clear();
+        }
+    }
 }
 
 void MainWindow::onStatusBarMessageChanged(QString newMessage)
@@ -116,21 +118,9 @@ void MainWindow::checkDisconnectedSerialPorts()
 
 void MainWindow::checkSerialReceive()
 {
-    if (!this->m_serialReceiveTimer->isPaused()) {
-        this->m_serialReceiveTimer->update();
-    }
     if (this->m_serialPort) {
         if (this->m_serialPort->isOpen()) {
-            this->m_serialPort->flushRXTX();
-            std::string temp{this->m_serialPort->readString()};
-            if (temp != "") {
-                this->m_serialReceiveTimer->start();
-                this->m_temporarySerialPortBuffer += temp;
-            }
-            if (this->m_serialReceiveTimer->totalTimeMilliseconds() > MainWindow::s_SERIAL_TIMEOUT) {
-                appendReceivedString(this->m_temporarySerialPortBuffer);
-                this->m_temporarySerialPortBuffer.clear();
-            }
+            appendReceivedString(this->m_serialPort->readString());
         }
     }
 }
@@ -285,7 +275,6 @@ void MainWindow::beginCommunication()
             }
             this->setWindowTitle(this->windowTitle() + " - " + toQString(this->m_serialPort->portName()));
             this->m_uiPtr->statusBar->showMessage(toQString(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING) + toQString(this->m_serialPort->portName()), MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT);
-            this->m_serialReceiveTimer->start();
             this->m_checkSerialPortReceiveTimer->start();
         } catch (std::exception &e) {
             std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};

@@ -82,12 +82,10 @@ private:
     std::shared_ptr<Ui::MainWindow> m_uiPtr;
     std::unique_ptr<QTimer> m_checkPortDisconnectTimer;
     std::unique_ptr<QTimer> m_checkSerialPortReceiveTimer;
-    std::unique_ptr<EventTimer> m_serialReceiveTimer;
     std::shared_ptr<SerialPort> m_serialPort;
     std::shared_ptr<QSerialTerminalIcons> m_qstiPtr;
     std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
     std::vector<std::string> m_serialPortNames;
-    std::string m_temporarySerialPortBuffer;
     std::vector<QString> m_commandHistory;
     unsigned int m_currentHistoryIndex;
     int m_xPlacement;
