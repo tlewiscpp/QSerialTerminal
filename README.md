@@ -1,2 +1,2 @@
 # QSerialTerminal
-A simple serial terminal written in C++ using the Qt framework
+Serial terminal in the Qt framework
