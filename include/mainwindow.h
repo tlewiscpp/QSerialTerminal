@@ -41,6 +41,12 @@ public:
     ~MainWindow();
     void closeEvent(QCloseEvent *event);
 
+    template <typename T>
+    QString toQString(const T &convert) { return QString::fromStdString(std::to_string(convert)); }
+    QString toQString(const std::string &str) { return QString::fromStdString(str); }
+    QString toQString(const char *str) { return QString::fromStdString(static_cast<std::string>(str)); }
+    QString toQString(const QString &qstr) { return qstr; }
+
     std::shared_ptr<QSerialTerminalIcons> strPtr() const;
     void bindQSerialTerminalIcons(std::shared_ptr<QSerialTerminalIcons> qstiPtr);
     void bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qDesktopWidget);
@@ -77,6 +83,10 @@ private slots:
     void onCtrlEPressed();
     void onCtrlUPressed();
     void onCtrlGPressed();
+
+    void onApplicationAboutToClose();
+    void onConnectButtonClicked(bool checked);
+    void onDisconnectButtonClicked(bool checked);
 
 private:
     std::shared_ptr<Ui::MainWindow> m_uiPtr;
