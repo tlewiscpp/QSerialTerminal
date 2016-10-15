@@ -241,10 +241,7 @@ void MainWindow::onActionConnectTriggered()
             portName == this->m_serialPort->portName()) {
             if (!this->m_serialPort->isOpen()) {
                 try {
-                    this->m_serialPort->openPort();
-                    this->m_uiPtr->sendBox->setEnabled(true);
-                    this->m_uiPtr->statusBar->showMessage(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
-                    beginCommunication();
+                     openSerialPort();
                 } catch (std::exception &e) {
                     (void)e;
                 }
@@ -255,10 +252,7 @@ void MainWindow::onActionConnectTriggered()
                 this->m_serialPort->closePort();
                 this->m_serialPort.reset();
                 this->m_serialPort = std::make_shared<SerialPort>(portName, baudRate, dataBits, stopBits, parity);
-                this->m_serialPort->openPort();
-                this->m_uiPtr->sendBox->setEnabled(true);
-                this->m_uiPtr->statusBar->showMessage(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
-                beginCommunication();
+                openSerialPort();
             } catch (std::exception &e) {
                 (void)e;
                 std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
@@ -274,7 +268,7 @@ void MainWindow::onActionConnectTriggered()
     } else {
         try {
             this->m_serialPort = std::make_shared<SerialPort>(portName, baudRate, dataBits, stopBits, parity);
-            beginCommunication();
+            openSerialPort();
         } catch (std::exception &e) {
             std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
             warningBox->setText(INVALID_SETTINGS_DETECTED_STRING + toQString(e.what()));
@@ -286,6 +280,16 @@ void MainWindow::onActionConnectTriggered()
             }
         }
     }
+}
+
+void MainWindow::openSerialPort()
+{
+    using namespace QSerialTerminalStrings;
+    this->m_serialPort->openPort();
+    this->m_uiPtr->sendBox->setEnabled(true);
+    this->m_uiPtr->sendBox->setFocus();
+    this->m_uiPtr->statusBar->showMessage(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
+    beginCommunication();
 }
 
 void MainWindow::begin()
@@ -303,8 +307,8 @@ void MainWindow::beginCommunication()
     if (this->m_serialPort) {
         try {
             if (!this->m_serialPort->isOpen()) {
-                this->m_serialPort->openPort();
-                this->m_uiPtr->sendBox->setEnabled(true);
+                openSerialPort();
+                return;
             }
             this->setWindowTitle(this->windowTitle() + " - " + toQString(this->m_serialPort->portName()));
             this->m_uiPtr->statusBar->showMessage(toQString(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING) + toQString(this->m_serialPort->portName()));

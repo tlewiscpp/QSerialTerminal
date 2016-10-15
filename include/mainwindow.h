@@ -48,6 +48,7 @@ public:
     QString toQString(const QString &qstr) { return qstr; }
 
     std::shared_ptr<QSerialTerminalIcons> strPtr() const;
+    void openSerialPort();
     void bindQSerialTerminalIcons(std::shared_ptr<QSerialTerminalIcons> qstiPtr);
     void bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qDesktopWidget);
     void centerAndFitWindow();
