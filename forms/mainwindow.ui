@@ -475,7 +475,7 @@
     <string>Connect</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+C</string>
+    <string>Ctrl+C</string>
    </property>
   </action>
   <action name="actionDisconnect">
@@ -483,7 +483,7 @@
     <string>Disconnect</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+D</string>
+    <string>Ctrl+D</string>
    </property>
   </action>
   <action name="actionQuit">
