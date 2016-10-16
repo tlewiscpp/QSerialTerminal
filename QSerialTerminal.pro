@@ -22,14 +22,20 @@ SOURCES += src/main.cpp\
     src/qserialterminalicons.cpp \
     src/qserialterminalstrings.cpp \
     src/qserialterminalutilities.cpp \
-    src/serialterminallineedit.cpp
+    src/serialterminallineedit.cpp \
+    src/scriptreader.cpp \
+    src/scriptexecutor.cpp \
+    src/serialcommand.cpp
 
 HEADERS  += include/mainwindow.h\
             include/customdialog.h \
     include/qserialterminalicons.h \
     include/qserialterminalstrings.h \
     include/qserialterminalutilities.h \
-    include/serialterminallineedit.h
+    include/serialterminallineedit.h \
+    include/scriptreader.h \
+    include/scriptexecutor.h \
+    include/serialcommand.h
 
 FORMS    += forms/mainwindow.ui
 

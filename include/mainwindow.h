@@ -7,10 +7,12 @@
 #include <QCloseEvent>
 #include <QDesktopWidget>
 #include <QMessageBox>
+#include <QFileDialog>
 #include <QTimer>
 #include <vector>
 #include <string>
 #include <chrono>
+#include <functional>
 #include <memory>
 #include <serialport.h>
 #include <systemcommand.h>
@@ -18,7 +20,10 @@
 #include <eventtimer.h>
 
 #include "customdialog.h"
-#include "eventtimer.h"
+#include "serialcommand.h"
+#include "serialcommand.h"
+#include "scriptexecutor.h"
+#include "scriptreader.h"
 #include "serialterminallineedit.h"
 #include "qserialterminalstrings.h"
 #include "qserialterminalicons.h"
@@ -48,7 +53,6 @@ public:
     QString toQString(const QString &qstr) { return qstr; }
 
     std::shared_ptr<QSerialTerminalIcons> strPtr() const;
-    void openSerialPort();
     void bindQSerialTerminalIcons(std::shared_ptr<QSerialTerminalIcons> qstiPtr);
     void bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qDesktopWidget);
     void centerAndFitWindow();
@@ -56,14 +60,12 @@ public:
     int yPlacement() const;
     void begin();
     void keyPressEvent(QKeyEvent *qke);
-
-
 private slots:
     void checkSerialReceive();
     void checkDisconnectedSerialPorts();
-    void onStatusBarMessageChanged(QString newMessage);
-    void onActionConnectTriggered();
-    void onActionDisconnectTriggered();
+    void onActionConnectTriggered(bool checked);
+    void onActionDisconnectTriggered(bool checked);
+    void onActionLoadScriptTriggered(bool checked);
 
     void onSendButtonClicked();
     void onReturnKeyPressed(SerialTerminalLineEdit *stle);
@@ -97,18 +99,31 @@ private:
     std::shared_ptr<QSerialTerminalIcons> m_qstiPtr;
     std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
     std::vector<std::string> m_serialPortNames;
+    std::function<void(MainWindow*, const std::string &)> m_packagedRxResultTask;
+    std::function<void(MainWindow*, const std::string &)> m_packagedTxResultTask;
+    std::function<void(MainWindow*, DelayType, int)> m_packagedDelayResultTask;
     std::vector<QString> m_commandHistory;
     unsigned int m_currentHistoryIndex;
     int m_xPlacement;
     int m_yPlacement;
 
+    void openSerialPort();
+    void closeSerialPort();
     void beginCommunication();
     void pauseCommunication();
     void stopCommunication();
     void calculateXYPlacement();
-    void setupSettingsDialog();
+    void setupAdditionalUiComponents();
     void appendReceivedString(const std::string &str);
     void appendTransmittedString(const QString &str);
+
+    static void staticPrintRxResult(MainWindow *mainWindow, const std::string &str);
+    static void staticPrintTxResult(MainWindow *mainWindow, const std::string &str);
+    static void staticPrintDelayResult(MainWindow *mainWindow, DelayType delayType, int howLong);
+
+    void printRxResult(const std::string &str);
+    void printTxResult(const std::string &str);
+    void printDelayResult(DelayType delayType, int howLong);
 
     static const int s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT;
     static const int s_SERIAL_TIMEOUT;
