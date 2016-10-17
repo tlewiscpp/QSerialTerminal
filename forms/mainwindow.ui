@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>802</width>
-    <height>454</height>
+    <height>622</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -87,7 +87,7 @@
             <x>0</x>
             <y>0</y>
             <width>770</width>
-            <height>254</height>
+            <height>422</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
@@ -113,6 +113,12 @@
                <width>0</width>
                <height>0</height>
               </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>DejaVu Sans Mono</family>
+               <pointsize>9</pointsize>
+              </font>
              </property>
             </widget>
            </item>

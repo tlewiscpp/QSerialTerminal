@@ -167,7 +167,7 @@ void MainWindow::onSendButtonClicked()
 {
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
-    if (this->m_uiPtr->sendBox->text() == toQString(SEND_STRING)) {
+    if (this->m_uiPtr->sendButton->text() == toQString(SEND_STRING)) {
         if (this->m_serialPort) {
             if ((this->m_uiPtr->sendBox->text().toStdString() != "") && (!isWhitespace(this->m_uiPtr->sendBox->text().toStdString()))) {
                 appendTransmittedString(toQString(stripLineEndings(this->m_uiPtr->sendBox->text().toStdString())));

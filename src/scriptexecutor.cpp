@@ -183,7 +183,7 @@ void ScriptExecutor::doLoop(MainWindow *mainWindow, std::shared_ptr<SerialPort> 
                     throw std::runtime_error(e.what());
                 }
             }
-            if (i-1 != loopCount) {
+            if (i+1 != loopCount) {
                 printLoopResult(mainWindow, LoopType::END, i, loopCount);
             }
         }
