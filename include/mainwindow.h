@@ -61,6 +61,7 @@ public:
     void begin();
     void keyPressEvent(QKeyEvent *qke);
     QApplication *application();
+    bool cancelScript() const;
 private slots:
     void checkSerialReceive();
     void checkDisconnectedSerialPorts();
@@ -78,6 +79,7 @@ private slots:
     void onCtrlEPressed(SerialTerminalLineEdit *stle);
     void onCtrlUPressed(SerialTerminalLineEdit *stle);
     void onCtrlGPressed(SerialTerminalLineEdit *stle);
+    void onCtrlCPressed(SerialTerminalLineEdit *stle);
     void onReturnKeyPressed();
     void onUpArrowPressed();
     void onDownArrowPressed();
@@ -87,6 +89,7 @@ private slots:
     void onCtrlEPressed();
     void onCtrlUPressed();
     void onCtrlGPressed();
+    void onCtrlCPressed();
 
     void onApplicationAboutToClose();
     void onConnectButtonClicked(bool checked);
@@ -107,6 +110,7 @@ private:
     std::function<void(MainWindow*, LoopType, int, int)> m_packagedLoopResultTask;
     std::vector<QString> m_commandHistory;
     unsigned int m_currentHistoryIndex;
+    bool m_cancelScript;
     int m_xPlacement;
     int m_yPlacement;
 

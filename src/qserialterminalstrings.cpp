@@ -79,7 +79,10 @@ namespace QSerialTerminalStrings
     const char *BEGINNING_LOOPS_BASE_STRING{"***Beginning "};
     const char *ENDING_LOOPS_BASE_STRING{"***Ending "};
     const char *BEGIN_LOOP_BASE_STRING{"Begin loop ("};
-    const char *END_LOOP_BASE_STRING{"End loop () "};
+    const char *END_LOOP_BASE_STRING{"End loop ("};
+    const char *CANCEL_SCRIPT_STRING{"Cancel Script"};
+    const char *SEND_STRING{"Send"};
+    const char *CANCELED_EXECUTING_SCRIPT_STRING{"Canceled execution of script file: "};
 
 
 }

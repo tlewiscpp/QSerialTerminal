@@ -87,6 +87,9 @@ namespace QSerialTerminalStrings
     extern const char *ENDING_LOOPS_BASE_STRING;
     extern const char *BEGIN_LOOP_BASE_STRING;
     extern const char *END_LOOP_BASE_STRING;
+    extern const char *CANCEL_SCRIPT_STRING;
+    extern const char *SEND_STRING;
+    extern const char *CANCELED_EXECUTING_SCRIPT_STRING;
 }
 
 

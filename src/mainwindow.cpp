@@ -24,6 +24,7 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     m_packagedFlushResultTask{MainWindow::staticPrintFlushResult},
     m_packagedLoopResultTask{MainWindow::staticPrintLoopResult},
     m_currentHistoryIndex{0},
+    m_cancelScript{false},
     m_xPlacement{0},
     m_yPlacement{0}
 {
@@ -165,17 +166,21 @@ void MainWindow::onSendButtonClicked()
 {
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
-    if (this->m_serialPort) {
-        if ((this->m_uiPtr->sendBox->text().toStdString() != "") && (!isWhitespace(this->m_uiPtr->sendBox->text().toStdString()))) {
-            appendTransmittedString(toQString(stripLineEndings(this->m_uiPtr->sendBox->text().toStdString())));
+    if (this->m_uiPtr->sendBox->text() == toQString(SEND_STRING)) {
+        if (this->m_serialPort) {
+            if ((this->m_uiPtr->sendBox->text().toStdString() != "") && (!isWhitespace(this->m_uiPtr->sendBox->text().toStdString()))) {
+                appendTransmittedString(toQString(stripLineEndings(this->m_uiPtr->sendBox->text().toStdString())));
+            }
+        } else {
+            if (this->m_uiPtr->portNameComboBox->count() != 0) {
+                onActionConnectTriggered(false);
+                onSendButtonClicked();
+            } else {
+                this->m_uiPtr->statusBar->showMessage(NO_SERIAL_PORTS_CONNECTED_STRING);
+            }
         }
     } else {
-        if (this->m_uiPtr->portNameComboBox->count() != 0) {
-            onActionConnectTriggered(false);
-            onSendButtonClicked();
-        } else {
-            this->m_uiPtr->statusBar->showMessage(NO_SERIAL_PORTS_CONNECTED_STRING);
-        }
+        this->m_cancelScript = true;
     }
 }
 
@@ -230,6 +235,7 @@ void MainWindow::setupAdditionalUiComponents()
     this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_DISABLED_TOOLTIP);
     this->m_uiPtr->disconnectButton->setEnabled(false);
     this->m_uiPtr->actionDisconnect->setEnabled(false);
+    this->m_uiPtr->sendBox->setTabOrder(this->m_uiPtr->sendBox, this->m_uiPtr->sendButton);
 
     this->m_uiPtr->statusBar->showMessage(CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING);
 }
@@ -539,6 +545,8 @@ void MainWindow::onActionLoadScriptTriggered(bool checked)
         } else {
             this->m_uiPtr->terminal->append("");
             this->m_uiPtr->terminal->append(EXECUTING_SCRIPT_STRING + file.fileName());
+            this->m_uiPtr->sendBox->setEnabled(false);
+            this->m_uiPtr->sendButton->setText(CANCEL_SCRIPT_STRING);
             scriptExecutor->execute(this,
                                     this->m_serialPort,
                                     this->m_packagedRxResultTask,
@@ -546,7 +554,15 @@ void MainWindow::onActionLoadScriptTriggered(bool checked)
                                     this->m_packagedDelayResultTask,
                                     this->m_packagedFlushResultTask,
                                     this->m_packagedLoopResultTask);
-            this->m_uiPtr->terminal->append(FINISHED_EXECUTING_SCRIPT_STRING + file.fileName());
+           this->m_uiPtr->terminal->setTextColor(QColor());
+            if (this->m_cancelScript) {
+                this->m_uiPtr->terminal->append(CANCELED_EXECUTING_SCRIPT_STRING + file.fileName());
+            } else {
+                this->m_uiPtr->terminal->append(FINISHED_EXECUTING_SCRIPT_STRING + file.fileName());
+            }
+            this->m_uiPtr->sendBox->setEnabled(false);
+            this->m_uiPtr->sendBox->setFocus();
+            this->m_uiPtr->sendButton->setText(SEND_STRING);
         }
     } else {
         std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
@@ -557,6 +573,11 @@ void MainWindow::onActionLoadScriptTriggered(bool checked)
     }
     this->m_checkSerialPortReceiveTimer->start();
     this->m_checkPortDisconnectTimer->start();
+}
+
+bool MainWindow::cancelScript() const
+{
+    return this->m_cancelScript;
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *qke)
@@ -581,7 +602,10 @@ void MainWindow::keyPressEvent(QKeyEvent *qke)
             onCtrlUPressed();
         } else if ((qke->key() == Qt::Key_G) && (qke->modifiers().testFlag(Qt::ControlModifier))) {
             onCtrlGPressed();
-        } else {
+        } else if ((qke->key() == Qt::Key_C) && (qke->modifiers().testFlag(Qt::ControlModifier))) {
+            onCtrlCPressed();
+        }
+        else {
             return QWidget::keyPressEvent(qke);
         }
     }
@@ -596,14 +620,12 @@ void MainWindow::onReturnKeyPressed(SerialTerminalLineEdit *stle)
 
 void MainWindow::onUpArrowPressed(SerialTerminalLineEdit *stle)
 {
-
     (void)stle;
     onUpArrowPressed();
 }
 
 void MainWindow::onDownArrowPressed(SerialTerminalLineEdit *stle)
 {
-
     (void)stle;
     onDownArrowPressed();
 }
@@ -611,14 +633,12 @@ void MainWindow::onDownArrowPressed(SerialTerminalLineEdit *stle)
 void MainWindow::onEscapeKeyPressed(SerialTerminalLineEdit *stle)
 {
     (void)stle;
-
     onEscapeKeyPressed();
 }
 
 void MainWindow::onAltKeyPressed(SerialTerminalLineEdit *stle)
 {
     (void)stle;
-
     onAltKeyPressed();
 }
 
@@ -650,10 +670,19 @@ void MainWindow::onCtrlGPressed(SerialTerminalLineEdit *stle)
     onCtrlGPressed();
 }
 
+void MainWindow::onCtrlCPressed(SerialTerminalLineEdit *stle)
+{
+    (void)stle;
+    onCtrlCPressed();
+}
+
 void MainWindow::onReturnKeyPressed()
 {
-    this->m_uiPtr->sendButton->click();
-    this->m_uiPtr->sendBox->setFocus();
+    using namespace GeneralUtilities;
+    //if ((this->m_uiPtr->sendBox->text() != "") && (!isWhitespace(this->m_uiPtr->sendBox->text().toStdString()))) {
+        this->m_uiPtr->sendButton->click();
+        //this->m_uiPtr->sendBox->setFocus();
+    //}
 }
 
 void MainWindow::onUpArrowPressed()
@@ -707,6 +736,14 @@ void MainWindow::onCtrlUPressed()
 void MainWindow::onCtrlGPressed()
 {
     this->m_uiPtr->terminal->clear();
+}
+
+void MainWindow::onCtrlCPressed()
+{
+    using namespace QSerialTerminalStrings;
+    if (this->m_uiPtr->sendButton->text() == toQString(CANCEL_SCRIPT_STRING)) {
+        this->m_cancelScript = true;
+    }
 }
 
 void MainWindow::onConnectButtonClicked(bool checked)

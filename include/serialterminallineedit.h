@@ -23,6 +23,7 @@ signals:
     void ctrlEPressed(SerialTerminalLineEdit *aoeb);
     void ctrlUPressed(SerialTerminalLineEdit *aoeb);
     void ctrlGPressed(SerialTerminalLineEdit *aoeb);
+    void ctrlCPressed(SerialTerminalLineEdit *aoeb);
 };
 
 #endif //QSERIALTERMINAL_SERIALTERMINALLINEEDIT_H
