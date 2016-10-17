@@ -19,13 +19,13 @@ INCLUDEPATH += include/
 
 SOURCES += src/main.cpp\
            src/mainwindow.cpp \
-    src/qserialterminalicons.cpp \
-    src/qserialterminalstrings.cpp \
-    src/qserialterminalutilities.cpp \
-    src/serialterminallineedit.cpp \
-    src/scriptreader.cpp \
-    src/scriptexecutor.cpp \
-    src/serialcommand.cpp
+            src/qserialterminalicons.cpp \
+            src/qserialterminalstrings.cpp \
+            src/qserialterminalutilities.cpp \
+            src/serialterminallineedit.cpp \
+            src/scriptreader.cpp \
+            src/scriptexecutor.cpp \
+            src/serialcommand.cpp
 
 HEADERS  += include/mainwindow.h\
             include/customdialog.h \
@@ -41,4 +41,4 @@ FORMS    += forms/mainwindow.ui
 
 RESOURCES += resources/icons.qrc
 
-win32:RC_FILE += resources/qserialterminal.rc
+win32:RC_FILE += resources/icons/qserialterminal.rc

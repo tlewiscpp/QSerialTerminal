@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui_settings-dialog.h"
 
 const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SERIAL_TIMEOUT{400};
@@ -110,13 +109,22 @@ void MainWindow::checkDisconnectedSerialPorts()
 
     for (int comboBoxIndex = 0; comboBoxIndex < this->m_uiPtr->portNameComboBox->count(); comboBoxIndex++) {
         bool deletionNeeded{true};
+        std::string serialPortToDelete{""};
         for (auto &it : currentSerialPorts) {
             if (toQString(it) == this->m_uiPtr->portNameComboBox->itemText(comboBoxIndex)) {
                 deletionNeeded = false;
             }
         }
         if (deletionNeeded) {
+            if (this->m_serialPort) {
+                if (this->m_serialPort->portName() == this->m_uiPtr->portNameComboBox->itemText(comboBoxIndex).toStdString()) {
+                    if (this->m_serialPort->isOpen()) {
+                        closeSerialPort();
+                    }
+                }
+            }
             this->m_uiPtr->portNameComboBox->removeItem(comboBoxIndex);
+
         }
     }
 }
