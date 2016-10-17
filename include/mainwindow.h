@@ -142,6 +142,7 @@ private:
     static const int s_CHECK_PORT_DISCONNECT_TIMEOUT;
     static const int s_CHECK_PORT_RECEIVE_TIMEOUT;
     static const int s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT;
+    static const int s_SCRIPT_INDENT;
 };
 
 #endif //SERIALTERMINAL_MAINWINDOW_H

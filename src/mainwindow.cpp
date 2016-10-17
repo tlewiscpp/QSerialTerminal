@@ -7,6 +7,7 @@ const int MainWindow::s_TASKBAR_HEIGHT{15};
 const int MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT{750};
 const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{50};
 const int MainWindow::s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT{5000};
+const int MainWindow::s_SCRIPT_INDENT{4};
 
 MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
                        std::shared_ptr<QSerialTerminalIcons> qstiPtr,
@@ -402,22 +403,24 @@ void MainWindow::printRxResult(const std::string &str)
     using namespace GeneralUtilities;
     if ((str != "") && (!isWhitespace(str)) && startsWith(str, '{')) {
         this->m_uiPtr->terminal->setTextColor(QColor(RED_COLOR_STRING));
-        this->m_uiPtr->terminal->append(toQString(TERMINAL_RECEIVE_BASE_STRING) + toQString(stripLineEndings(stripNonAsciiCharacters(str))));
+        this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_RECEIVE_BASE_STRING) + toQString(stripLineEndings(stripNonAsciiCharacters(str))));
     }
 }
 
 void MainWindow::printTxResult(const std::string &str)
 {
     using namespace QSerialTerminalStrings;
+    using namespace GeneralUtilities;
     this->m_uiPtr->terminal->setTextColor(QColor(BLUE_COLOR_STRING));
-    this->m_uiPtr->terminal->append(toQString(TERMINAL_TRANSMIT_BASE_STRING) + toQString(str));
+    this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_TRANSMIT_BASE_STRING) + toQString(str));
 }
 
 void MainWindow::printDelayResult(DelayType delayType, int howLong)
 {
     using namespace QSerialTerminalStrings;
+    using namespace GeneralUtilities;
     this->m_uiPtr->terminal->setTextColor(QColor(GREEN_COLOR_STRING));
-    QString stringToAppend{toQString(TERMINAL_DELAY_BASE_STRING) + toQString(howLong)};
+    QString stringToAppend{toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_DELAY_BASE_STRING) + toQString(howLong)};
     if (delayType == DelayType::SECONDS) {
         stringToAppend.append(SECONDS_SUFFIX_STRING);
     } else if (delayType == DelayType::MILLISECONDS) {
@@ -442,7 +445,7 @@ void MainWindow::printFlushResult(FlushType flushType)
         stringToAppend.append(TERMINAL_FLUSH_RX_TX_BASE_STRING);
     }
     this->m_uiPtr->terminal->setTextColor(QColor(GRAY_COLOR_STRING));
-    this->m_uiPtr->terminal->append(stringToAppend);
+    this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + stringToAppend);
     this->m_uiPtr->terminal->setTextColor(QColor());
 }
 
@@ -461,22 +464,22 @@ void MainWindow::printLoopResult(LoopType loopType, int currentLoop, int loopCou
     if (loopCount == -1) {
         if (loopType == LoopType::START) {
             if (currentLoop == 0) {
-                this->m_uiPtr->terminal->append(BEGINNING_INFINITE_LOOP_STRING);
+                this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + BEGINNING_INFINITE_LOOP_STRING);
             }
-            this->m_uiPtr->terminal->append(toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
+            this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
         } else if (loopType == LoopType::END) {
-            this->m_uiPtr->terminal->append(toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
+            this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
         }
     } else {
         if (loopType == LoopType::START) {
             if (currentLoop == 0) {
-                this->m_uiPtr->terminal->append(toQString(BEGINNING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
+                this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(BEGINNING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
             }
-            this->m_uiPtr->terminal->append(toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
+            this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
         } else if (loopType == LoopType::END) {
-            this->m_uiPtr->terminal->append(toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
+            this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
             if ((currentLoop+1) == loopCount) {
-                this->m_uiPtr->terminal->append(toQString(ENDING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
+                this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(ENDING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
             }
         }
         this->m_uiPtr->terminal->setTextColor(QColor());
@@ -557,9 +560,12 @@ void MainWindow::onActionLoadScriptTriggered(bool checked)
            this->m_uiPtr->terminal->setTextColor(QColor());
             if (this->m_cancelScript) {
                 this->m_uiPtr->terminal->append(CANCELED_EXECUTING_SCRIPT_STRING + file.fileName());
+                this->m_cancelScript = false;
             } else {
                 this->m_uiPtr->terminal->append(FINISHED_EXECUTING_SCRIPT_STRING + file.fileName());
             }
+            this->m_serialPort->flushRXTX();
+            printFlushResult(FlushType::RX_TX);
             this->m_uiPtr->sendBox->setEnabled(false);
             this->m_uiPtr->sendBox->setFocus();
             this->m_uiPtr->sendButton->setText(SEND_STRING);

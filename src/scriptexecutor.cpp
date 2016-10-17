@@ -56,13 +56,13 @@ void ScriptExecutor::execute(MainWindow *mainWindow, std::shared_ptr<SerialPort>
                     printRxResult(mainWindow, serialPort->readString());
                 } else if (it.commandType() == SerialCommandType::DELAY_SECONDS) {
                     printDelayResult(mainWindow, DelayType::SECONDS, std::stoi(it.commandArgument()));
-                    delaySecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow->application());
+                    delaySecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow);
                 } else if (it.commandType() == SerialCommandType::DELAY_MILLISECONDS) {
                     printDelayResult(mainWindow, DelayType::MILLISECONDS, std::stoi(it.commandArgument()));
-                    delayMillisecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow->application());
+                    delayMillisecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow);
                 } else if (it.commandType() == SerialCommandType::DELAY_MICROSECONDS) {
                     printDelayResult(mainWindow, DelayType::MICROSECONDS, std::stoi(it.commandArgument()));
-                    delayMicrosecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow->application());
+                    delayMicrosecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow);
                 } else if (it.commandType() == SerialCommandType::FLUSH_RX) {
                     printFlushResult(mainWindow, FlushType::RX);
                     serialPort->flushRX();
@@ -122,13 +122,13 @@ void ScriptExecutor::doLoop(MainWindow *mainWindow, std::shared_ptr<SerialPort> 
                         printRxResult(mainWindow, serialPort->readString());
                     } else if (it.commandType() == SerialCommandType::DELAY_SECONDS) {
                        printDelayResult(mainWindow, DelayType::SECONDS, std::stoi(it.commandArgument()));
-                       delaySecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow->application());
+                       delaySecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow);
                    } else if (it.commandType() == SerialCommandType::DELAY_MILLISECONDS) {
                        printDelayResult(mainWindow, DelayType::MILLISECONDS, std::stoi(it.commandArgument()));
-                       delayMillisecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow->application());
+                       delayMillisecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow);
                    } else if (it.commandType() == SerialCommandType::DELAY_MICROSECONDS) {
                        printDelayResult(mainWindow, DelayType::MICROSECONDS, std::stoi(it.commandArgument()));
-                       delayMicrosecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow->application());
+                       delayMicrosecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow);
                    } else if (it.commandType() == SerialCommandType::FLUSH_RX) {
                         printFlushResult(mainWindow, FlushType::RX);
                         serialPort->flushRX();
@@ -143,6 +143,7 @@ void ScriptExecutor::doLoop(MainWindow *mainWindow, std::shared_ptr<SerialPort> 
                     throw std::runtime_error(e.what());
                 }
             }
+            printLoopResult(mainWindow, LoopType::END, i, -1);
         }
     } else {
         for (int i = 0 ; i < loopCount; i++) {
@@ -161,13 +162,13 @@ void ScriptExecutor::doLoop(MainWindow *mainWindow, std::shared_ptr<SerialPort> 
                     }
                     else if (it.commandType() == SerialCommandType::DELAY_SECONDS) {
                         printDelayResult(mainWindow, DelayType::SECONDS, std::stoi(it.commandArgument()));
-                        delaySecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow->application());
+                        delaySecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow);
                     } else if (it.commandType() == SerialCommandType::DELAY_MILLISECONDS) {
                         printDelayResult(mainWindow, DelayType::MILLISECONDS, std::stoi(it.commandArgument()));
-                        delayMillisecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow->application());
+                        delayMillisecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow);
                     } else if (it.commandType() == SerialCommandType::DELAY_MICROSECONDS) {
                         printDelayResult(mainWindow, DelayType::MICROSECONDS, std::stoi(it.commandArgument()));
-                        delayMillisecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow->application());
+                        delayMicrosecondsWithUpdate(std::stoi(it.commandArgument()), mainWindow);
                     } else if (it.commandType() == SerialCommandType::FLUSH_RX) {
                         printFlushResult(mainWindow, FlushType::RX);
                         serialPort->flushRX();
@@ -182,13 +183,16 @@ void ScriptExecutor::doLoop(MainWindow *mainWindow, std::shared_ptr<SerialPort> 
                     throw std::runtime_error(e.what());
                 }
             }
+            if (i-1 != loopCount) {
+                printLoopResult(mainWindow, LoopType::END, i, loopCount);
+            }
         }
     }
     printLoopResult(mainWindow, LoopType::END, loopCount-1, loopCount);
 }
 
 
-void ScriptExecutor::delaySecondsWithUpdate(int howLong, QApplication *update)
+void ScriptExecutor::delaySecondsWithUpdate(int howLong, MainWindow *mainWindow)
 {
     int millisecondsToDelay{howLong * 1000};
     auto startTime{std::chrono::high_resolution_clock::now()};
@@ -196,34 +200,42 @@ void ScriptExecutor::delaySecondsWithUpdate(int howLong, QApplication *update)
     long long int elapsedTime{0};
 
     do {
-        update->processEvents();
+        mainWindow->application()->processEvents();
+        if (mainWindow->cancelScript()) {
+            return;
+        }
         endTime = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     } while (elapsedTime <= millisecondsToDelay);
 }
 
 
-void ScriptExecutor::delayMillisecondsWithUpdate(int howLong, QApplication *update)
+void ScriptExecutor::delayMillisecondsWithUpdate(int howLong, MainWindow *mainWindow)
 {
     auto startTime{std::chrono::high_resolution_clock::now()};
     auto endTime{std::chrono::high_resolution_clock::now()};
     long long int elapsedTime{0};
-
     do {
-        update->processEvents();
+        mainWindow->application()->processEvents();
+        if (mainWindow->cancelScript()) {
+            return;
+        }
         endTime = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
     } while (elapsedTime <= howLong);
 }
 
-void ScriptExecutor::delayMicrosecondsWithUpdate(int howLong, QApplication *update)
+void ScriptExecutor::delayMicrosecondsWithUpdate(int howLong, MainWindow *mainWindow)
 {
     auto startTime{std::chrono::high_resolution_clock::now()};
     auto endTime{std::chrono::high_resolution_clock::now()};
     long long int elapsedTime{0};
 
     do {
-        update->processEvents();
+        mainWindow->application()->processEvents();
+        if (mainWindow->cancelScript()) {
+            return;
+        }
         endTime = std::chrono::high_resolution_clock::now();
         elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
     } while (elapsedTime <= howLong);

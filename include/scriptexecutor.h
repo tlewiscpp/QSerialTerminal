@@ -33,17 +33,17 @@ private:
     std::shared_ptr<ScriptReader> m_scriptReader;
 
     void doLoop(MainWindow *mainWindow, std::shared_ptr<SerialPort> serialPort,
-                 const std::function<void(MainWindow *, const std::__cxx11::string &)> &printRxResult,
-                 const std::function<void(MainWindow *, const std::__cxx11::string &)> &printTxResult,
+                 const std::function<void(MainWindow *, const std::string &)> &printRxResult,
+                 const std::function<void(MainWindow *, const std::string &)> &printTxResult,
                  const std::function<void(MainWindow *, DelayType, int)> &printDelayResult,
                  const std::function<void(MainWindow *, FlushType)> &printFlushResult,
                  const std::function<void(MainWindow *, LoopType, int, int)> &printLoopResult,
                  const std::vector<SerialCommand> &commands,
                  int loopCount);
 
-    void delaySecondsWithUpdate(int howLong, QApplication *update);
-    void delayMillisecondsWithUpdate(int howLong, QApplication *update);
-    void delayMicrosecondsWithUpdate(int howLong, QApplication *update);
+    void delaySecondsWithUpdate(int howLong, MainWindow *mainWindow);
+    void delayMillisecondsWithUpdate(int howLong, MainWindow *mainWindow);
+    void delayMicrosecondsWithUpdate(int howLong, MainWindow *mainWindow);
 };
 
 
