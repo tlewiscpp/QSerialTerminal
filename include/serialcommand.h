@@ -3,8 +3,10 @@
 
 #include <string>
 
-enum class SerialCommandType { DELAY_SECONDS, DELAY_MILLISECONDS, DELAY_MICROSECONDS, WRITE, READ, COMMAND_UNSPECIFIED };
+enum class SerialCommandType { DELAY_SECONDS, DELAY_MILLISECONDS, DELAY_MICROSECONDS, WRITE, READ, FLUSH_RX, FLUSH_TX, FLUSH_RX_TX, LOOP_START, LOOP_END, COMMAND_UNSPECIFIED };
 enum class DelayType { SECONDS, MILLISECONDS, MICROSECONDS };
+enum class FlushType { RX, TX, RX_TX };
+enum class LoopType { START, END };
 
 class SerialCommand
 {

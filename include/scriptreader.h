@@ -11,6 +11,7 @@
 
 #include <fileutilities.h>
 #include <generalutilities.h>
+#include <mathutilities.h>
 
 #include "serialcommand.h"
 #include "qserialterminalstrings.h"

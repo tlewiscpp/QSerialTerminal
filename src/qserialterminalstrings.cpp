@@ -15,9 +15,14 @@ namespace QSerialTerminalStrings
     const char *BLUE_COLOR_STRING{"blue"};
     const char *RED_COLOR_STRING{"red"};
     const char *GREEN_COLOR_STRING{"green"};
+    const char *GRAY_COLOR_STRING{"gray"};
+    const char *ORANGE_COLOR_STRING{"orange"};
     const char *TERMINAL_RECEIVE_BASE_STRING{"Rx << "};
     const char *TERMINAL_TRANSMIT_BASE_STRING{"Tx >> "};
     const char *TERMINAL_DELAY_BASE_STRING{"Delay <> "};
+    const char *TERMINAL_FLUSH_RX_BASE_STRING{"Flush vv "};
+    const char *TERMINAL_FLUSH_TX_BASE_STRING{"Flush ^^ "};
+    const char *TERMINAL_FLUSH_RX_TX_BASE_STRING{"Flush ^v "};
     const char *NO_SERIAL_PORTS_CONNECTED_STRING{"No serial ports connected"};
     const char *CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING{"Use the connect button to connect to a serial port and begin sending data"};
     const char *OPEN_SCRIPT_FILE_CAPTION{"Open Script File"};
@@ -34,6 +39,11 @@ namespace QSerialTerminalStrings
     const char *DELAY_MICROSECONDS_IDENTIFIER{"delaymicroseconds("};
     const char *WRITE_IDENTIFIER{"write("};
     const char *READ_IDENTIFIER{"read("};
+    const char *LOOP_IDENTIFIER{"loop("};
+    const char *FLUSH_RX_IDENTIFIER{"flushrx"};
+    const char *FLUSH_TX_IDENTIFIER{"flushtx"};
+    const char *FLUSH_TX_RX_IDENTIFIER{"flushtxrx"};
+    const char *FLUSH_RX_TX_IDENTIFIER{"flushrxtx"};
     const char *SECONDS_SUFFIX_STRING{"sec"};
     const char *MILLISECONDS_SUFFIX_STRING{"ms"};
     const char *MICROSECONDS_SUFFIX_STRING{"us"};
@@ -59,5 +69,17 @@ namespace QSerialTerminalStrings
     const char *NULL_MAIN_WINDOW_PASSED_TO_EXECUTE_STRING{"WARNING: Null MainWindow passed to ScriptExecutor::execute(), skipping script execution"};
     const char *SCRIPT_FILE_DOES_NOT_EXISTS_STRING{"WARNING: Script file does not exist, skipping script: "};
     const char *UNABLE_TO_OPEN_SCRIPT_FILE_STRING{"WARNING: Unable to open script file, skipping script: "};
+    const char *LOOP_COUNT_PARAMETER_NOT_AN_INTEGER_STRING{"LoopCount() parameter is not an integer, ignoring option"};
+    const char *UNTERMINATED_LOOP_STRING{"WARNING: The script contains an unterminated loop,  skipping script execution"};
+    const char *UNEXPECTED_LOOP_CLOSING_STRING{"WARNING: A loop closure was found, but no loop was currently being populated, ignoring option"};
+    const char *CLOSING_LOOP_IDENTIFIER{"}"};
+    const char *BEGINNING_INFINITE_LOOP_STRING{"***Beginning infinite loop***"};
+    const char *INFINITE_LOOP_COUNT_TAIL_STRING{"/infinite)"};
+    const char *LOOPS_TAIL_STRING{" loops***"};
+    const char *BEGINNING_LOOPS_BASE_STRING{"***Beginning "};
+    const char *ENDING_LOOPS_BASE_STRING{"***Ending "};
+    const char *BEGIN_LOOP_BASE_STRING{"Begin loop ("};
+    const char *END_LOOP_BASE_STRING{"End loop () "};
+
 
 }

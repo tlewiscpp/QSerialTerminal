@@ -20,9 +20,14 @@ namespace QSerialTerminalStrings
     extern const char *BLUE_COLOR_STRING;
     extern const char *RED_COLOR_STRING;
     extern const char *GREEN_COLOR_STRING;
+    extern const char *GRAY_COLOR_STRING;
+    extern const char *ORANGE_COLOR_STRING;
     extern const char *TERMINAL_RECEIVE_BASE_STRING;
     extern const char *TERMINAL_TRANSMIT_BASE_STRING;
     extern const char *TERMINAL_DELAY_BASE_STRING;
+    extern const char *TERMINAL_FLUSH_RX_BASE_STRING;
+    extern const char *TERMINAL_FLUSH_TX_BASE_STRING;
+    extern const char *TERMINAL_FLUSH_RX_TX_BASE_STRING;
     extern const char *NO_SERIAL_PORTS_CONNECTED_STRING;
     extern const char *CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING;
     extern const char *EMPTY_SCRIPT_STRING;
@@ -40,6 +45,11 @@ namespace QSerialTerminalStrings
     extern const char *DELAY_MICROSECONDS_IDENTIFIER;
     extern const char *WRITE_IDENTIFIER;
     extern const char *READ_IDENTIFIER;
+    extern const char *LOOP_IDENTIFIER;
+    extern const char *FLUSH_RX_IDENTIFIER;
+    extern const char *FLUSH_TX_IDENTIFIER;
+    extern const char *FLUSH_TX_RX_IDENTIFIER;
+    extern const char *FLUSH_RX_TX_IDENTIFIER;
     extern const char *SECONDS_SUFFIX_STRING;
     extern const char *MILLISECONDS_SUFFIX_STRING;
     extern const char *MICROSECONDS_SUFFIX_STRING;
@@ -66,6 +76,17 @@ namespace QSerialTerminalStrings
     extern const char *NULL_MAIN_WINDOW_PASSED_TO_EXECUTE_STRING;
     extern const char *SCRIPT_FILE_DOES_NOT_EXISTS_STRING;
     extern const char *UNABLE_TO_OPEN_SCRIPT_FILE_STRING;
+    extern const char *LOOP_COUNT_PARAMETER_NOT_AN_INTEGER_STRING;
+    extern const char *UNTERMINATED_LOOP_STRING;
+    extern const char *UNEXPECTED_LOOP_CLOSING_STRING;
+    extern const char *CLOSING_LOOP_IDENTIFIER;
+    extern const char *BEGINNING_INFINITE_LOOP_STRING;
+    extern const char *INFINITE_LOOP_COUNT_TAIL_STRING;
+    extern const char *LOOPS_TAIL_STRING;
+    extern const char *BEGINNING_LOOPS_BASE_STRING;
+    extern const char *ENDING_LOOPS_BASE_STRING;
+    extern const char *BEGIN_LOOP_BASE_STRING;
+    extern const char *END_LOOP_BASE_STRING;
 }
 
 

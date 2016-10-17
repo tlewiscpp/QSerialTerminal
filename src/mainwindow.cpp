@@ -22,6 +22,8 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     m_packagedRxResultTask{MainWindow::staticPrintRxResult},
     m_packagedTxResultTask{MainWindow::staticPrintTxResult},
     m_packagedDelayResultTask{MainWindow::staticPrintDelayResult},
+    m_packagedFlushResultTask{MainWindow::staticPrintFlushResult},
+    m_packagedLoopResultTask{MainWindow::staticPrintLoopResult},
     m_currentHistoryIndex{0},
     m_xPlacement{0},
     m_yPlacement{0}
@@ -412,6 +414,61 @@ void MainWindow::printDelayResult(DelayType delayType, int howLong)
     this->m_uiPtr->terminal->append(stringToAppend);
 }
 
+void MainWindow::printFlushResult(FlushType flushType)
+{
+    using namespace GeneralUtilities;
+    using namespace QSerialTerminalStrings;
+    QString stringToAppend{""};
+
+    if (flushType == FlushType::RX) {
+        stringToAppend.append(TERMINAL_FLUSH_RX_BASE_STRING);
+    } else if (flushType == FlushType::TX) {
+        stringToAppend.append(TERMINAL_FLUSH_TX_BASE_STRING);
+    } else if (flushType == FlushType::RX_TX) {
+        stringToAppend.append(TERMINAL_FLUSH_RX_TX_BASE_STRING);
+    }
+    this->m_uiPtr->terminal->setTextColor(QColor(GRAY_COLOR_STRING));
+    this->m_uiPtr->terminal->append(stringToAppend);
+    this->m_uiPtr->terminal->setTextColor(QColor());
+}
+
+QApplication *MainWindow::application()
+{
+    return qApp;
+}
+
+
+void MainWindow::printLoopResult(LoopType loopType, int currentLoop, int loopCount)
+{
+    using namespace GeneralUtilities;
+    using namespace QSerialTerminalStrings;
+    QString stringToAppend{""};
+    this->m_uiPtr->terminal->setTextColor(QColor(ORANGE_COLOR_STRING));
+    if (loopCount == -1) {
+        if (loopType == LoopType::START) {
+            if (currentLoop == 0) {
+                this->m_uiPtr->terminal->append(BEGINNING_INFINITE_LOOP_STRING);
+            }
+            this->m_uiPtr->terminal->append(toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
+        } else if (loopType == LoopType::END) {
+            this->m_uiPtr->terminal->append(toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
+        }
+    } else {
+        if (loopType == LoopType::START) {
+            if (currentLoop == 0) {
+                this->m_uiPtr->terminal->append(toQString(BEGINNING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
+            }
+            this->m_uiPtr->terminal->append(toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
+        } else if (loopType == LoopType::END) {
+            this->m_uiPtr->terminal->append(toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
+            if ((currentLoop+1) == loopCount) {
+                this->m_uiPtr->terminal->append(toQString(ENDING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
+            }
+        }
+        this->m_uiPtr->terminal->setTextColor(QColor());
+    }
+}
+
 void MainWindow::staticPrintRxResult(MainWindow *mainWindow, const std::string &str)
 {
     if (mainWindow) {
@@ -430,6 +487,20 @@ void MainWindow::staticPrintDelayResult(MainWindow *mainWindow,  DelayType delay
 {
     if (mainWindow) {
         mainWindow->printDelayResult(delayType, howLong);
+    }
+}
+
+void MainWindow::staticPrintFlushResult(MainWindow *mainWindow, FlushType flushType)
+{
+    if (mainWindow) {
+        mainWindow->printFlushResult(flushType);
+    }
+}
+
+void MainWindow::staticPrintLoopResult(MainWindow *mainWindow, LoopType loopType, int currentLoop, int loopCount)
+{
+    if (mainWindow) {
+        mainWindow->printLoopResult(loopType, currentLoop, loopCount);
     }
 }
 
@@ -464,7 +535,9 @@ void MainWindow::onActionLoadScriptTriggered(bool checked)
                                     this->m_serialPort,
                                     this->m_packagedRxResultTask,
                                     this->m_packagedTxResultTask,
-                                    this->m_packagedDelayResultTask);
+                                    this->m_packagedDelayResultTask,
+                                    this->m_packagedFlushResultTask,
+                                    this->m_packagedLoopResultTask);
             this->m_uiPtr->terminal->append(FINISHED_EXECUTING_SCRIPT_STRING + file.fileName());
         }
     } else {

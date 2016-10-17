@@ -6,6 +6,7 @@ ScriptReader::ScriptReader(const std::string &scriptFilePath) :
 {
     using namespace FileUtilities;
     using namespace GeneralUtilities;
+    using namespace MathUtilities;
     using namespace QSerialTerminalStrings;
     if (!fileExists(this->m_scriptFilePath)) {
         throw std::runtime_error(SCRIPT_FILE_DOES_NOT_EXISTS_STRING + tQuoted(this->m_scriptFilePath));
@@ -23,6 +24,8 @@ ScriptReader::ScriptReader(const std::string &scriptFilePath) :
         throw std::runtime_error(UNABLE_TO_OPEN_SCRIPT_FILE_STRING + tQuoted(this->m_scriptFilePath));
     }
     buffer = trimWhitespace(buffer);
+    bool loop{false};
+    int loopCount{0};
     for (std::vector<std::string>::const_iterator iter = buffer.begin(); iter != buffer.end(); iter++) {
         try {
             std::string copyString{*iter};
@@ -31,6 +34,12 @@ ScriptReader::ScriptReader(const std::string &scriptFilePath) :
             size_t foundDelayPosition{copyString.find(DELAY_IDENTIFIER)};
             size_t foundWritePosition{copyString.find(WRITE_IDENTIFIER)};
             size_t foundReadPosition{copyString.find(READ_IDENTIFIER)};
+            size_t foundFlushRxPosition{copyString.find(FLUSH_RX_IDENTIFIER)};
+            size_t foundFlushTxPosition{copyString.find(FLUSH_TX_IDENTIFIER)};
+            size_t foundFlushRxTxPosition{copyString.find(FLUSH_RX_TX_IDENTIFIER)};
+            size_t foundFlushTxRxPosition{copyString.find(FLUSH_TX_RX_IDENTIFIER)};
+            size_t foundLoopPosition{copyString.find(LOOP_IDENTIFIER)};
+            size_t foundClosingLoopPosition{copyString.find(CLOSING_LOOP_IDENTIFIER)};
             if (copyString.length() != 0) {
                 std::string otherCopy{copyString};
                 unsigned int numberOfWhitespace{0};
@@ -51,7 +60,45 @@ ScriptReader::ScriptReader(const std::string &scriptFilePath) :
             }
 
             long int currentLine{std::distance<std::vector<std::string>::const_iterator>(buffer.begin(), iter)+1};
-            if (foundDelayPosition != std::string::npos) {
+            if (foundLoopPosition != std::string::npos) {
+                std::string targetLoopCount{0};
+                if (copyString.find(")") == std::string::npos) {
+                    std::cout << GENERIC_CONFIG_WARNING_BASE_STRING << currentLine << GENERIC_CONFIG_WARNING_TAIL_STRING << std::endl;
+                    std::cout << NO_CLOSING_PARENTHESIS_FOUND_STRING << std::endl;
+                    std::cout << *iter << std::endl;
+                    std::cout << tWhitespace(iter->length()-1) << HERE_STRING << std::endl;
+                    continue;
+                }
+                targetLoopCount = copyString.substr(static_cast<std::string>(LOOP_IDENTIFIER).length());
+                targetLoopCount = targetLoopCount.substr(0, targetLoopCount.find(")"));
+                if (trimWhitespace(targetLoopCount) == "") {
+                    loop = true;
+                    loopCount = -1;
+                    this->m_commands->emplace_back(SerialCommandType::LOOP_START, std::to_string(loopCount));
+                } else {
+                    try {
+                        loopCount = tAbs(std::stoi(targetLoopCount));
+                        loop = true;
+                        this->m_commands->emplace_back(SerialCommandType::LOOP_START, targetLoopCount);
+                    } catch (std::exception &e) {
+                        std::cout << GENERIC_CONFIG_WARNING_BASE_STRING << currentLine << GENERIC_CONFIG_WARNING_TAIL_STRING << std::endl;
+                        std::cout << LOOP_COUNT_PARAMETER_NOT_AN_INTEGER_STRING << std::endl;
+                        std::cout << *iter << std::endl;
+                        std::cout << tWhitespace(iter->find(")")-1) << EXPECTED_HERE_STRING << std::endl;
+                    }
+                }
+            } else if ((foundClosingLoopPosition != std::string::npos) && (trimWhitespace(copyString).length() == 1)) {
+                if (!loop) {
+                    std::cout << GENERIC_CONFIG_WARNING_BASE_STRING << currentLine << GENERIC_CONFIG_WARNING_TAIL_STRING << std::endl;
+                    std::cout << UNEXPECTED_LOOP_CLOSING_STRING << std::endl;
+                    std::cout << *iter << std::endl;
+                    std::cout << tWhitespace(iter->length()-1) << HERE_STRING << std::endl;
+                    continue;
+                } else {
+                    loop = false;
+                    this->m_commands->emplace_back(SerialCommandType::LOOP_END, "");
+                }
+            } else if (foundDelayPosition != std::string::npos) {
                 std::string targetDelay{""};
                 std::string identifier{""};
                 size_t foundDelaySecondsPosition{copyString.find(DELAY_SECONDS_IDENTIFIER)};
@@ -84,7 +131,7 @@ ScriptReader::ScriptReader(const std::string &scriptFilePath) :
                 targetDelay = targetDelay.substr(0, targetDelay.find(")"));
 
                 try {
-                    int delay{std::stoi(targetDelay)};
+                    long long int delay{std::stoll(targetDelay)};
                     (void)delay;
                     this->m_commands->emplace_back(commandType, targetDelay);
                 } catch (std::exception &e) {
@@ -136,6 +183,33 @@ ScriptReader::ScriptReader(const std::string &scriptFilePath) :
                     continue;
                 }
                 this->m_commands->emplace_back(SerialCommandType::READ, "");
+            } else if (foundFlushRxPosition != std::string::npos) {
+                if (copyString.find(")") == std::string::npos) {
+                    std::cout << GENERIC_CONFIG_WARNING_BASE_STRING << currentLine << GENERIC_CONFIG_WARNING_TAIL_STRING << std::endl;
+                    std::cout << NO_CLOSING_PARENTHESIS_FOUND_STRING << std::endl;
+                    std::cout << *iter << std::endl;
+                    std::cout << tWhitespace(iter->length()-1) << HERE_STRING << std::endl;
+                    continue;
+                }
+                this->m_commands->emplace_back(SerialCommandType::FLUSH_RX, "");
+            } else if (foundFlushTxPosition != std::string::npos) {
+                if (copyString.find(")") == std::string::npos) {
+                    std::cout << GENERIC_CONFIG_WARNING_BASE_STRING << currentLine << GENERIC_CONFIG_WARNING_TAIL_STRING << std::endl;
+                    std::cout << NO_CLOSING_PARENTHESIS_FOUND_STRING << std::endl;
+                    std::cout << *iter << std::endl;
+                    std::cout << tWhitespace(iter->length()-1) << HERE_STRING << std::endl;
+                    continue;
+                }
+                this->m_commands->emplace_back(SerialCommandType::FLUSH_TX, "");
+            } else if ((foundFlushTxRxPosition != std::string::npos) || (foundFlushRxTxPosition != std::string::npos)) {
+                if (copyString.find(")") == std::string::npos) {
+                    std::cout << GENERIC_CONFIG_WARNING_BASE_STRING << currentLine << GENERIC_CONFIG_WARNING_TAIL_STRING << std::endl;
+                    std::cout << NO_CLOSING_PARENTHESIS_FOUND_STRING << std::endl;
+                    std::cout << *iter << std::endl;
+                    std::cout << tWhitespace(iter->length()-1) << HERE_STRING << std::endl;
+                    continue;
+                }
+                this->m_commands->emplace_back(SerialCommandType::FLUSH_RX_TX, "");
             } else {
                 std::cout << GENERIC_CONFIG_WARNING_BASE_STRING << currentLine << GENERIC_CONFIG_WARNING_TAIL_STRING << std::endl;
                 std::cout << CONFIG_EXPRESSION_MALFORMED_STRING << std::endl;
@@ -147,6 +221,11 @@ ScriptReader::ScriptReader(const std::string &scriptFilePath) :
             this->m_commands->clear();
             return;
         }
+    }
+    if (loop) {
+        std::cout << UNTERMINATED_LOOP_STRING << std::endl;
+        this->m_commands->clear();
+        return;
     }
 }
 

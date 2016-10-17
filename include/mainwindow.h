@@ -60,6 +60,7 @@ public:
     int yPlacement() const;
     void begin();
     void keyPressEvent(QKeyEvent *qke);
+    QApplication *application();
 private slots:
     void checkSerialReceive();
     void checkDisconnectedSerialPorts();
@@ -102,6 +103,8 @@ private:
     std::function<void(MainWindow*, const std::string &)> m_packagedRxResultTask;
     std::function<void(MainWindow*, const std::string &)> m_packagedTxResultTask;
     std::function<void(MainWindow*, DelayType, int)> m_packagedDelayResultTask;
+    std::function<void(MainWindow*, FlushType)> m_packagedFlushResultTask;
+    std::function<void(MainWindow*, LoopType, int, int)> m_packagedLoopResultTask;
     std::vector<QString> m_commandHistory;
     unsigned int m_currentHistoryIndex;
     int m_xPlacement;
@@ -120,10 +123,14 @@ private:
     static void staticPrintRxResult(MainWindow *mainWindow, const std::string &str);
     static void staticPrintTxResult(MainWindow *mainWindow, const std::string &str);
     static void staticPrintDelayResult(MainWindow *mainWindow, DelayType delayType, int howLong);
+    static void staticPrintFlushResult(MainWindow *mainWindow, FlushType flushType);
+    static void staticPrintLoopResult(MainWindow *mainWindow, LoopType loopType, int currentLoop, int loopCount);
 
     void printRxResult(const std::string &str);
     void printTxResult(const std::string &str);
     void printDelayResult(DelayType delayType, int howLong);
+    void printFlushResult(FlushType flushType);
+    void printLoopResult(LoopType loopType, int currentLoop, int loopCount);
 
     static const int s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT;
     static const int s_SERIAL_TIMEOUT;
