@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QTimer>
+#include <QMenu>
+#include <QAction>
 #include <vector>
 #include <list>
 #include <string>
@@ -20,6 +22,7 @@
 #include <generalutilities.h>
 #include <eventtimer.h>
 
+#include "customaction.h"
 #include "serialcommand.h"
 #include "serialcommand.h"
 #include "scriptexecutor.h"
@@ -68,6 +71,8 @@ private slots:
     void onActionConnectTriggered(bool checked);
     void onActionDisconnectTriggered(bool checked);
     void onActionLoadScriptTriggered(bool checked);
+    void onCommandHistoryContextMenuRequested(const QPoint &point);
+    void onCommandHistoryContextMenuActionTriggered(CustomAction *action, bool checked);
 
     void onSendButtonClicked();
     void onReturnKeyPressed(SerialTerminalLineEdit *stle);

@@ -25,7 +25,8 @@ SOURCES += src/main.cpp\
             src/serialterminallineedit.cpp \
             src/scriptreader.cpp \
             src/scriptexecutor.cpp \
-            src/serialcommand.cpp
+            src/serialcommand.cpp \
+    src/customaction.cpp
 
 HEADERS  += include/mainwindow.h\
     include/qserialterminalicons.h \
@@ -34,7 +35,8 @@ HEADERS  += include/mainwindow.h\
     include/serialterminallineedit.h \
     include/scriptreader.h \
     include/scriptexecutor.h \
-    include/serialcommand.h
+    include/serialcommand.h \
+    include/customaction.h
 
 FORMS    += forms/mainwindow.ui
 

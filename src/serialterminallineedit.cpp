@@ -3,7 +3,8 @@
 SerialTerminalLineEdit::SerialTerminalLineEdit(QWidget *parent) :
     QLineEdit{parent}
 {
-
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showCommandHistoryContextMenu(const QPoint &)));
 }
 
 void SerialTerminalLineEdit::keyPressEvent(QKeyEvent *qke)
@@ -33,4 +34,9 @@ void SerialTerminalLineEdit::keyPressEvent(QKeyEvent *qke)
             return QLineEdit::keyPressEvent(qke);
         }
     }
+}
+
+void SerialTerminalLineEdit::showCommandHistoryContextMenu(const QPoint &point)
+{
+    emit (commandHistoryContextMenuRequested(point));
 }

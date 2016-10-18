@@ -39,6 +39,7 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     connect(this->m_uiPtr->actionQuit, SIGNAL(triggered(bool)), this, SLOT(close()));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(onApplicationAboutToClose()));
 
+    connect(this->m_uiPtr->sendBox, SIGNAL(commandHistoryContextMenuRequested(const QPoint &)), this, SLOT(onCommandHistoryContextMenuRequested(const QPoint &)));
     connect(this->m_uiPtr->actionConnect, SIGNAL(triggered(bool)), this, SLOT(onActionConnectTriggered(bool)));
     connect(this->m_uiPtr->connectButton, SIGNAL(clicked(bool)), this, SLOT(onConnectButtonClicked(bool)));
     connect(this->m_uiPtr->actionDisconnect, SIGNAL(triggered(bool)), this, SLOT(onActionDisconnectTriggered(bool)));
@@ -225,6 +226,33 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
     }
     */
+}
+
+void MainWindow::onCommandHistoryContextMenuRequested(const QPoint &point)
+{
+    using namespace QSerialTerminalStrings;
+    using namespace GeneralUtilities;
+    QMenu commandHistoryContextMenu(COMMAND_HISTORY_CONTEXT_MENU_STRING, this);
+    int i{0};
+    for (auto &it : this->m_commandHistory) {
+        if ((isWhitespace(it.toStdString())) || (it.toStdString() == "")) {
+            i++;
+            continue;
+        }
+        CustomAction *tempAction{new CustomAction{it, i++, this}};
+        commandHistoryContextMenu.addAction(tempAction);
+        connect(tempAction, SIGNAL(triggered(CustomAction *,bool)), this, SLOT(onCommandHistoryContextMenuActionTriggered(CustomAction *, bool)));
+    }
+    commandHistoryContextMenu.exec(mapToGlobal(point));
+}
+
+void MainWindow::onCommandHistoryContextMenuActionTriggered(CustomAction *action, bool checked)
+{
+    (void)checked;
+    if (action) {
+        this->m_currentHistoryIndex = action->index();
+        this->m_uiPtr->sendBox->setText(action->text());
+    }
 }
 
 void MainWindow::setupAdditionalUiComponents()

@@ -90,6 +90,7 @@ namespace QSerialTerminalStrings
     extern const char *CANCEL_SCRIPT_STRING;
     extern const char *SEND_STRING;
     extern const char *CANCELED_EXECUTING_SCRIPT_STRING;
+    extern const char *COMMAND_HISTORY_CONTEXT_MENU_STRING;
 }
 
 
