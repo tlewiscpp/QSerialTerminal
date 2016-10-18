@@ -108,6 +108,7 @@ private:
     std::function<void(MainWindow*, DelayType, int)> m_packagedDelayResultTask;
     std::function<void(MainWindow*, FlushType)> m_packagedFlushResultTask;
     std::function<void(MainWindow*, LoopType, int, int)> m_packagedLoopResultTask;
+    bool m_currentLinePushedIntoCommandHistory;
     std::vector<QString> m_commandHistory;
     unsigned int m_currentHistoryIndex;
     bool m_cancelScript;

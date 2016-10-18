@@ -24,6 +24,7 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     m_packagedDelayResultTask{MainWindow::staticPrintDelayResult},
     m_packagedFlushResultTask{MainWindow::staticPrintFlushResult},
     m_packagedLoopResultTask{MainWindow::staticPrintLoopResult},
+    m_currentLinePushedIntoCommandHistory{false},
     m_currentHistoryIndex{0},
     m_cancelScript{false},
     m_xPlacement{0},
@@ -75,8 +76,9 @@ void MainWindow::appendTransmittedString(const QString &str)
     using namespace QSerialTerminalStrings;
     if (this->m_serialPort) {
         if (this->m_serialPort->isOpen()) {
-            this->m_commandHistory.emplace_back(this->m_uiPtr->sendBox->text());
-            this->m_currentHistoryIndex++;
+            this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
+            this->m_currentHistoryIndex = 0;
+            this->m_currentLinePushedIntoCommandHistory = false;
             this->m_serialPort->writeString(str.toStdString());
             printTxResult(str.toStdString());
             this->m_uiPtr->sendBox->clear();
@@ -687,33 +689,28 @@ void MainWindow::onCtrlCPressed(SerialTerminalLineEdit *stle)
 void MainWindow::onReturnKeyPressed()
 {
     using namespace GeneralUtilities;
-    //if ((this->m_uiPtr->sendBox->text() != "") && (!isWhitespace(this->m_uiPtr->sendBox->text().toStdString()))) {
-        this->m_uiPtr->sendButton->click();
-        //this->m_uiPtr->sendBox->setFocus();
-    //}
+    this->m_uiPtr->sendButton->click();
 }
 
 void MainWindow::onUpArrowPressed()
 {
-    if (this->m_currentHistoryIndex == this->m_commandHistory.size()) {
-        this->m_commandHistory.emplace_back( this->m_uiPtr->sendBox->text());
+    if (this->m_currentHistoryIndex >= this->m_commandHistory.size()-1) {
+        return;
     }
     if (this->m_currentHistoryIndex == 0) {
-        this->m_uiPtr->sendBox->setText(this->m_commandHistory.at(this->m_currentHistoryIndex));
-    } else {
-        this->m_uiPtr->sendBox->setText(this->m_commandHistory.at(--this->m_currentHistoryIndex));
+        this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
+        this->m_currentLinePushedIntoCommandHistory = true;
     }
+    this->m_currentHistoryIndex++;
+    this->m_uiPtr->sendBox->setText(this->m_commandHistory.at(this->m_currentHistoryIndex));
 }
 
 void MainWindow::onDownArrowPressed()
 {
-    if (this->m_currentHistoryIndex != this->m_commandHistory.size()) {
-        if ((this->m_currentHistoryIndex + 1) == (this->m_commandHistory.size())) {
-            this->m_uiPtr->sendBox->setText(this->m_commandHistory.at(this->m_currentHistoryIndex));
-        } else {
-            this->m_uiPtr->sendBox->setText(this->m_commandHistory.at(++this->m_currentHistoryIndex));
-        }
+    if (this->m_currentHistoryIndex == 0) {
+        return;
     }
+    this->m_uiPtr->sendBox->setText(this->m_commandHistory.at(--this->m_currentHistoryIndex));
 }
 
 void MainWindow::onEscapeKeyPressed()
