@@ -77,8 +77,7 @@ void MainWindow::appendTransmittedString(const QString &str)
     if (this->m_serialPort) {
         if (this->m_serialPort->isOpen()) {
             this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
-            this->m_currentHistoryIndex = 0;
-            this->m_currentLinePushedIntoCommandHistory = false;
+            resetCommandHistory();
             this->m_serialPort->writeString(str.toStdString());
             printTxResult(str.toStdString());
             this->m_uiPtr->sendBox->clear();
@@ -163,6 +162,29 @@ void MainWindow::calculateXYPlacement()
     std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qDesktopWidget->availableGeometry())};
     this->m_xPlacement = (avail->width()/2)-(this->width()/2);
     this->m_yPlacement = (avail->height()/2)-(this->height()/2) - MainWindow::s_TASKBAR_HEIGHT;
+}
+
+void MainWindow::resetCommandHistory()
+{
+    this->m_currentHistoryIndex = 0;
+    this->m_currentLinePushedIntoCommandHistory = false;
+    clearEmptyStringsFromCommandHistory();
+}
+
+void MainWindow::clearEmptyStringsFromCommandHistory()
+{
+    using namespace GeneralUtilities;
+    while (true) {
+        int i{0};
+        for (auto &it : this->m_commandHistory) {
+            if ((isWhitespace(it.toStdString())) || (it.toStdString() == "")) {
+                this->m_commandHistory.erase(this->m_commandHistory.begin() + i);
+                break;
+            }
+            i++;
+        }
+        break;
+    }
 }
 
 void MainWindow::onSendButtonClicked()
@@ -698,8 +720,10 @@ void MainWindow::onUpArrowPressed()
         return;
     }
     if (this->m_currentHistoryIndex == 0) {
-        this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
-        this->m_currentLinePushedIntoCommandHistory = true;
+        if (!this->m_currentLinePushedIntoCommandHistory) {
+            this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
+            this->m_currentLinePushedIntoCommandHistory = true;
+        }
     }
     this->m_currentHistoryIndex++;
     this->m_uiPtr->sendBox->setText(this->m_commandHistory.at(this->m_currentHistoryIndex));

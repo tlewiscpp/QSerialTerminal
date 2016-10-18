@@ -10,6 +10,7 @@
 #include <QFileDialog>
 #include <QTimer>
 #include <vector>
+#include <list>
 #include <string>
 #include <chrono>
 #include <functional>
@@ -115,6 +116,8 @@ private:
     int m_xPlacement;
     int m_yPlacement;
 
+    void resetCommandHistory();
+    void clearEmptyStringsFromCommandHistory();
     void openSerialPort();
     void closeSerialPort();
     void beginCommunication();

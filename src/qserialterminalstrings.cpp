@@ -17,12 +17,12 @@ namespace QSerialTerminalStrings
     const char *GREEN_COLOR_STRING{"green"};
     const char *GRAY_COLOR_STRING{"gray"};
     const char *ORANGE_COLOR_STRING{"orange"};
-    const char *TERMINAL_RECEIVE_BASE_STRING    {"Rx      <<   "};
-    const char *TERMINAL_TRANSMIT_BASE_STRING   {"Tx      >>   "};
-    const char *TERMINAL_DELAY_BASE_STRING      {"Delay   <>   "};
-    const char *TERMINAL_FLUSH_RX_BASE_STRING   {"Flush   vv   "};
-    const char *TERMINAL_FLUSH_TX_BASE_STRING   {"Flush   ^^   "};
-    const char *TERMINAL_FLUSH_RX_TX_BASE_STRING{"Flush   ^v   "};
+    const char *TERMINAL_RECEIVE_BASE_STRING    {"Rx << "};
+    const char *TERMINAL_TRANSMIT_BASE_STRING   {"Tx >> "};
+    const char *TERMINAL_DELAY_BASE_STRING      {"Delay <> "};
+    const char *TERMINAL_FLUSH_RX_BASE_STRING   {"Flush vv "};
+    const char *TERMINAL_FLUSH_TX_BASE_STRING   {"Flush ^^ "};
+    const char *TERMINAL_FLUSH_RX_TX_BASE_STRING{"Flush ^v "};
     const char *NO_SERIAL_PORTS_CONNECTED_STRING{"No serial ports connected"};
     const char *CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING{"Use the connect button to connect to a serial port and begin sending data"};
     const char *OPEN_SCRIPT_FILE_CAPTION{"Open Script File"};
