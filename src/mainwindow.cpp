@@ -7,7 +7,7 @@ const int MainWindow::s_TASKBAR_HEIGHT{15};
 const int MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT{750};
 const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{50};
 const int MainWindow::s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT{5000};
-const int MainWindow::s_SCRIPT_INDENT{4};
+const int MainWindow::s_SCRIPT_INDENT{0};
 
 MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
                        std::shared_ptr<QSerialTerminalIcons> qstiPtr,
