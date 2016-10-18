@@ -188,6 +188,8 @@ void MainWindow::onSendButtonClicked()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
+    this->m_cancelScript = true;
+    event->accept();
     /*
     using namespace QSerialTerminalStrings;
     QMessageBox::StandardButton userReply;
