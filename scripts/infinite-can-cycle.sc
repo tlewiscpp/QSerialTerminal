@@ -18,7 +18,6 @@
 
 # Any line that has invalid syntax will be ignored, and a warning will be output to stdout
 
-Loop() {
     DelayMilliseconds(500)
     FlushTXTX()
     Write("{dwrite:18:0}")
@@ -41,6 +40,7 @@ Loop() {
     DelayMilliseconds(1000)
     FlushTXRX()
     
+Loop() {    
     #Top Left Inidicator
     Write("{canwrite:0x3B3:0x40:0x00:0x00:0x12:0x00:0x00:0x00:0x00}")
     DelayMilliseconds(25)
