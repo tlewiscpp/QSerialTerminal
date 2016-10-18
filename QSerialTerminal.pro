@@ -28,7 +28,6 @@ SOURCES += src/main.cpp\
             src/serialcommand.cpp
 
 HEADERS  += include/mainwindow.h\
-            include/customdialog.h \
     include/qserialterminalicons.h \
     include/qserialterminalstrings.h \
     include/qserialterminalutilities.h \

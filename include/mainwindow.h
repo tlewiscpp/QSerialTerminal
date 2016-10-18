@@ -20,7 +20,6 @@
 #include <generalutilities.h>
 #include <eventtimer.h>
 
-#include "customdialog.h"
 #include "serialcommand.h"
 #include "serialcommand.h"
 #include "scriptexecutor.h"
