@@ -29,6 +29,9 @@ ScriptReader::ScriptReader(const std::string &scriptFilePath) :
     for (std::vector<std::string>::const_iterator iter = buffer.begin(); iter != buffer.end(); iter++) {
         try {
             std::string copyString{*iter};
+            if (startsWithNotIncludingWhitespace(copyString, '#') || isWhitespace(copyString)) {
+                continue;
+            }
             std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
             //TODO: Replace with regex for searching
             size_t foundDelayPosition{copyString.find(DELAY_IDENTIFIER)};
@@ -40,24 +43,6 @@ ScriptReader::ScriptReader(const std::string &scriptFilePath) :
             size_t foundFlushTxRxPosition{copyString.find(FLUSH_TX_RX_IDENTIFIER)};
             size_t foundLoopPosition{copyString.find(LOOP_IDENTIFIER)};
             size_t foundClosingLoopPosition{copyString.find(CLOSING_LOOP_IDENTIFIER)};
-            if (copyString.length() != 0) {
-                std::string otherCopy{copyString};
-                unsigned int numberOfWhitespace{0};
-                while (otherCopy.length() > 1 && isWhitespace(otherCopy[0])) {
-                    stripFromString(otherCopy, ' ');
-                    numberOfWhitespace++;
-                }
-                if (copyString.length() > numberOfWhitespace) {
-                    if (copyString[numberOfWhitespace] == '#') {
-                        continue;
-                    }
-                }
-            } else {
-                continue;
-            }
-            if (isWhitespace(copyString)) {
-                continue;
-            }
 
             long int currentLine{std::distance<std::vector<std::string>::const_iterator>(buffer.begin(), iter)+1};
             if (foundLoopPosition != std::string::npos) {
