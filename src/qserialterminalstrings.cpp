@@ -26,7 +26,11 @@ namespace QSerialTerminalStrings
     const char *NO_SERIAL_PORTS_CONNECTED_STRING{"No serial ports connected"};
     const char *CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING{"Use the connect button to connect to a serial port and begin sending data"};
     const char *OPEN_SCRIPT_FILE_CAPTION{"Open Script File"};
-    const char *OPEN_SCRIPT_FILE_DEFAULT_DIRECTORY{static_cast<std::string>(QDir::homePath().toStdString() + static_cast<std::string>("/QSerialTerminal/")).c_str()};
+#if (defined(_WIN32) || defined(__CYGWIN__))
+    const char *OPEN_SCRIPT_FILE_DEFAULT_DIRECTORY{"C:/Cygwin64/opt/GitHub/QSerialTerminal/scripts/"};
+#else
+    const char *OPEN_SCRIPT_FILE_DEFAULT_DIRECTORY{"/opt/GitHub/QSerialTerminal/scripts/"};
+#endif
     const char *EMPTY_SCRIPT_STRING{"The loaded script does not contain any valid commands: "};
     const char *EMPTY_SCRIPT_WINDOW_TITLE_STRING{"Loaded Script Empty"};
     const char *FILE_DOES_NOT_EXIST_STRING{"The selected script file does not exist: "};
