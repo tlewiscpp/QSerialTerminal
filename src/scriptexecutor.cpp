@@ -39,7 +39,7 @@ void ScriptExecutor::execute(MainWindow *mainWindow, std::shared_ptr<SerialPort>
             throw std::runtime_error(e.what());
         }
     }
-    int loop {false};
+    int loop{0};
     int loopCount{0};
     std::vector<SerialCommand> loopSerialCommands;
     for (auto &it : (*this->m_scriptReader->commands())) {
@@ -73,7 +73,7 @@ void ScriptExecutor::execute(MainWindow *mainWindow, std::shared_ptr<SerialPort>
                     printFlushResult(mainWindow, FlushType::RX_TX);
                     serialPort->flushRXTX();
                 } else if (it.commandType() == SerialCommandType::LOOP_START) {
-                    loop = true;
+                    loop++;
                     loopCount = std::stoi(it.commandArgument());
                     loopSerialCommands.clear();
                 } else {
@@ -81,7 +81,7 @@ void ScriptExecutor::execute(MainWindow *mainWindow, std::shared_ptr<SerialPort>
                 }
             } else {
                 if (it.commandType() == SerialCommandType::LOOP_END) {
-                    loop =  false;
+                    loop--;
                     doLoop(mainWindow, serialPort, printRxResult, printTxResult, printDelayResult, printFlushResult, printLoopResult, loopSerialCommands, loopCount);
                     loopSerialCommands.clear();
                 } else {

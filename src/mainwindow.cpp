@@ -59,7 +59,11 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
 
     this->m_checkPortDisconnectTimer->setInterval(MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT);
     this->m_checkSerialPortReceiveTimer->setInterval(MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT);
+#if defined(_WIN32) || defined(__CYGWIN__)
+
+#else
     connect(this->m_checkPortDisconnectTimer.get(), SIGNAL(timeout()), this, SLOT(checkDisconnectedSerialPorts()));
+#endif
     connect(this->m_checkSerialPortReceiveTimer.get(), SIGNAL(timeout()), this, SLOT(checkSerialReceive()));
 }
 
