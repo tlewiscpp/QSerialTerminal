@@ -5,9 +5,10 @@ const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SERIAL_TIMEOUT{400};
 const int MainWindow::s_TASKBAR_HEIGHT{15};
 const int MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT{750};
-const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{50};
+const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{500};
 const int MainWindow::s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SCRIPT_INDENT{0};
+const int MainWindow::s_SERIAL_READ_TIMEOUT{25};
 
 MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
                        std::shared_ptr<QSerialTerminalIcons> qstiPtr,
@@ -57,6 +58,11 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     connect(this->m_uiPtr->sendBox, SIGNAL(ctrlUPressed(SerialTerminalLineEdit*)), this, SLOT(onCtrlUPressed(SerialTerminalLineEdit*)));
     connect(this->m_uiPtr->sendBox, SIGNAL(ctrlGPressed(SerialTerminalLineEdit*)), this, SLOT(onCtrlGPressed(SerialTerminalLineEdit*)));
 
+    connect(this->m_uiPtr->actionLENone, SIGNAL(triggered(bool)), this, SLOT(onActionLENoneTriggered(bool)));
+    connect(this->m_uiPtr->actionLECR, SIGNAL(triggered(bool)), this, SLOT(onActionLECRTriggered(bool)));
+    connect(this->m_uiPtr->actionLELF, SIGNAL(triggered(bool)), this, SLOT(onActionLELFTriggered(bool)));
+    connect(this->m_uiPtr->actionLECRLF, SIGNAL(triggered(bool)), this, SLOT(onActionLECRLFTriggered(bool)));
+
     this->m_checkPortDisconnectTimer->setInterval(MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT);
     this->m_checkSerialPortReceiveTimer->setInterval(MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT);
 #if defined(_WIN32) || defined(__CYGWIN__)
@@ -65,6 +71,71 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     connect(this->m_checkPortDisconnectTimer.get(), SIGNAL(timeout()), this, SLOT(checkDisconnectedSerialPorts()));
 #endif
     connect(this->m_checkSerialPortReceiveTimer.get(), SIGNAL(timeout()), this, SLOT(checkSerialReceive()));
+}
+
+void MainWindow::onActionLENoneTriggered(bool toggled)
+{
+    (void)toggled;
+    doChangeLineEnding(LineEnding::LE_None);
+}
+
+void MainWindow::onActionLECRTriggered(bool toggled)
+{
+    (void)toggled;
+    doChangeLineEnding(LineEnding::LE_CarriageReturn);
+}
+
+void MainWindow::onActionLELFTriggered(bool toggled)
+{
+    (void)toggled;
+    doChangeLineEnding(LineEnding::LE_LineFeed);
+}
+
+void MainWindow::onActionLECRLFTriggered(bool toggled)
+{
+    (void)toggled;
+    doChangeLineEnding(LineEnding::LE_CarriageReturnLineFeed);
+}
+
+void MainWindow::doChangeLineEnding(LineEnding newLineEnding)
+{
+    this->m_lineEnding = newLineEnding;
+    if (this->m_lineEnding == LineEnding::LE_None) {
+        this->m_uiPtr->actionLENone->setChecked(true);
+        this->m_uiPtr->actionLECR->setChecked(false);
+        this->m_uiPtr->actionLELF->setChecked(false);
+        this->m_uiPtr->actionLECRLF->setChecked(false);
+    } else if (this->m_lineEnding == LineEnding::LE_CarriageReturn) {
+        this->m_uiPtr->actionLENone->setChecked(false);
+        this->m_uiPtr->actionLECR->setChecked(true);
+        this->m_uiPtr->actionLELF->setChecked(false);
+        this->m_uiPtr->actionLECRLF->setChecked(false);
+    } else if (this->m_lineEnding == LineEnding::LE_LineFeed) {
+        this->m_uiPtr->actionLENone->setChecked(false);
+        this->m_uiPtr->actionLECR->setChecked(false);
+        this->m_uiPtr->actionLELF->setChecked(true);
+        this->m_uiPtr->actionLECRLF->setChecked(false);
+    } else if (this->m_lineEnding == LineEnding::LE_CarriageReturnLineFeed) {
+        this->m_uiPtr->actionLENone->setChecked(false);
+        this->m_uiPtr->actionLECR->setChecked(false);
+        this->m_uiPtr->actionLELF->setChecked(false);
+        this->m_uiPtr->actionLECRLF->setChecked(true);
+    }
+}
+
+std::string MainWindow::getLineEnding(LineEnding lineEnding)
+{
+    if (lineEnding == LineEnding::LE_None) {
+        return "";
+    } else if (lineEnding == LineEnding::LE_CarriageReturn) {
+        return "\r";
+    } else if (lineEnding == LineEnding::LE_LineFeed) {
+        return "\n";
+    } else if (lineEnding == LineEnding::LE_CarriageReturnLineFeed) {
+        return "\r\n";
+    } else {
+        return "";
+    }
 }
 
 void MainWindow::appendReceivedString(const std::string &str)
@@ -80,13 +151,16 @@ void MainWindow::appendTransmittedString(const QString &str)
 {
     using namespace QSerialTerminalStrings;
     if (this->m_serialPort) {
-        if (this->m_serialPort->isOpen()) {
+        if (!this->m_serialPort->isOpen()) {
+            this->m_serialPort->openPort();
+        }
+        if (str.toStdString() != "") {
             this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
             resetCommandHistory();
-            this->m_serialPort->writeString(str.toStdString());
-            printTxResult(str.toStdString());
-            this->m_uiPtr->sendBox->clear();
         }
+        this->m_serialPort->writeString(str.toStdString() + this->getLineEnding(this->m_lineEnding));
+        printTxResult(str.toStdString());
+        this->m_uiPtr->sendBox->clear();
     }
 }
 
@@ -139,9 +213,14 @@ void MainWindow::checkDisconnectedSerialPorts()
 
 void MainWindow::checkSerialReceive()
 {
+    using namespace GeneralUtilities;
     if (this->m_serialPort) {
-        if (this->m_serialPort->isOpen()) {
-            appendReceivedString(this->m_serialPort->readString());
+        if (!this->m_serialPort->isOpen()) {
+            this->m_serialPort->openPort();
+        }
+        std::string returnString{stripNonAsciiCharacters(this->m_serialPort->readString())};
+        if (returnString != "") {
+            appendReceivedString(returnString);
         }
     }
 }
@@ -198,9 +277,7 @@ void MainWindow::onSendButtonClicked()
     using namespace GeneralUtilities;
     if (this->m_uiPtr->sendButton->text() == toQString(SEND_STRING)) {
         if (this->m_serialPort) {
-            if ((this->m_uiPtr->sendBox->text().toStdString() != "") && (!isWhitespace(this->m_uiPtr->sendBox->text().toStdString()))) {
-                appendTransmittedString(toQString(stripLineEndings(this->m_uiPtr->sendBox->text().toStdString())));
-            }
+            appendTransmittedString(toQString(stripLineEndings(this->m_uiPtr->sendBox->text().toStdString())));
         } else {
             if (this->m_uiPtr->portNameComboBox->count() != 0) {
                 onActionConnectTriggered(false);
@@ -371,6 +448,7 @@ void MainWindow::openSerialPort()
     this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_ENABLED_TOOLTIP);
     this->m_uiPtr->sendBox->setFocus();
     this->m_uiPtr->statusBar->showMessage(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
+    this->m_serialPort->setTimeout(MainWindow::s_SERIAL_READ_TIMEOUT);
     beginCommunication();
 }
 
@@ -648,26 +726,26 @@ void MainWindow::keyPressEvent(QKeyEvent *qke)
 {
     if (qke) {
         if ((qke->key() == Qt::Key_Enter) || (qke->key() == Qt::Key_Return)) {
-            this->parentWidget()->setFocus();
-            onReturnKeyPressed();
+            this->m_uiPtr->sendBox->clearFocus();
+            this->onReturnKeyPressed();
         } else if (qke->key() == Qt::Key_Up) {
-            onUpArrowPressed();
+            this->onUpArrowPressed();
         } else if (qke->key() == Qt::Key_Down) {
-            onDownArrowPressed();
+            this->onDownArrowPressed();
         } else if (qke->key() == Qt::Key_Escape) {
-            onEscapeKeyPressed();
+            this->onEscapeKeyPressed();
         } else if (qke->key() == Qt::Key_Alt) {
-            onAltKeyPressed();
+            this->onAltKeyPressed();
         } else if ((qke->key() == Qt::Key_A) && (qke->modifiers().testFlag(Qt::ControlModifier))) {
-            onCtrlAPressed();
+            this->onCtrlAPressed();
         } else if ((qke->key() == Qt::Key_E) && (qke->modifiers().testFlag(Qt::ControlModifier))) {
-            onCtrlEPressed();
+            this->onCtrlEPressed();
         } else if ((qke->key() == Qt::Key_U) && (qke->modifiers().testFlag(Qt::ControlModifier))) {
-            onCtrlUPressed();
+            this->onCtrlUPressed();
         } else if ((qke->key() == Qt::Key_G) && (qke->modifiers().testFlag(Qt::ControlModifier))) {
-            onCtrlGPressed();
+            this->onCtrlGPressed();
         } else if ((qke->key() == Qt::Key_C) && (qke->modifiers().testFlag(Qt::ControlModifier))) {
-            onCtrlCPressed();
+            this->onCtrlCPressed();
         }
         else {
             return QWidget::keyPressEvent(qke);
@@ -679,65 +757,65 @@ void MainWindow::keyPressEvent(QKeyEvent *qke)
 void MainWindow::onReturnKeyPressed(SerialTerminalLineEdit *stle)
 {
     (void)stle;
-    onReturnKeyPressed();
+    this->onReturnKeyPressed();
 }
 
 void MainWindow::onUpArrowPressed(SerialTerminalLineEdit *stle)
 {
     (void)stle;
-    onUpArrowPressed();
+    this->onUpArrowPressed();
 }
 
 void MainWindow::onDownArrowPressed(SerialTerminalLineEdit *stle)
 {
     (void)stle;
-    onDownArrowPressed();
+    this->onDownArrowPressed();
 }
 
 void MainWindow::onEscapeKeyPressed(SerialTerminalLineEdit *stle)
 {
     (void)stle;
-    onEscapeKeyPressed();
+    this->onEscapeKeyPressed();
 }
 
 void MainWindow::onAltKeyPressed(SerialTerminalLineEdit *stle)
 {
     (void)stle;
-    onAltKeyPressed();
+    this->onAltKeyPressed();
 }
 
 void MainWindow::onCtrlAPressed(SerialTerminalLineEdit *stle)
 {
 
     (void)stle;
-    onCtrlAPressed();
+    this->onCtrlAPressed();
 }
 
 void MainWindow::onCtrlEPressed(SerialTerminalLineEdit *stle)
 {
 
     (void)stle;
-    onCtrlEPressed();
+    this->onCtrlEPressed();
 }
 
 void MainWindow::onCtrlUPressed(SerialTerminalLineEdit *stle)
 {
 
     (void)stle;
-    onCtrlUPressed();
+    this->onCtrlUPressed();
 }
 
 void MainWindow::onCtrlGPressed(SerialTerminalLineEdit *stle)
 {
 
     (void)stle;
-    onCtrlGPressed();
+    this->onCtrlGPressed();
 }
 
 void MainWindow::onCtrlCPressed(SerialTerminalLineEdit *stle)
 {
     (void)stle;
-    onCtrlCPressed();
+    this->onCtrlCPressed();
 }
 
 void MainWindow::onReturnKeyPressed()

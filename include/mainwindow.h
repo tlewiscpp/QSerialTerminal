@@ -42,6 +42,13 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    enum class LineEnding {
+        LE_None,
+        LE_CarriageReturn,
+        LE_LineFeed,
+        LE_CarriageReturnLineFeed
+    };
+
 public:
     explicit MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
                         std::shared_ptr<QSerialTerminalIcons> qstiPtr,
@@ -73,6 +80,11 @@ private slots:
     void onActionLoadScriptTriggered(bool checked);
     void onCommandHistoryContextMenuRequested(const QPoint &point);
     void onCommandHistoryContextMenuActionTriggered(CustomAction *action, bool checked);
+
+    void onActionLENoneTriggered(bool checked);
+    void onActionLECRTriggered(bool checked);
+    void onActionLELFTriggered(bool checked);
+    void onActionLECRLFTriggered(bool checked);
 
     void onSendButtonClicked();
     void onReturnKeyPressed(SerialTerminalLineEdit *stle);
@@ -117,6 +129,7 @@ private:
     std::vector<QString> m_commandHistory;
     unsigned int m_currentHistoryIndex;
     bool m_cancelScript;
+    LineEnding m_lineEnding;
     int m_xPlacement;
     int m_yPlacement;
 
@@ -129,8 +142,10 @@ private:
     void stopCommunication();
     void calculateXYPlacement();
     void setupAdditionalUiComponents();
+    std::string getLineEnding(LineEnding lineEnding);
     void appendReceivedString(const std::string &str);
     void appendTransmittedString(const QString &str);
+    void doChangeLineEnding(LineEnding newLineEnding);
 
     static void staticPrintRxResult(MainWindow *mainWindow, const std::string &str);
     static void staticPrintTxResult(MainWindow *mainWindow, const std::string &str);
@@ -151,6 +166,8 @@ private:
     static const int s_CHECK_PORT_RECEIVE_TIMEOUT;
     static const int s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT;
     static const int s_SCRIPT_INDENT;
+    static const int s_SERIAL_READ_TIMEOUT;
+
 };
 
 #endif //QSERIALTERMINAL_MAINWINDOW_H

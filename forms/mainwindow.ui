@@ -87,7 +87,7 @@
             <x>0</x>
             <y>0</y>
             <width>657</width>
-            <height>262</height>
+            <height>246</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
@@ -497,7 +497,7 @@
      <x>0</x>
      <y>0</y>
      <width>689</width>
-     <height>19</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -515,7 +515,17 @@
     </property>
     <addaction name="actionAboutQt"/>
    </widget>
+   <widget class="QMenu" name="menuLineEndings">
+    <property name="title">
+     <string>Line Endings</string>
+    </property>
+    <addaction name="actionLENone"/>
+    <addaction name="actionLECR"/>
+    <addaction name="actionLELF"/>
+    <addaction name="actionLECRLF"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuLineEndings"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -557,6 +567,53 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionLENone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>None</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+N</string>
+   </property>
+  </action>
+  <action name="actionLECR">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Carriage Return (\r)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+R</string>
+   </property>
+  </action>
+  <action name="actionLELF">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Line Feed (\n)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F</string>
+   </property>
+  </action>
+  <action name="actionLECRLF">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>CR &amp; LF (\r\n) </string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+A</string>
    </property>
   </action>
  </widget>
