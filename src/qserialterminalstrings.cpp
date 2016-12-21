@@ -24,7 +24,7 @@ namespace QSerialTerminalStrings
     const char *TERMINAL_FLUSH_TX_BASE_STRING{"Flush ^^ "};
     const char *TERMINAL_FLUSH_RX_TX_BASE_STRING{"Flush ^v "};
     const char *NO_SERIAL_PORTS_CONNECTED_STRING{"No serial ports connected"};
-    const char *CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING{"Use the connect button to connect to a serial port and begin sending data"};
+    const char *CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING{"Select a serial port and press connect"};
     const char *OPEN_SCRIPT_FILE_CAPTION{"Open Script File"};
 #if (defined(_WIN32) || defined(__CYGWIN__))
     const char *OPEN_SCRIPT_FILE_DEFAULT_DIRECTORY{"C:/Cygwin64/opt/GitHub/QSerialTerminal/scripts/"};
@@ -60,6 +60,7 @@ namespace QSerialTerminalStrings
     const char *SEND_STRING{"Send"};
     const char *CANCELED_EXECUTING_SCRIPT_STRING{"Canceled execution of script file: "};
     const char *COMMAND_HISTORY_CONTEXT_MENU_STRING{"Command History"};
-    const char *NO_AVAILABLE_SERIAL_PORTS_STRING{"No serial ports are connected to device, please connect a device to connect"};
+    const char *NO_AVAILABLE_SERIAL_PORTS_STRING{"No serial ports are connected to device, please connect a device"};
     const char *NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING{"No Serial Ports Available"};
+    const char *SERIAL_PORT_DISCONNECTED_STRING{"Serial port disconnected: "};
 }

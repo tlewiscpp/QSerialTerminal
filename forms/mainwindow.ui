@@ -156,16 +156,15 @@
      <height>19</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="CustomMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
     <addaction name="actionConnect"/>
-    <addaction name="actionDisconnect"/>
     <addaction name="actionLoadScript"/>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuAbout">
+   <widget class="CustomMenu" name="menuAbout">
     <property name="title">
      <string>About</string>
     </property>
@@ -195,7 +194,7 @@
      <string>Stop Bits</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuDataBits">
+   <widget class="CustomMenu" name="menuDataBits">
     <property name="title">
      <string>Data Bits</string>
     </property>
@@ -216,6 +215,9 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionConnect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Connect</string>
    </property>

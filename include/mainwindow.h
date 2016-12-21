@@ -191,6 +191,8 @@ private:
     static const int s_SCRIPT_INDENT;
     static const int s_SERIAL_READ_TIMEOUT;
     std::string getSerialPortItemFromActions(SerialPortItemType serialPortItemType);
+    void addNewSerialPortInfoItem(SerialPortItemType serialPortItemType, const std::string &actionName);
+    void removeOldSerialPortInfoItem(SerialPortItemType serialPortItemType, const std::string &actionName);
 };
 
 #endif //QSERIALTERMINAL_MAINWINDOW_H

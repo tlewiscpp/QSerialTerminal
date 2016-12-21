@@ -62,23 +62,23 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     connect(this->m_uiPtr->actionLELF, SIGNAL(triggered(bool)), this, SLOT(onActionLELFTriggered(bool)));
     connect(this->m_uiPtr->actionLECRLF, SIGNAL(triggered(bool)), this, SLOT(onActionLECRLFTriggered(bool)));
 
-    connect(this->m_uiPtr->menuAbout, SIGNAL(aboutToShow()), this, SLOT(onContextMenuActive()));
-    connect(this->m_uiPtr->menuBaudRate, SIGNAL(aboutToShow()), this, SLOT(onContextMenuActive()));
-    connect(this->m_uiPtr->menuDataBits, SIGNAL(aboutToShow()), this, SLOT(onContextMenuActive()));
-    connect(this->m_uiPtr->menuFile, SIGNAL(aboutToShow()), this, SLOT(onContextMenuActive()));
-    connect(this->m_uiPtr->menuLineEndings, SIGNAL(aboutToShow()), this, SLOT(onContextMenuActive()));
-    connect(this->m_uiPtr->menuParity, SIGNAL(aboutToShow()), this, SLOT(onContextMenuActive()));
-    connect(this->m_uiPtr->menuPortNames, SIGNAL(aboutToShow()), this, SLOT(onContextMenuActive()));
-    connect(this->m_uiPtr->menuStopBits, SIGNAL(aboutToShow()), this, SLOT(onContextMenuActive()));
+    connect(this->m_uiPtr->menuAbout, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_uiPtr->menuBaudRate, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_uiPtr->menuDataBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_uiPtr->menuFile, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_uiPtr->menuLineEndings, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_uiPtr->menuParity, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_uiPtr->menuPortNames, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_uiPtr->menuStopBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
 
-    connect(this->m_uiPtr->menuAbout, SIGNAL(aboutToShow()), this, SLOT(onContextMenuInactive()));
-    connect(this->m_uiPtr->menuBaudRate, SIGNAL(aboutToShow()), this, SLOT(onContextMenuInactive()));
-    connect(this->m_uiPtr->menuDataBits, SIGNAL(aboutToShow()), this, SLOT(onContextMenuInactive()));
-    connect(this->m_uiPtr->menuFile, SIGNAL(aboutToShow()), this, SLOT(onContextMenuInactive()));
-    connect(this->m_uiPtr->menuLineEndings, SIGNAL(aboutToShow()), this, SLOT(onContextMenuInactive()));
-    connect(this->m_uiPtr->menuParity, SIGNAL(aboutToShow()), this, SLOT(onContextMenuInactive()));
-    connect(this->m_uiPtr->menuPortNames, SIGNAL(aboutToShow()), this, SLOT(onContextMenuInactive()));
-    connect(this->m_uiPtr->menuStopBits, SIGNAL(aboutToShow()), this, SLOT(onContextMenuInactive()));
+    connect(this->m_uiPtr->menuAbout, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_uiPtr->menuBaudRate, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_uiPtr->menuDataBits, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_uiPtr->menuFile, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_uiPtr->menuLineEndings, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_uiPtr->menuParity, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_uiPtr->menuPortNames, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_uiPtr->menuStopBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
 
 
     this->m_checkPortDisconnectTimer->setInterval(MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT);
@@ -219,7 +219,131 @@ void MainWindow::bindQSerialTerminalIcons(std::shared_ptr<QSerialTerminalIcons> 
 void MainWindow::checkDisconnectedSerialPorts()
 {
     using namespace GeneralUtilities;
+    auto names = SerialPort::availableSerialPorts();
+    auto maybeUpdate = std::vector<std::string>{};
+    auto currents = std::vector<std::string>{};
+
+    for (auto &it : names) {
+        maybeUpdate.push_back(it);
+    }
+    for (auto &it : this->m_availablePortNamesActions) {
+        currents.push_back(it->text().toStdString());
+    }
+    for (auto &it : maybeUpdate) {
+        if (!itemExists(currents, it)) {
+            this->addNewSerialPortInfoItem(SerialPortItemType::PORT_NAME, it);
+        }
+    }
+    for (auto &it : currents) {
+        if (!itemExists(maybeUpdate, it)) {
+            this->removeOldSerialPortInfoItem(SerialPortItemType::PORT_NAME, it);
+        }
+    }
 }
+
+void MainWindow::addNewSerialPortInfoItem(SerialPortItemType serialPortItemType, const std::string &actionName)
+{
+    CustomAction *tempAction{new CustomAction{toQString(actionName), 0, this}};
+    tempAction->setCheckable(true);
+
+    if (serialPortItemType == SerialPortItemType::PORT_NAME) {
+        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionPortNamesChecked(CustomAction*, bool)));
+        this->m_availablePortNamesActions.push_back(tempAction);
+        this->m_uiPtr->menuPortNames->addAction(tempAction);
+    } else if (serialPortItemType == SerialPortItemType::BAUD_RATE) {
+        if (tempAction->text().toStdString() == SerialPort::DEFAULT_BAUD_RATE_STRING) {
+            tempAction->setChecked(true);
+        }
+        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionBaudRateChecked(CustomAction*, bool)));
+        this->m_availableBaudRateActions.push_back(tempAction);
+        this->m_uiPtr->menuBaudRate->addAction(tempAction);
+    } else if (serialPortItemType == SerialPortItemType::PARITY) {
+        if (tempAction->text().toStdString() == SerialPort::DEFAULT_PARITY_STRING) {
+            tempAction->setChecked(true);
+        }
+        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionParityChecked(CustomAction*, bool)));
+        this->m_availableParityActions.push_back(tempAction);
+        this->m_uiPtr->menuParity->addAction(tempAction);
+    } else if (serialPortItemType == SerialPortItemType::DATA_BITS) {
+        if (tempAction->text().toStdString() == SerialPort::DEFAULT_DATA_BITS_STRING) {
+            tempAction->setChecked(true);
+        }
+        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionDataBitsChecked(CustomAction*, bool)));
+        this->m_availableDataBitsActions.push_back(tempAction);
+        this->m_uiPtr->menuDataBits->addAction(tempAction);
+    } else if (serialPortItemType == SerialPortItemType::STOP_BITS) {
+        if (tempAction->text().toStdString() == SerialPort::DEFAULT_STOP_BITS_STRING) {
+            tempAction->setChecked(true);
+        }
+        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionStopBitsChecked(CustomAction*, bool)));
+        this->m_availableStopBitsActions.push_back(tempAction);
+        this->m_uiPtr->menuStopBits->addAction(tempAction);
+    } else {
+        delete tempAction;
+    }
+}
+
+void MainWindow::removeOldSerialPortInfoItem(SerialPortItemType serialPortItemType, const std::string &actionName)
+{
+    using namespace QSerialTerminalStrings;
+    int i{0};
+    if (serialPortItemType == SerialPortItemType::PORT_NAME) {
+        for (auto &it : this->m_availablePortNamesActions) {
+            if (it->text().toStdString() == actionName) {
+                this->m_uiPtr->statusBar->showMessage(SERIAL_PORT_DISCONNECTED_STRING + it->text());
+                if (it->isChecked()) {
+                    this->m_uiPtr->actionConnect->setChecked(false);
+                    this->m_uiPtr->connectButton->setChecked(false);
+                    this->m_uiPtr->actionConnect->setEnabled(false);
+                    this->m_uiPtr->connectButton->setEnabled(false);
+                    this->m_uiPtr->actionLoadScript->setEnabled(false);
+                }
+                it->deleteLater();
+                this->m_availablePortNamesActions.erase(this->m_availablePortNamesActions.begin() + i);
+                return;
+            }
+            i++;
+        }
+    } else if (serialPortItemType == SerialPortItemType::BAUD_RATE) {
+        for (auto &it : this->m_availableBaudRateActions) {
+            if (it->text().toStdString() == actionName) {
+                it->deleteLater();
+                this->m_availableBaudRateActions.erase(this->m_availableBaudRateActions.begin() + i);
+                return;
+            }
+            i++;
+        }
+    } else if (serialPortItemType == SerialPortItemType::PARITY) {
+        for (auto &it : this->m_availableParityActions) {
+            if (it->text().toStdString() == actionName) {
+                it->deleteLater();
+                this->m_availableParityActions.erase(this->m_availableParityActions.begin() + i);
+                return;
+            }
+            i++;
+        }
+    } else if (serialPortItemType == SerialPortItemType::DATA_BITS) {
+        for (auto &it : this->m_availableDataBitsActions) {
+            if (it->text().toStdString() == actionName) {
+                it->deleteLater();
+                this->m_availableDataBitsActions.erase(this->m_availableDataBitsActions.begin() + i);
+                return;
+            }
+            i++;
+        }
+    } else if (serialPortItemType == SerialPortItemType::STOP_BITS) {
+        for (auto &it : this->m_availableStopBitsActions) {
+            if (it->text().toStdString() == actionName) {
+                it->deleteLater();
+                this->m_availableStopBitsActions.erase(this->m_availableStopBitsActions.begin() + i);
+                return;
+            }
+            i++;
+        }
+    }
+}
+
+
 
 void MainWindow::checkSerialReceive()
 {
@@ -350,63 +474,32 @@ void MainWindow::setupAdditionalUiComponents()
 {
     using namespace QSerialTerminalStrings;
     for (auto &it : SerialPort::availableDataBits()) {
-        CustomAction *tempAction{new CustomAction{toQString(it), 0, this}};
-        tempAction->setCheckable(true);
-        if (tempAction->text().toStdString() == SerialPort::DEFAULT_DATA_BITS_STRING) {
-            tempAction->setChecked(true);
-        }
-        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionDataBitsChecked(CustomAction*, bool)));
-        this->m_availableDataBitsActions.push_back(tempAction);
-        this->m_uiPtr->menuDataBits->addAction(tempAction);
+        this->addNewSerialPortInfoItem(SerialPortItemType::DATA_BITS, it);
     }
 
     for (auto &it : SerialPort::availableStopBits()) {
-        CustomAction*tempAction{new CustomAction{toQString(it), 0, this}};
-        tempAction->setCheckable(true);
-        if (tempAction->text().toStdString() == SerialPort::DEFAULT_STOP_BITS_STRING) {
-            tempAction->setChecked(true);
-        }
-        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionStopBitsChecked(CustomAction*, bool)));
-        this->m_availableStopBitsActions.push_back(tempAction);
-        this->m_uiPtr->menuStopBits->addAction(tempAction);
+        this->addNewSerialPortInfoItem(SerialPortItemType::STOP_BITS, it);
     }
 
     for (auto &it : SerialPort::availableParity()) {
-        CustomAction*tempAction{new CustomAction{toQString(it), 0, this}};
-        tempAction->setCheckable(true);
-        if (tempAction->text().toStdString() == SerialPort::DEFAULT_PARITY_STRING) {
-            tempAction->setChecked(true);
-        }
-        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionParityChecked(CustomAction*, bool)));
-        this->m_availableParityActions.push_back(tempAction);
-        this->m_uiPtr->menuParity->addAction(tempAction);
+        this->addNewSerialPortInfoItem(SerialPortItemType::PARITY, it);
     }
 
     for (auto &it : SerialPort::availableBaudRates()) {
-        CustomAction*tempAction{new CustomAction{toQString(it), 0, this}};
-        tempAction->setCheckable(true);
-        if (tempAction->text().toStdString() == SerialPort::DEFAULT_BAUD_RATE_STRING) {
-            tempAction->setChecked(true);
-        }
-        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionBaudRateChecked(CustomAction*, bool)));
-        this->m_availableBaudRateActions.push_back(tempAction);
-        this->m_uiPtr->menuBaudRate->addAction(tempAction);
+        this->addNewSerialPortInfoItem(SerialPortItemType::BAUD_RATE, it);
     }
 
     for (auto &it : SerialPort::availableSerialPorts()) {
-        CustomAction *tempAction{new CustomAction{toQString(it), 0, this}};
-        tempAction->setCheckable(true);
-        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionPortNamesChecked(CustomAction*, bool)));
-        this->m_availablePortNamesActions.push_back(tempAction);
-        this->m_uiPtr->menuPortNames->addAction(tempAction);
+        this->addNewSerialPortInfoItem(SerialPortItemType::PORT_NAME, it);
     }
 
     this->m_uiPtr->sendBox->setEnabled(false);
+    this->m_uiPtr->connectButton->setEnabled(false);
+    this->m_uiPtr->actionConnect->setEnabled(false);
     this->m_uiPtr->sendBox->setToolTip(SEND_BOX_DISABLED_TOOLTIP);
     this->m_uiPtr->actionLoadScript->setEnabled(false);
     this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_DISABLED_TOOLTIP);
 
-    this->m_uiPtr->actionDisconnect->setEnabled(false);
     this->m_uiPtr->sendBox->setTabOrder(this->m_uiPtr->sendBox, this->m_uiPtr->sendButton);
 
     this->m_uiPtr->statusBar->showMessage(CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING);
@@ -414,9 +507,7 @@ void MainWindow::setupAdditionalUiComponents()
 
 void MainWindow::onActionBaudRateChecked(CustomAction *action, bool checked)
 {
-    if ((action->isChecked()) || (checked)) {
-        return;
-    }
+    (void)checked;
     for (auto &it : this->m_availableBaudRateActions) {
         if (it == action) {
             action->setChecked(true);
@@ -428,9 +519,7 @@ void MainWindow::onActionBaudRateChecked(CustomAction *action, bool checked)
 
 void MainWindow::onActionParityChecked(CustomAction *action, bool checked)
 {
-    if ((action->isChecked()) || (checked)) {
-        return;
-    }
+    (void)checked;
     for (auto &it : this->m_availableParityActions) {
         if (it == action) {
             action->setChecked(true);
@@ -442,9 +531,7 @@ void MainWindow::onActionParityChecked(CustomAction *action, bool checked)
 
 void MainWindow::onActionDataBitsChecked(CustomAction *action, bool checked)
 {
-    if ((action->isChecked()) || (checked)) {
-        return;
-    }
+    (void)checked;
     for (auto &it : this->m_availableDataBitsActions) {
         if (it == action) {
             action->setChecked(true);
@@ -456,9 +543,7 @@ void MainWindow::onActionDataBitsChecked(CustomAction *action, bool checked)
 
 void MainWindow::onActionStopBitsChecked(CustomAction *action, bool checked)
 {
-    if ((action->isChecked()) || (checked)) {
-        return;
-    }
+    (void)checked;
     for (auto &it : this->m_availableStopBitsActions) {
         if (it == action) {
             action->setChecked(true);
@@ -470,8 +555,13 @@ void MainWindow::onActionStopBitsChecked(CustomAction *action, bool checked)
 
 void MainWindow::onActionPortNamesChecked(CustomAction *action, bool checked)
 {
-    if ((action->isChecked()) || (checked)) {
-        return;
+    (void)checked;
+    if (!action->isChecked()) {
+        this->m_uiPtr->actionConnect->setEnabled(false);
+        this->m_uiPtr->connectButton->setEnabled(false);
+    } else {
+        this->m_uiPtr->actionConnect->setEnabled(true);
+        this->m_uiPtr->connectButton->setEnabled(true);
     }
     for (auto &it : this->m_availablePortNamesActions) {
         if (it == action) {
@@ -520,7 +610,10 @@ std::string MainWindow::getSerialPortItemFromActions(SerialPortItemType serialPo
 
 void MainWindow::onActionConnectTriggered(bool checked)
 {
-    (void)checked;
+    if (!checked) {
+        this->onActionDisconnectTriggered(checked);
+        return;
+    }
     using namespace QSerialTerminalStrings;
     this->pauseCommunication();
 
@@ -556,6 +649,7 @@ void MainWindow::onActionConnectTriggered(bool checked)
                 warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
                 warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
                 warningBox->exec();
+                this->m_uiPtr->actionConnect->setChecked(false);
                 if (this->m_serialPort) {
                     closeSerialPort();
                 }
@@ -571,6 +665,7 @@ void MainWindow::onActionConnectTriggered(bool checked)
             warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
             warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
             warningBox->exec();
+            this->m_uiPtr->actionConnect->setChecked(false);
             if (this->m_serialPort) {
                 closeSerialPort();
             }
@@ -582,6 +677,8 @@ void MainWindow::openSerialPort()
 {
     using namespace QSerialTerminalStrings;
     this->m_serialPort->openPort();
+    this->m_uiPtr->actionConnect->setChecked(true);
+    this->m_uiPtr->connectButton->setChecked(true);
     this->m_uiPtr->actionDisconnect->setEnabled(true);
     this->m_uiPtr->sendBox->setEnabled(true);
     this->m_uiPtr->sendBox->setToolTip(SEND_BOX_ENABLED_TOOLTIP);
@@ -597,6 +694,8 @@ void MainWindow::closeSerialPort()
 {
     using namespace QSerialTerminalStrings;
     this->m_serialPort->closePort();
+    this->m_uiPtr->actionConnect->setChecked(false);
+    this->m_uiPtr->connectButton->setChecked(false);
     this->m_uiPtr->actionDisconnect->setEnabled(false);
     this->m_uiPtr->sendBox->setEnabled(false);
     this->m_uiPtr->sendBox->setToolTip(SEND_BOX_DISABLED_TOOLTIP);
@@ -669,6 +768,8 @@ void MainWindow::onActionDisconnectTriggered(bool checked)
     using namespace QSerialTerminalStrings;
     if (this->m_serialPort) {
         closeSerialPort();
+        this->m_uiPtr->actionConnect->setChecked(false);
+        this->m_uiPtr->connectButton->setChecked(false);
         this->m_serialPort.reset();
     }
 }
@@ -1033,9 +1134,9 @@ void MainWindow::onCtrlCPressed()
 void MainWindow::onConnectButtonClicked(bool checked)
 {
     if ((this->m_uiPtr->connectButton->isChecked()) || (checked)) {
-        this->onActionDisconnectTriggered(checked);
-    } else {
         this->onActionConnectTriggered(checked);
+    } else {
+        this->onActionDisconnectTriggered(checked);
     }
 }
 
