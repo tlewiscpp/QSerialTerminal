@@ -39,17 +39,6 @@ namespace QSerialTerminalStrings
     extern const char *OPEN_SCRIPT_FILE_CAPTION;
     extern const char *OPEN_SCRIPT_FILE_DEFAULT_DIRECTORY;
 
-    extern const char *DELAY_IDENTIFIER;
-    extern const char *DELAY_SECONDS_IDENTIFIER;
-    extern const char *DELAY_MILLISECONDS_IDENTIFIER;
-    extern const char *DELAY_MICROSECONDS_IDENTIFIER;
-    extern const char *WRITE_IDENTIFIER;
-    extern const char *READ_IDENTIFIER;
-    extern const char *LOOP_IDENTIFIER;
-    extern const char *FLUSH_RX_IDENTIFIER;
-    extern const char *FLUSH_TX_IDENTIFIER;
-    extern const char *FLUSH_TX_RX_IDENTIFIER;
-    extern const char *FLUSH_RX_TX_IDENTIFIER;
     extern const char *SECONDS_SUFFIX_STRING;
     extern const char *MILLISECONDS_SUFFIX_STRING;
     extern const char *MICROSECONDS_SUFFIX_STRING;
@@ -58,20 +47,6 @@ namespace QSerialTerminalStrings
     extern const char *SEND_BOX_ENABLED_TOOLTIP;
     extern const char *SEND_BOX_DISABLED_TOOLTIP;
 
-    extern const char *NO_CLOSING_PARENTHESIS_FOUND_STRING;
-    extern const char *NO_CLOSING_QUOTATION_MARKS_FOUND_STRING;
-    extern const char *NO_PARAMETER_SEPARATING_COMMA_STRING;
-    extern const char *EXPECTED_HERE_STRING;
-    extern const char *HERE_STRING;
-    extern const char *WRITE_PARAMETER_MUST_BE_IN_QUOTATIONS_STRING;
-    extern const char *DELAY_SECONDS_PARAMETER_NOT_AN_INTEGER_STRING;
-    extern const char *DELAY_MILLISECONDS_PARAMETER_NOT_AN_INTEGER_STRING;
-    extern const char *DELAY_MICROSECONDS_PARAMETER_NOT_AN_INTEGER_STRING;
-    extern const char *GENERIC_CONFIG_WARNING_BASE_STRING;
-    extern const char *GENERIC_CONFIG_WARNING_TAIL_STRING;
-    extern const char *CONFIG_EXPRESSION_MALFORMED_STRING;
-    extern const char *EXCEPTION_IN_CONSTRUCTOR_STRING;
-    extern const char *SERIAL_COMMAND_TYPE_NOT_IMPLEMENTED_STRING;
     extern const char *NULL_SERIAL_PORT_PASSED_TO_EXECUTE_STRING;
     extern const char *NULL_MAIN_WINDOW_PASSED_TO_EXECUTE_STRING;
     extern const char *SCRIPT_FILE_DOES_NOT_EXISTS_STRING;
@@ -91,6 +66,8 @@ namespace QSerialTerminalStrings
     extern const char *SEND_STRING;
     extern const char *CANCELED_EXECUTING_SCRIPT_STRING;
     extern const char *COMMAND_HISTORY_CONTEXT_MENU_STRING;
+    extern const char *NO_AVAILABLE_SERIAL_PORTS_STRING;
+    extern const char *NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING;
 }
 
 

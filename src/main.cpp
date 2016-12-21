@@ -2,7 +2,9 @@
 #include <QDesktopWidget>
 #include <memory>
 #include <serialport.h>
+#include <tstream.h>
 #include <generalutilities.h>
+
 #include "qserialterminalicons.h"
 #include "mainwindow.h"
 
@@ -17,6 +19,9 @@ int main(int argc, char *argv[])
     mainWindow->setWindowTitle(MAIN_WINDOW_TITLE);
     mainWindow->setStyleSheet(MAIN_WINDOW_STYLESHEET);
     mainWindow->begin();
+#if defined(__ANDROID__)
+    mainWindow->showMaximized();
+#endif
 
     return qApplication.exec();
 }

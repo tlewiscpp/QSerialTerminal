@@ -12,6 +12,8 @@ public:
     int index() const;
     void setIndex(int index);
 
+    friend bool operator==(const CustomAction &lhs, const CustomAction &rhs) { return lhs.text() == rhs.text(); }
+
 private slots:
     void emitCustomSignal(bool);
 

@@ -21,16 +21,15 @@
 #include <systemcommand.h>
 #include <generalutilities.h>
 #include <eventtimer.h>
+#include <tscriptreader.h>
+#include <tscriptexecutor.h>
+#include <tstream.h>
 
 #include "customaction.h"
-#include "serialcommand.h"
-#include "serialcommand.h"
-#include "scriptexecutor.h"
-#include "scriptreader.h"
+#include "custommenu.h"
 #include "serialterminallineedit.h"
 #include "qserialterminalstrings.h"
 #include "qserialterminalicons.h"
-#include "qserialterminalutilities.h"
 
 namespace Ui
 {
@@ -47,6 +46,14 @@ class MainWindow : public QMainWindow
         LE_CarriageReturn,
         LE_LineFeed,
         LE_CarriageReturnLineFeed
+    };
+
+    enum class SerialPortItemType {
+        PORT_NAME,
+        BAUD_RATE,
+        PARITY,
+        DATA_BITS,
+        STOP_BITS
     };
 
 public:
@@ -72,6 +79,7 @@ public:
     void keyPressEvent(QKeyEvent *qke);
     QApplication *application();
     bool cancelScript() const;
+    void processEvents();
 private slots:
     void checkSerialReceive();
     void checkDisconnectedSerialPorts();
@@ -80,6 +88,16 @@ private slots:
     void onActionLoadScriptTriggered(bool checked);
     void onCommandHistoryContextMenuRequested(const QPoint &point);
     void onCommandHistoryContextMenuActionTriggered(CustomAction *action, bool checked);
+
+    void onContextMenuActive(CustomMenu *);
+    void onContextMenuInactive(CustomMenu *);
+
+    void onActionBaudRateChecked(CustomAction *action, bool checked);
+    void onActionParityChecked(CustomAction *action, bool checked);
+    void onActionDataBitsChecked(CustomAction *action, bool checked);
+    void onActionStopBitsChecked(CustomAction *action, bool checked);
+    void onActionPortNamesChecked(CustomAction *action, bool checked);
+
 
     void onActionLENoneTriggered(bool checked);
     void onActionLECRTriggered(bool checked);
@@ -132,6 +150,11 @@ private:
     LineEnding m_lineEnding;
     int m_xPlacement;
     int m_yPlacement;
+    std::vector<CustomAction *> m_availableBaudRateActions;
+    std::vector<CustomAction *> m_availableParityActions;
+    std::vector<CustomAction *> m_availableStopBitsActions;
+    std::vector<CustomAction *> m_availableDataBitsActions;
+    std::vector<CustomAction *> m_availablePortNamesActions;
 
     void resetCommandHistory();
     void clearEmptyStringsFromCommandHistory();
@@ -167,7 +190,7 @@ private:
     static const int s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT;
     static const int s_SCRIPT_INDENT;
     static const int s_SERIAL_READ_TIMEOUT;
-
+    std::string getSerialPortItemFromActions(SerialPortItemType serialPortItemType);
 };
 
 #endif //QSERIALTERMINAL_MAINWINDOW_H
