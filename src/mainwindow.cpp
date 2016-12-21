@@ -182,7 +182,7 @@ void MainWindow::appendReceivedString(const std::string &str)
 {
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
-    if ((str != "") && (!isWhitespace(str)) && startsWith(str, '{')) {
+    if ((str != "") && (!isWhitespace(str))) {
         printRxResult(str);
     }
 }
@@ -342,8 +342,6 @@ void MainWindow::removeOldSerialPortInfoItem(SerialPortItemType serialPortItemTy
         }
     }
 }
-
-
 
 void MainWindow::checkSerialReceive()
 {
@@ -778,7 +776,7 @@ void MainWindow::printRxResult(const std::string &str)
 {
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
-    if ((str != "") && (!isWhitespace(str)) && startsWith(str, '{')) {
+    if ((str != "") && (!isWhitespace(str))) {
         this->m_uiPtr->terminal->setTextColor(QColor(RED_COLOR_STRING));
         this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_RECEIVE_BASE_STRING) + toQString(stripLineEndings(stripNonAsciiCharacters(str))));
     }
