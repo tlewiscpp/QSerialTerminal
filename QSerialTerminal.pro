@@ -94,7 +94,7 @@ unix:!android {
 }
 
 android {
-    LIB_SOURCE_BASE = /opt/GitHub/tjlutils
+    LIB_SOURCE_BASE = E:/opt/SharedStorage/GitHub/tjlutils
 
     INCLUDEPATH += include/ \
                    $${LIB_SOURCE_BASE}/serialport/include/ \
@@ -103,7 +103,7 @@ android {
                    $${LIB_SOURCE_BASE}/fileutilities/include/ \
                    $${LIB_SOURCE_BASE}/eventtimer/include/ \
                    $${LIB_SOURCE_BASE}/tstream/include/ \
-                   $${LIB_SOURCE_BASE}/prettyprinter/include/ \
+                   $${LIB_SOURCE_BASE}/systemcommand/include/ \
                    $${LIB_SOURCE_BASE}/mathutilities/include/
 
 
@@ -115,13 +115,12 @@ android {
                 src/customaction.cpp \
                 $${LIB_SOURCE_BASE}/serialport/src/serialport.cpp \
                 $${LIB_SOURCE_BASE}/generalutilities/src/generalutilities.cpp \
-                $${LIB_SOURCE_BASE}/systemcommand/src/systemcommand.cpp \
                 $${LIB_SOURCE_BASE}/fileutilities/src/fileutilities.cpp \
                 $${LIB_SOURCE_BASE}/eventtimer/src/eventtimer.cpp \
-                $${LIB_SOURCE_BASE}/prettyprinter/src/prettyprinter.cpp \
-                $${LIB_SOURCE_BASE}/mathutilities/src/mathutilities.cpp \
                 $${LIB_SOURCE_BASE}/tstream/src/tscriptreader.cpp \
-                $${LIB_SOURCE_BASE}/tstream/src/tscriptexecutor.cpp
+                $${LIB_SOURCE_BASE}/tstream/src/tscriptexecutor.cpp \
+                $${LIB_SOURCE_BASE}/systemcommand/src/systemcommand.cpp \
+                $${LIB_SOURCE_BASE}/mathutilities/src/mathutilities.cpp
 
     HEADERS  += include/mainwindow.h\
                 include/qserialterminalicons.h \
@@ -137,7 +136,7 @@ android {
                 $${LIB_SOURCE_BASE}/tstream/include/tstream.h \
                 $${LIB_SOURCE_BASE}/tstream/include/tscriptreader.h \
                 $${LIB_SOURCE_BASE}/tstream/include/tscriptexecutor.h \
-                $${LIB_SOURCE_BASE}/prettyprinter/include/prettyprinter.h \
+                $${LIB_SOURCE_BASE}/systemcommand/include/systemcommand.h \
                 $${LIB_SOURCE_BASE}/mathutilities/include/mathutilities.h
 
     FORMS    += forms/mainwindow.ui

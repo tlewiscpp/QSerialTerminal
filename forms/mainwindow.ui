@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>689</width>
-    <height>438</height>
+    <width>698</width>
+    <height>628</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -64,10 +64,20 @@
         <number>5</number>
        </property>
        <item row="0" column="0">
-        <widget class="SerialTerminalLineEdit" name="sendBox"/>
+        <widget class="SerialTerminalLineEdit" name="sendBox">
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="1">
         <widget class="QPushButton" name="sendButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a serial port from the &amp;quot;port&amp;quot; menu above, then connect by clicking the &amp;quot;connect&amp;quot; button at the bottom, then enter some text to send, then click this button to send the text to the serial device&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Send</string>
          </property>
@@ -86,8 +96,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>657</width>
-            <height>339</height>
+            <width>666</width>
+            <height>516</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
@@ -120,6 +130,12 @@
                <pointsize>9</pointsize>
               </font>
              </property>
+             <property name="autoFillBackground">
+              <bool>true</bool>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+             </property>
             </widget>
            </item>
            <item row="1" column="0">
@@ -129,6 +145,12 @@
                <width>16777215</width>
                <height>16777215</height>
               </size>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a serial port from the &amp;quot;port&amp;quot; menu above, then click this button to begin communicating with a serial device&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
              </property>
              <property name="text">
               <string>Connect</string>
@@ -152,15 +174,14 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>689</width>
-     <height>19</height>
+     <width>698</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="CustomMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionConnect"/>
     <addaction name="actionLoadScript"/>
     <addaction name="actionQuit"/>
    </widget>

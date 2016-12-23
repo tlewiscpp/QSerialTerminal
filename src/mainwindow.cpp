@@ -297,6 +297,8 @@ void MainWindow::removeOldSerialPortInfoItem(SerialPortItemType serialPortItemTy
                     this->m_uiPtr->actionConnect->setEnabled(false);
                     this->m_uiPtr->connectButton->setEnabled(false);
                     this->m_uiPtr->actionLoadScript->setEnabled(false);
+                    this->m_uiPtr->sendBox->setEnabled(false);
+                    this->m_uiPtr->sendButton->setEnabled(false);
                 }
                 it->deleteLater();
                 this->m_availablePortNamesActions.erase(this->m_availablePortNamesActions.begin() + i);
@@ -494,6 +496,7 @@ void MainWindow::setupAdditionalUiComponents()
     this->m_uiPtr->sendBox->setEnabled(false);
     this->m_uiPtr->connectButton->setEnabled(false);
     this->m_uiPtr->actionConnect->setEnabled(false);
+    this->m_uiPtr->sendButton->setEnabled(false);
     this->m_uiPtr->sendBox->setToolTip(SEND_BOX_DISABLED_TOOLTIP);
     this->m_uiPtr->actionLoadScript->setEnabled(false);
     this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_DISABLED_TOOLTIP);
@@ -555,10 +558,8 @@ void MainWindow::onActionPortNamesChecked(CustomAction *action, bool checked)
 {
     (void)checked;
     if (!action->isChecked()) {
-        this->m_uiPtr->actionConnect->setEnabled(false);
         this->m_uiPtr->connectButton->setEnabled(false);
     } else {
-        this->m_uiPtr->actionConnect->setEnabled(true);
         this->m_uiPtr->connectButton->setEnabled(true);
     }
     for (auto &it : this->m_availablePortNamesActions) {
@@ -647,7 +648,6 @@ void MainWindow::onActionConnectTriggered(bool checked)
                 warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
                 warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
                 warningBox->exec();
-                this->m_uiPtr->actionConnect->setChecked(false);
                 if (this->m_serialPort) {
                     closeSerialPort();
                 }
@@ -663,7 +663,6 @@ void MainWindow::onActionConnectTriggered(bool checked)
             warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
             warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
             warningBox->exec();
-            this->m_uiPtr->actionConnect->setChecked(false);
             if (this->m_serialPort) {
                 closeSerialPort();
             }
@@ -674,9 +673,15 @@ void MainWindow::onActionConnectTriggered(bool checked)
 void MainWindow::openSerialPort()
 {
     using namespace QSerialTerminalStrings;
+#if defined(__ANDROID__)
+    SystemCommand systemCommand{ANDROID_PERMISSION_BASE_STRING + this->m_serialPort->portName() + "\""};
+    systemCommand.execute();
+#endif
+
     this->m_serialPort->openPort();
-    this->m_uiPtr->actionConnect->setChecked(true);
+    this->m_uiPtr->terminal->clear();
     this->m_uiPtr->connectButton->setChecked(true);
+    this->m_uiPtr->sendButton->setEnabled(true);
     this->m_uiPtr->actionDisconnect->setEnabled(true);
     this->m_uiPtr->sendBox->setEnabled(true);
     this->m_uiPtr->sendBox->setToolTip(SEND_BOX_ENABLED_TOOLTIP);
@@ -692,7 +697,6 @@ void MainWindow::closeSerialPort()
 {
     using namespace QSerialTerminalStrings;
     this->m_serialPort->closePort();
-    this->m_uiPtr->actionConnect->setChecked(false);
     this->m_uiPtr->connectButton->setChecked(false);
     this->m_uiPtr->actionDisconnect->setEnabled(false);
     this->m_uiPtr->sendBox->setEnabled(false);
@@ -766,7 +770,6 @@ void MainWindow::onActionDisconnectTriggered(bool checked)
     using namespace QSerialTerminalStrings;
     if (this->m_serialPort) {
         closeSerialPort();
-        this->m_uiPtr->actionConnect->setChecked(false);
         this->m_uiPtr->connectButton->setChecked(false);
         this->m_serialPort.reset();
     }

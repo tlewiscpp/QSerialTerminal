@@ -63,4 +63,5 @@ namespace QSerialTerminalStrings
     const char *NO_AVAILABLE_SERIAL_PORTS_STRING{"No serial ports are connected to device, please connect a device"};
     const char *NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING{"No Serial Ports Available"};
     const char *SERIAL_PORT_DISCONNECTED_STRING{"Serial port disconnected: "};
+    const char *ANDROID_PERMISSION_BASE_STRING{"su -c \"chmod 666 "};
 }
