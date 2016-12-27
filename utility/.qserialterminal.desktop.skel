@@ -1,9 +1,8 @@
 [Desktop Entry]
-Type=Application
 Name=QSerialTerminal
+Version=1.0
 GenericName=QSerialTerminal
 Comment=Communicate with serial devices
-Exec=run-qserialterminal.sh
-Icon=qserialterminal.png
 Terminal=false
-Categories=Games;
+Type=Application
+Categories=Development;

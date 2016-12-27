@@ -86,11 +86,7 @@ unix:!android {
 
     RESOURCES += resources/icons.qrc
 
-    CONFIG(release, debug|release): LIBS += -L$$PWD/C:/Cygwin64/opt/LibraryBuilds/tjlutils/Debug/debug/release/ -ltjlutils
-    LIBS += -L$$PWD/C:/Cygwin64/opt/LibraryBuilds/tjlutils/Debug/ -ltjlutils
-
-    INCLUDEPATH += $$PWD/C:/Cygwin64/opt/LibraryBuilds/tjlutils/Debug/debug
-    DEPENDPATH += $$PWD/C:/Cygwin64/opt/LibraryBuilds/tjlutils/Debug/debug
+    LIBS += -L/opt/LibraryBuilds/tjlutils/Debug/ -ltjlutils
 }
 
 android {

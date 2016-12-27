@@ -557,11 +557,7 @@ void MainWindow::onActionStopBitsChecked(CustomAction *action, bool checked)
 void MainWindow::onActionPortNamesChecked(CustomAction *action, bool checked)
 {
     (void)checked;
-    if (!action->isChecked()) {
-        this->m_uiPtr->connectButton->setEnabled(false);
-    } else {
-        this->m_uiPtr->connectButton->setEnabled(true);
-    }
+    this->m_uiPtr->connectButton->setEnabled(true);
     for (auto &it : this->m_availablePortNamesActions) {
         if (it == action) {
             action->setChecked(true);
