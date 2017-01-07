@@ -57,11 +57,6 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     connect(this->m_uiPtr->sendBox, SIGNAL(ctrlUPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlUPressed(QSerialTerminalLineEdit*)));
     connect(this->m_uiPtr->sendBox, SIGNAL(ctrlGPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlGPressed(QSerialTerminalLineEdit*)));
 
-    connect(this->m_uiPtr->actionLENone, SIGNAL(triggered(bool)), this, SLOT(onActionLENoneTriggered(bool)));
-    connect(this->m_uiPtr->actionLECR, SIGNAL(triggered(bool)), this, SLOT(onActionLECRTriggered(bool)));
-    connect(this->m_uiPtr->actionLELF, SIGNAL(triggered(bool)), this, SLOT(onActionLELFTriggered(bool)));
-    connect(this->m_uiPtr->actionLECRLF, SIGNAL(triggered(bool)), this, SLOT(onActionLECRLFTriggered(bool)));
-
     connect(this->m_uiPtr->menuAbout, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
     connect(this->m_uiPtr->menuBaudRate, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
     connect(this->m_uiPtr->menuDataBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
@@ -113,29 +108,7 @@ void MainWindow::onContextMenuInactive(CustomMenu *customMenu)
     (void) customMenu;
 }
 
-void MainWindow::onActionLENoneTriggered(bool toggled)
-{
-    (void)toggled;
-    doChangeLineEnding(LineEnding::LE_None);
-}
-
-void MainWindow::onActionLECRTriggered(bool toggled)
-{
-    (void)toggled;
-    doChangeLineEnding(LineEnding::LE_CarriageReturn);
-}
-
-void MainWindow::onActionLELFTriggered(bool toggled)
-{
-    (void)toggled;
-    doChangeLineEnding(LineEnding::LE_LineFeed);
-}
-
-void MainWindow::onActionLECRLFTriggered(bool toggled)
-{
-    (void)toggled;
-    doChangeLineEnding(LineEnding::LE_CarriageReturnLineFeed);
-}
+/*
 
 void MainWindow::doChangeLineEnding(LineEnding newLineEnding)
 {
@@ -178,6 +151,8 @@ std::string MainWindow::getLineEnding(LineEnding lineEnding)
     }
 }
 
+*/
+
 void MainWindow::appendReceivedString(const std::string &str)
 {
     using namespace QSerialTerminalStrings;
@@ -198,7 +173,7 @@ void MainWindow::appendTransmittedString(const QString &str)
             this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
             resetCommandHistory();
         }
-        this->m_serialPort->writeString(str.toStdString() + this->getLineEnding(this->m_lineEnding));
+        this->m_serialPort->writeString(str.toStdString());
         printTxResult(str.toStdString());
         this->m_uiPtr->sendBox->clear();
     }
@@ -278,6 +253,13 @@ void MainWindow::addNewSerialPortInfoItem(SerialPortItemType serialPortItemType,
         connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionStopBitsChecked(CustomAction*, bool)));
         this->m_availableStopBitsActions.push_back(tempAction);
         this->m_uiPtr->menuStopBits->addAction(tempAction);
+    } else if (serialPortItemType == SerialPortItemType::LINE_ENDING) {
+        if (tempAction->text().toStdString() == SerialPort::DEFAULT_LINE_ENDING_STRING) {
+            tempAction->setChecked(true);
+        }
+        connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionLineEndingsChecked(CustomAction*, bool)));
+        this->m_availableLineEndingActions.push_back(tempAction);
+        this->m_uiPtr->menuLineEndings->addAction(tempAction);
     } else {
         delete tempAction;
     }
@@ -494,6 +476,10 @@ void MainWindow::setupAdditionalUiComponents()
         }
     }
 
+    for (auto &it : SerialPort::availableLineEndings()) {
+        this->addNewSerialPortInfoItem(SerialPortItemType::LINE_ENDING, it);
+    }
+
     for (auto &it : SerialPort::availableDataBits()) {
         this->addNewSerialPortInfoItem(SerialPortItemType::DATA_BITS, it);
     }
@@ -573,6 +559,21 @@ void MainWindow::onActionStopBitsChecked(CustomAction *action, bool checked)
     for (auto &it : this->m_availableStopBitsActions) {
         if (it == action) {
             action->setChecked(true);
+        } else {
+            it->setChecked(false);
+        }
+    }
+}
+
+void MainWindow::onActionLineEndingsChecked(CustomAction *action, bool checked)
+{
+    (void)checked;
+    for (auto &it : this->m_availableLineEndingActions) {
+        if (it == action) {
+            action->setChecked(true);
+            if (this->m_serialPort) {
+                this->m_serialPort->setLineEnding(SerialPort::parseLineEndingFromRaw(action->text().toStdString()));
+            }
         } else {
             it->setChecked(false);
         }

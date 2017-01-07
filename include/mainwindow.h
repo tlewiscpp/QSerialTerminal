@@ -45,7 +45,8 @@ class MainWindow : public QMainWindow
         BAUD_RATE,
         PARITY,
         DATA_BITS,
-        STOP_BITS
+        STOP_BITS,
+        LINE_ENDING
     };
 
 public:
@@ -89,12 +90,7 @@ private slots:
     void onActionDataBitsChecked(CustomAction *action, bool checked);
     void onActionStopBitsChecked(CustomAction *action, bool checked);
     void onActionPortNamesChecked(CustomAction *action, bool checked);
-
-
-    void onActionLENoneTriggered(bool checked);
-    void onActionLECRTriggered(bool checked);
-    void onActionLELFTriggered(bool checked);
-    void onActionLECRLFTriggered(bool checked);
+    void onActionLineEndingsChecked(CustomAction *action, bool checked);
 
     void onSendButtonClicked();
     void onReturnKeyPressed(QSerialTerminalLineEdit *stle);
