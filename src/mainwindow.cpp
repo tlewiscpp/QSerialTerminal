@@ -47,15 +47,15 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     connect(this->m_uiPtr->actionLoadScript, SIGNAL(triggered(bool)), this, SLOT(onActionLoadScriptTriggered(bool)));
 
     connect(this->m_uiPtr->sendButton, SIGNAL(clicked(bool)), this, SLOT(onSendButtonClicked()));
-    connect(this->m_uiPtr->sendBox, SIGNAL(returnPressed(SerialTerminalLineEdit*)), this, SLOT(onReturnKeyPressed(SerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(upArrowPressed(SerialTerminalLineEdit*)), this, SLOT(onUpArrowPressed(SerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(downArrowPressed(SerialTerminalLineEdit*)), this, SLOT(onDownArrowPressed(SerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(escapePressed(SerialTerminalLineEdit*)), this, SLOT(onEscapeKeyPressed(SerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(altPressed(SerialTerminalLineEdit*)), this, SLOT(onAltKeyPressed(SerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlAPressed(SerialTerminalLineEdit*)), this, SLOT(onCtrlAPressed(SerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlEPressed(SerialTerminalLineEdit*)), this, SLOT(onCtrlEPressed(SerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlUPressed(SerialTerminalLineEdit*)), this, SLOT(onCtrlUPressed(SerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlGPressed(SerialTerminalLineEdit*)), this, SLOT(onCtrlGPressed(SerialTerminalLineEdit*)));
+    connect(this->m_uiPtr->sendBox, SIGNAL(returnPressed(QSerialTerminalLineEdit*)), this, SLOT(onReturnKeyPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_uiPtr->sendBox, SIGNAL(upArrowPressed(QSerialTerminalLineEdit*)), this, SLOT(onUpArrowPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_uiPtr->sendBox, SIGNAL(downArrowPressed(QSerialTerminalLineEdit*)), this, SLOT(onDownArrowPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_uiPtr->sendBox, SIGNAL(escapePressed(QSerialTerminalLineEdit*)), this, SLOT(onEscapeKeyPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_uiPtr->sendBox, SIGNAL(altPressed(QSerialTerminalLineEdit*)), this, SLOT(onAltKeyPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlAPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlAPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlEPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlEPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlUPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlUPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlGPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlGPressed(QSerialTerminalLineEdit*)));
 
     connect(this->m_uiPtr->actionLENone, SIGNAL(triggered(bool)), this, SLOT(onActionLENoneTriggered(bool)));
     connect(this->m_uiPtr->actionLECR, SIGNAL(triggered(bool)), this, SLOT(onActionLECRTriggered(bool)));
@@ -352,8 +352,13 @@ void MainWindow::checkSerialReceive()
         if (!this->m_serialPort->isOpen()) {
             this->m_serialPort->openPort();
         }
-        std::string returnString{stripNonAsciiCharacters(this->m_serialPort->readString())};
-        if (returnString != "") {
+        std::string returnString{""};
+        if (this->m_serialPort->lineEnding() != LineEnding::LE_None) {
+            returnString = this->m_serialPort->readStringUntil(this->m_serialPort->lineEndingToString()[0]);
+        } else {
+            returnString = this->m_serialPort->readString();
+        }
+        if (!returnString.empty()) {
             appendReceivedString(returnString);
         }
     }
@@ -473,6 +478,22 @@ void MainWindow::onCommandHistoryContextMenuActionTriggered(CustomAction *action
 void MainWindow::setupAdditionalUiComponents()
 {
     using namespace QSerialTerminalStrings;
+
+    this->m_availableLineEndingActions.push_back(this->m_uiPtr->actionLENone);
+    this->m_availableLineEndingActions.push_back(this->m_uiPtr->actionLECR);
+    this->m_availableLineEndingActions.push_back(this->m_uiPtr->actionLELF);
+    this->m_availableLineEndingActions.push_back(this->m_uiPtr->actionLECRLF);
+
+    for (auto &it : this->m_availableLineEndingActions) {
+        std::string temp{it->text().toStdString()};
+        std::string defaultLineEnding{"(" + SerialPort::lineEndingToString(SerialPort::DEFAULT_LINE_ENDING) + ")"};
+        std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+        std::transform(defaultLineEnding.begin(), defaultLineEnding.end(), defaultLineEnding.begin(), ::tolower);
+        if (temp.find(defaultLineEnding) != std::string::npos) {
+            it->setChecked(true);
+        }
+    }
+
     for (auto &it : SerialPort::availableDataBits()) {
         this->addNewSerialPortInfoItem(SerialPortItemType::DATA_BITS, it);
     }
@@ -493,16 +514,20 @@ void MainWindow::setupAdditionalUiComponents()
         this->addNewSerialPortInfoItem(SerialPortItemType::PORT_NAME, it);
     }
 
+    if (!this->m_availablePortNamesActions.empty()) {
+        (*std::begin(this->m_availablePortNamesActions))->setChecked(true);
+        this->m_uiPtr->connectButton->setEnabled(true);
+        this->m_uiPtr->actionConnect->setEnabled(true);
+    } else {
+        this->m_uiPtr->connectButton->setEnabled(false);
+        this->m_uiPtr->actionConnect->setEnabled(false);
+    }
     this->m_uiPtr->sendBox->setEnabled(false);
-    this->m_uiPtr->connectButton->setEnabled(false);
-    this->m_uiPtr->actionConnect->setEnabled(false);
     this->m_uiPtr->sendButton->setEnabled(false);
     this->m_uiPtr->sendBox->setToolTip(SEND_BOX_DISABLED_TOOLTIP);
     this->m_uiPtr->actionLoadScript->setEnabled(false);
     this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_DISABLED_TOOLTIP);
-
     this->m_uiPtr->sendBox->setTabOrder(this->m_uiPtr->sendBox, this->m_uiPtr->sendButton);
-
     this->m_uiPtr->statusBar->showMessage(CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING);
 }
 
@@ -557,7 +582,11 @@ void MainWindow::onActionStopBitsChecked(CustomAction *action, bool checked)
 void MainWindow::onActionPortNamesChecked(CustomAction *action, bool checked)
 {
     (void)checked;
-    this->m_uiPtr->connectButton->setEnabled(true);
+    if (!action->isChecked()) {
+        this->m_uiPtr->connectButton->setEnabled(false);
+    } else {
+        this->m_uiPtr->connectButton->setEnabled(true);
+    }
     for (auto &it : this->m_availablePortNamesActions) {
         if (it == action) {
             action->setChecked(true);
@@ -997,65 +1026,64 @@ void MainWindow::keyPressEvent(QKeyEvent *qke)
 }
 
 
-void MainWindow::onReturnKeyPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onReturnKeyPressed(QSerialTerminalLineEdit *stle)
 {
     (void)stle;
     this->onReturnKeyPressed();
 }
 
-void MainWindow::onUpArrowPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onUpArrowPressed(QSerialTerminalLineEdit *stle)
 {
     (void)stle;
     this->onUpArrowPressed();
 }
 
-void MainWindow::onDownArrowPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onDownArrowPressed(QSerialTerminalLineEdit *stle)
 {
     (void)stle;
     this->onDownArrowPressed();
 }
 
-void MainWindow::onEscapeKeyPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onEscapeKeyPressed(QSerialTerminalLineEdit *stle)
 {
     (void)stle;
     this->onEscapeKeyPressed();
 }
 
-void MainWindow::onAltKeyPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onAltKeyPressed(QSerialTerminalLineEdit *stle)
 {
     (void)stle;
     this->onAltKeyPressed();
 }
 
-void MainWindow::onCtrlAPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onCtrlAPressed(QSerialTerminalLineEdit *stle)
 {
 
     (void)stle;
     this->onCtrlAPressed();
 }
 
-void MainWindow::onCtrlEPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onCtrlEPressed(QSerialTerminalLineEdit *stle)
 {
 
     (void)stle;
     this->onCtrlEPressed();
 }
 
-void MainWindow::onCtrlUPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onCtrlUPressed(QSerialTerminalLineEdit *stle)
 {
 
     (void)stle;
     this->onCtrlUPressed();
 }
 
-void MainWindow::onCtrlGPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onCtrlGPressed(QSerialTerminalLineEdit *stle)
 {
-
     (void)stle;
     this->onCtrlGPressed();
 }
 
-void MainWindow::onCtrlCPressed(SerialTerminalLineEdit *stle)
+void MainWindow::onCtrlCPressed(QSerialTerminalLineEdit *stle)
 {
     (void)stle;
     this->onCtrlCPressed();

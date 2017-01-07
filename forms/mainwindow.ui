@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>698</width>
-    <height>628</height>
+    <width>1024</width>
+    <height>571</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -64,12 +64,23 @@
         <number>5</number>
        </property>
        <item row="0" column="0">
-        <widget class="SerialTerminalLineEdit" name="sendBox">
+        <widget class="QSerialTerminalLineEdit" name="sendBox">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="autoFillBackground">
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgba(255, 255, 255, 127);</string>
+          <string notr="true"/>
          </property>
         </widget>
        </item>
@@ -96,8 +107,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>666</width>
-            <height>536</height>
+            <width>992</width>
+            <height>455</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
@@ -127,7 +138,9 @@
              <property name="font">
               <font>
                <family>DejaVu Sans Mono</family>
-               <pointsize>14</pointsize>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
               </font>
              </property>
              <property name="autoFillBackground">
@@ -140,6 +153,12 @@
            </item>
            <item row="1" column="0">
             <widget class="QPushButton" name="connectButton">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>50</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
                <width>16777215</width>
@@ -155,7 +174,16 @@
              <property name="text">
               <string>Connect</string>
              </property>
+             <property name="shortcut">
+              <string>Ctrl+Shift+C</string>
+             </property>
              <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="autoDefault">
+              <bool>true</bool>
+             </property>
+             <property name="default">
               <bool>true</bool>
              </property>
             </widget>
@@ -174,8 +202,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>698</width>
-     <height>14</height>
+     <width>1024</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="CustomMenu" name="menuFile">
@@ -329,14 +357,14 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>SerialTerminalLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>include/serialterminallineedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>CustomMenu</class>
    <extends>QMenu</extends>
    <header>include/custommenu.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QSerialTerminalLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>include/qserialterminallineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -15,7 +15,7 @@ CONFIG += c++14 static
 
 win32 {
 
-    LIB_SOURCE_BASE = E:/opt/SharedStorage/GitHub/tjlutils
+    LIB_SOURCE_BASE = E:/GitHub/tjlutils
     INCLUDEPATH += include/ \
                    $${LIB_SOURCE_BASE}/serialport/include/ \
                    $${LIB_SOURCE_BASE}/generalutilities/include/ \
@@ -31,7 +31,6 @@ win32 {
                 src/mainwindow.cpp \
                 src/qserialterminalicons.cpp \
                 src/qserialterminalstrings.cpp \
-                src/serialterminallineedit.cpp \
                 src/customaction.cpp \
                 $${LIB_SOURCE_BASE}/serialport/src/serialport.cpp \
                 $${LIB_SOURCE_BASE}/generalutilities/src/generalutilities.cpp \
@@ -39,12 +38,13 @@ win32 {
                 $${LIB_SOURCE_BASE}/fileutilities/src/fileutilities.cpp \
                 $${LIB_SOURCE_BASE}/eventtimer/src/eventtimer.cpp \
                 $${LIB_SOURCE_BASE}/prettyprinter/src/prettyprinter.cpp \
-                $${LIB_SOURCE_BASE}/mathutilities/src/mathutilities.cpp
+                $${LIB_SOURCE_BASE}/mathutilities/src/mathutilities.cpp \
+                $${LIB_SOURCE_BASE}/tstream/src/tscriptexecutor.cpp \
+                $${LIB_SOURCE_BASE}/tstream/src/tscriptreader.cpp
 
     HEADERS  += include/mainwindow.h\
                 include/qserialterminalicons.h \
                 include/qserialterminalstrings.h \
-                include/serialterminallineedit.h \
                 include/customaction.h \
                 $${LIB_SOURCE_BASE}/serialport/include/serialport.h \
                 $${LIB_SOURCE_BASE}/generalutilities/include/generalutilities.h \
@@ -54,6 +54,7 @@ win32 {
                 $${LIB_SOURCE_BASE}/eventtimer/include/eventtimer.h \
                 $${LIB_SOURCE_BASE}/tstream/include/tstream.h \
                 $${LIB_SOURCE_BASE}/tstream/include/tscriptreader.h \
+                $${LIB_SOURCE_BASE}/tstream/include/tscriptexecutor.h \
                 $${LIB_SOURCE_BASE}/prettyprinter/include/prettyprinter.h \
                 $${LIB_SOURCE_BASE}/mathutilities/include/mathutilities.h
 
@@ -72,21 +73,23 @@ unix:!android {
                 src/mainwindow.cpp \
                 src/qserialterminalicons.cpp \
                 src/qserialterminalstrings.cpp \
-                src/serialterminallineedit.cpp \
                 src/customaction.cpp
 
 
     HEADERS  += include/mainwindow.h\
                 include/qserialterminalicons.h \
                 include/qserialterminalstrings.h \
-                include/serialterminallineedit.h \
                 include/customaction.h
 
     FORMS    += forms/mainwindow.ui
 
     RESOURCES += resources/icons.qrc
 
-    LIBS += -L/opt/LibraryBuilds/tjlutils/Debug/ -ltjlutils
+    CONFIG(release, debug|release): LIBS += -L$$PWD/C:/Cygwin64/opt/LibraryBuilds/tjlutils/Debug/debug/release/ -ltjlutils
+    LIBS += -L$$PWD/C:/Cygwin64/opt/LibraryBuilds/tjlutils/Debug/ -ltjlutils
+
+    INCLUDEPATH += $$PWD/C:/Cygwin64/opt/LibraryBuilds/tjlutils/Debug/debug
+    DEPENDPATH += $$PWD/C:/Cygwin64/opt/LibraryBuilds/tjlutils/Debug/debug
 }
 
 android {
@@ -107,7 +110,6 @@ android {
                 src/mainwindow.cpp \
                 src/qserialterminalicons.cpp \
                 src/qserialterminalstrings.cpp \
-                src/serialterminallineedit.cpp \
                 src/customaction.cpp \
                 $${LIB_SOURCE_BASE}/serialport/src/serialport.cpp \
                 $${LIB_SOURCE_BASE}/generalutilities/src/generalutilities.cpp \
@@ -121,7 +123,6 @@ android {
     HEADERS  += include/mainwindow.h\
                 include/qserialterminalicons.h \
                 include/qserialterminalstrings.h \
-                include/serialterminallineedit.h \
                 include/customaction.h \
                 $${LIB_SOURCE_BASE}/serialport/include/serialport.h \
                 $${LIB_SOURCE_BASE}/generalutilities/include/generalutilities.h \
@@ -142,10 +143,12 @@ android {
 }
 
 HEADERS += \
-    include/custommenu.h
+    include/custommenu.h \
+    include/qserialterminallineedit.h
 
 SOURCES += \
-    src/custommenu.cpp
+    src/custommenu.cpp \
+    src/qserialterminallineedit.cpp
 
 DISTFILES += \
     android/AndroidManifest.xml \

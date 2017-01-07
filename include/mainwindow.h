@@ -27,7 +27,7 @@
 
 #include "customaction.h"
 #include "custommenu.h"
-#include "serialterminallineedit.h"
+#include "qserialterminallineedit.h"
 #include "qserialterminalstrings.h"
 #include "qserialterminalicons.h"
 
@@ -40,14 +40,6 @@ namespace Ui
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
-    enum class LineEnding {
-        LE_None,
-        LE_CarriageReturn,
-        LE_LineFeed,
-        LE_CarriageReturnLineFeed
-    };
-
     enum class SerialPortItemType {
         PORT_NAME,
         BAUD_RATE,
@@ -105,16 +97,16 @@ private slots:
     void onActionLECRLFTriggered(bool checked);
 
     void onSendButtonClicked();
-    void onReturnKeyPressed(SerialTerminalLineEdit *stle);
-    void onUpArrowPressed(SerialTerminalLineEdit *stle);
-    void onDownArrowPressed(SerialTerminalLineEdit *stle);
-    void onEscapeKeyPressed(SerialTerminalLineEdit *stle);
-    void onAltKeyPressed(SerialTerminalLineEdit *stle);
-    void onCtrlAPressed(SerialTerminalLineEdit *stle);
-    void onCtrlEPressed(SerialTerminalLineEdit *stle);
-    void onCtrlUPressed(SerialTerminalLineEdit *stle);
-    void onCtrlGPressed(SerialTerminalLineEdit *stle);
-    void onCtrlCPressed(SerialTerminalLineEdit *stle);
+    void onReturnKeyPressed(QSerialTerminalLineEdit *stle);
+    void onUpArrowPressed(QSerialTerminalLineEdit *stle);
+    void onDownArrowPressed(QSerialTerminalLineEdit *stle);
+    void onEscapeKeyPressed(QSerialTerminalLineEdit *stle);
+    void onAltKeyPressed(QSerialTerminalLineEdit *stle);
+    void onCtrlAPressed(QSerialTerminalLineEdit *stle);
+    void onCtrlEPressed(QSerialTerminalLineEdit *stle);
+    void onCtrlUPressed(QSerialTerminalLineEdit *stle);
+    void onCtrlGPressed(QSerialTerminalLineEdit *stle);
+    void onCtrlCPressed(QSerialTerminalLineEdit *stle);
     void onReturnKeyPressed();
     void onUpArrowPressed();
     void onDownArrowPressed();
@@ -155,6 +147,7 @@ private:
     std::vector<CustomAction *> m_availableStopBitsActions;
     std::vector<CustomAction *> m_availableDataBitsActions;
     std::vector<CustomAction *> m_availablePortNamesActions;
+    std::vector<QAction *> m_availableLineEndingActions;
 
     void resetCommandHistory();
     void clearEmptyStringsFromCommandHistory();
