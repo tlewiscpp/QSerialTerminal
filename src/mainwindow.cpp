@@ -1097,7 +1097,7 @@ void MainWindow::onReturnKeyPressed()
 
 void MainWindow::onUpArrowPressed()
 {
-    if (this->m_currentHistoryIndex >= this->m_commandHistory.size()-1) {
+    if ((this->m_currentHistoryIndex >= this->m_commandHistory.size()-1) || (this->m_commandHistory.empty())) {
         return;
     }
     if (this->m_currentHistoryIndex == 0) {
