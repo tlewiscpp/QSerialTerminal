@@ -108,7 +108,7 @@
             <x>0</x>
             <y>0</y>
             <width>992</width>
-            <height>476</height>
+            <height>455</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
@@ -156,7 +156,7 @@
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>30</height>
+               <height>50</height>
               </size>
              </property>
              <property name="maximumSize">
@@ -203,7 +203,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>14</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="CustomMenu" name="menuFile">
@@ -223,6 +223,10 @@
     <property name="title">
      <string>Line Endings</string>
     </property>
+    <addaction name="actionLENone"/>
+    <addaction name="actionLECR"/>
+    <addaction name="actionLELF"/>
+    <addaction name="actionLECRLF"/>
    </widget>
    <widget class="CustomMenu" name="menuBaudRate">
     <property name="title">
