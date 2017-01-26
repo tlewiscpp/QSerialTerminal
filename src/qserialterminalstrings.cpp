@@ -64,4 +64,5 @@ namespace QSerialTerminalStrings
     const char *NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING{"No Serial Ports Available"};
     const char *SERIAL_PORT_DISCONNECTED_STRING{"Serial port disconnected: "};
     const char *ANDROID_PERMISSION_BASE_STRING{"su -c \"chmod 666 "};
+    const char *INVALID_LINE_ENDING_PASSED_TO_SET_LINE_ENDING_STRING{"ERROR: Invalid line ending passed to MainWindow::setLineEnding(const std::string &): "};
 }

@@ -70,6 +70,7 @@ namespace QSerialTerminalStrings
     extern const char *NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING;
     extern const char *SERIAL_PORT_DISCONNECTED_STRING;
     extern const char *ANDROID_PERMISSION_BASE_STRING;
+    extern const char *INVALID_LINE_ENDING_PASSED_TO_SET_LINE_ENDING_STRING;
 }
 
 

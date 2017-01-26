@@ -5,10 +5,17 @@ const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SERIAL_TIMEOUT{400};
 const int MainWindow::s_TASKBAR_HEIGHT{15};
 const int MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT{750};
-const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{500};
+const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{100};
 const int MainWindow::s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SCRIPT_INDENT{0};
 const int MainWindow::s_SERIAL_READ_TIMEOUT{25};
+const std::string MainWindow::s_CARRIAGE_RETURN_LINE_ENDING{"\\\\r"};
+const std::string MainWindow::s_NEW_LINE_LINE_ENDING{"\\\\n"};
+const std::string MainWindow::s_CARRIAGE_RETURN_NEW_LINE_LINE_ENDING{"\\\\r\\\\n"};
+const std::list<std::string> MainWindow::s_AVAILABLE_LINE_ENDINGS{s_CARRIAGE_RETURN_LINE_ENDING,
+                                                                  s_NEW_LINE_LINE_ENDING,
+                                                                  s_CARRIAGE_RETURN_NEW_LINE_LINE_ENDING};
+const std::string MainWindow::s_DEFAULT_LINE_ENDING{MainWindow::s_CARRIAGE_RETURN_LINE_ENDING};
 
 MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
                        std::shared_ptr<QSerialTerminalIcons> qstiPtr,
@@ -84,6 +91,34 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     connect(this->m_checkPortDisconnectTimer.get(), SIGNAL(timeout()), this, SLOT(checkDisconnectedSerialPorts()));
 #endif
     connect(this->m_checkSerialPortReceiveTimer.get(), SIGNAL(timeout()), this, SLOT(checkSerialReceive()));
+}
+
+void MainWindow::setLineEnding(const std::string &lineEnding)
+{
+    using namespace QSerialTerminalStrings;
+    if (lineEnding.find(MainWindow::s_CARRIAGE_RETURN_LINE_ENDING) != std::string::npos) {
+        if (lineEnding.find(MainWindow::s_NEW_LINE_LINE_ENDING) != std::string::npos) {
+            this->m_lineEnding = "\r\n";
+        } else {
+            this->m_lineEnding = "\r";
+        }
+    } else if (lineEnding.find(MainWindow::s_NEW_LINE_LINE_ENDING) != std::string::npos)  {
+        this->m_lineEnding = "\n";
+    } else {
+        throw std::runtime_error(INVALID_LINE_ENDING_PASSED_TO_SET_LINE_ENDING_STRING);
+    }
+}
+
+void MainWindow::autoSetLineEnding()
+{
+    for (auto &it : this->m_availableLineEndingActions) {
+        if (it->isChecked()) {
+            if (this->m_serialPort) {
+                this->setLineEnding(it->text().toStdString());
+                this->m_serialPort->setLineEnding(this->m_lineEnding);
+            }
+        }
+    }
 }
 
 void MainWindow::onContextMenuActive(CustomMenu *customMenu)
@@ -173,7 +208,7 @@ void MainWindow::appendTransmittedString(const QString &str)
             this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
             resetCommandHistory();
         }
-        this->m_serialPort->writeString(str.toStdString());
+        this->m_serialPort->writeLine(str.toStdString());
         printTxResult(str.toStdString());
         this->m_uiPtr->sendBox->clear();
     }
@@ -254,7 +289,7 @@ void MainWindow::addNewSerialPortInfoItem(SerialPortItemType serialPortItemType,
         this->m_availableStopBitsActions.push_back(tempAction);
         this->m_uiPtr->menuStopBits->addAction(tempAction);
     } else if (serialPortItemType == SerialPortItemType::LINE_ENDING) {
-        if (tempAction->text().toStdString() == SerialPort::DEFAULT_LINE_ENDING_STRING) {
+        if (tempAction->text().toStdString() == MainWindow::s_DEFAULT_LINE_ENDING) {
             tempAction->setChecked(true);
         }
         connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionLineEndingsChecked(CustomAction*, bool)));
@@ -334,12 +369,9 @@ void MainWindow::checkSerialReceive()
         if (!this->m_serialPort->isOpen()) {
             this->m_serialPort->openPort();
         }
-        std::string returnString{""};
-        if (this->m_serialPort->lineEnding() != LineEnding::LE_None) {
-            returnString = this->m_serialPort->readStringUntil(this->m_serialPort->lineEndingToString()[0]);
-        } else {
-            returnString = this->m_serialPort->readString();
-        }
+        this->autoSetLineEnding();
+        this->m_serialPort->setLineEnding(this->m_lineEnding);
+        std::string returnString{this->m_serialPort->readLine()};
         if (!returnString.empty()) {
             appendReceivedString(returnString);
         }
@@ -461,22 +493,7 @@ void MainWindow::setupAdditionalUiComponents()
 {
     using namespace QSerialTerminalStrings;
 
-    this->m_availableLineEndingActions.push_back(this->m_uiPtr->actionLENone);
-    this->m_availableLineEndingActions.push_back(this->m_uiPtr->actionLECR);
-    this->m_availableLineEndingActions.push_back(this->m_uiPtr->actionLELF);
-    this->m_availableLineEndingActions.push_back(this->m_uiPtr->actionLECRLF);
-
-    for (auto &it : this->m_availableLineEndingActions) {
-        std::string temp{it->text().toStdString()};
-        std::string defaultLineEnding{"(" + SerialPort::lineEndingToString(SerialPort::DEFAULT_LINE_ENDING) + ")"};
-        std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
-        std::transform(defaultLineEnding.begin(), defaultLineEnding.end(), defaultLineEnding.begin(), ::tolower);
-        if (temp.find(defaultLineEnding) != std::string::npos) {
-            it->setChecked(true);
-        }
-    }
-
-    for (auto &it : SerialPort::availableLineEndings()) {
+    for (auto &it : MainWindow::s_AVAILABLE_LINE_ENDINGS) {
         this->addNewSerialPortInfoItem(SerialPortItemType::LINE_ENDING, it);
     }
 
@@ -572,7 +589,8 @@ void MainWindow::onActionLineEndingsChecked(CustomAction *action, bool checked)
         if (it == action) {
             action->setChecked(true);
             if (this->m_serialPort) {
-                this->m_serialPort->setLineEnding(SerialPort::parseLineEndingFromRaw(action->text().toStdString()));
+                this->setLineEnding(action->text().toStdString());
+                this->m_serialPort->setLineEnding(this->m_lineEnding);
             }
         } else {
             it->setChecked(false);

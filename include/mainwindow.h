@@ -135,7 +135,7 @@ private:
     std::vector<QString> m_commandHistory;
     unsigned int m_currentHistoryIndex;
     bool m_cancelScript;
-    LineEnding m_lineEnding;
+    std::string m_lineEnding;
     int m_xPlacement;
     int m_yPlacement;
     std::vector<CustomAction *> m_availableBaudRateActions;
@@ -154,10 +154,9 @@ private:
     void stopCommunication();
     void calculateXYPlacement();
     void setupAdditionalUiComponents();
-    std::string getLineEnding(LineEnding lineEnding);
     void appendReceivedString(const std::string &str);
     void appendTransmittedString(const QString &str);
-    void doChangeLineEnding(LineEnding newLineEnding);
+    void doChangeLineEnding(std::string newLineEnding);
 
     static void staticPrintRxResult(MainWindow *mainWindow, const std::string &str);
     static void staticPrintTxResult(MainWindow *mainWindow, const std::string &str);
@@ -179,9 +178,17 @@ private:
     static const int s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT;
     static const int s_SCRIPT_INDENT;
     static const int s_SERIAL_READ_TIMEOUT;
+    static const std::string s_CARRIAGE_RETURN_LINE_ENDING;
+    static const std::string s_NEW_LINE_LINE_ENDING;
+    static const std::string s_CARRIAGE_RETURN_NEW_LINE_LINE_ENDING;
+    static const std::list<std::string> s_AVAILABLE_LINE_ENDINGS;
+    static const std::string s_DEFAULT_LINE_ENDING;
+
     std::string getSerialPortItemFromActions(SerialPortItemType serialPortItemType);
     void addNewSerialPortInfoItem(SerialPortItemType serialPortItemType, const std::string &actionName);
     void removeOldSerialPortInfoItem(SerialPortItemType serialPortItemType, const std::string &actionName);
+    void setLineEnding(const std::string &lineEnding);
+    void autoSetLineEnding();
 };
 
 #endif //QSERIALTERMINAL_MAINWINDOW_H
