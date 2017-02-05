@@ -5,10 +5,10 @@ const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SERIAL_TIMEOUT{250};
 const int MainWindow::s_TASKBAR_HEIGHT{15};
 const int MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT{750};
-const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{100};
+const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{25};
 const int MainWindow::s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SCRIPT_INDENT{0};
-const int MainWindow::s_SERIAL_READ_TIMEOUT{25};
+const int MainWindow::s_SERIAL_READ_TIMEOUT{500};
 const std::string MainWindow::s_CARRIAGE_RETURN_LINE_ENDING{"\\\\r"};
 const std::string MainWindow::s_NEW_LINE_LINE_ENDING{"\\\\n"};
 const std::string MainWindow::s_CARRIAGE_RETURN_NEW_LINE_LINE_ENDING{"\\\\r\\\\n"};
@@ -805,6 +805,11 @@ void MainWindow::onActionDisconnectTriggered(bool checked)
     if (this->m_serialPort) {
         closeSerialPort();
         this->m_uiPtr->connectButton->setChecked(false);
+        std::cout << "Waiting for async read of serial port " << this->m_serialPort->portName() << " to finish..." << std::endl;
+        while (this->m_serialReceiveAsyncHandle->wait_for(std::chrono::seconds(0)) != std::future_status::ready) {
+            std::this_thread::yield();
+        }
+        std::cout << "Completed, resetting serial port shared_ptr" << std::endl;
         this->m_serialPort.reset();
     }
 }
