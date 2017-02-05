@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
-const int MainWindow::s_SERIAL_TIMEOUT{400};
+const int MainWindow::s_SERIAL_TIMEOUT{250};
 const int MainWindow::s_TASKBAR_HEIGHT{15};
 const int MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT{750};
 const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{100};
@@ -82,7 +82,6 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     connect(this->m_uiPtr->menuPortNames, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
     connect(this->m_uiPtr->menuStopBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
 
-
     this->m_checkPortDisconnectTimer->setInterval(MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT);
     this->m_checkSerialPortReceiveTimer->setInterval(MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT);
 #if defined(_WIN32) || defined(__CYGWIN__)
@@ -90,7 +89,7 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
 #else
     connect(this->m_checkPortDisconnectTimer.get(), SIGNAL(timeout()), this, SLOT(checkDisconnectedSerialPorts()));
 #endif
-    connect(this->m_checkSerialPortReceiveTimer.get(), SIGNAL(timeout()), this, SLOT(checkSerialReceive()));
+    connect(this->m_checkSerialPortReceiveTimer.get(), SIGNAL(timeout()), this, SLOT(launchSerialReceiveAsync()));
 }
 
 void MainWindow::setLineEnding(const std::string &lineEnding)
@@ -143,51 +142,6 @@ void MainWindow::onContextMenuInactive(CustomMenu *customMenu)
     (void) customMenu;
 }
 
-/*
-
-void MainWindow::doChangeLineEnding(LineEnding newLineEnding)
-{
-    this->m_lineEnding = newLineEnding;
-    if (this->m_lineEnding == LineEnding::LE_None) {
-        this->m_uiPtr->actionLENone->setChecked(true);
-        this->m_uiPtr->actionLECR->setChecked(false);
-        this->m_uiPtr->actionLELF->setChecked(false);
-        this->m_uiPtr->actionLECRLF->setChecked(false);
-    } else if (this->m_lineEnding == LineEnding::LE_CarriageReturn) {
-        this->m_uiPtr->actionLENone->setChecked(false);
-        this->m_uiPtr->actionLECR->setChecked(true);
-        this->m_uiPtr->actionLELF->setChecked(false);
-        this->m_uiPtr->actionLECRLF->setChecked(false);
-    } else if (this->m_lineEnding == LineEnding::LE_LineFeed) {
-        this->m_uiPtr->actionLENone->setChecked(false);
-        this->m_uiPtr->actionLECR->setChecked(false);
-        this->m_uiPtr->actionLELF->setChecked(true);
-        this->m_uiPtr->actionLECRLF->setChecked(false);
-    } else if (this->m_lineEnding == LineEnding::LE_CarriageReturnLineFeed) {
-        this->m_uiPtr->actionLENone->setChecked(false);
-        this->m_uiPtr->actionLECR->setChecked(false);
-        this->m_uiPtr->actionLELF->setChecked(false);
-        this->m_uiPtr->actionLECRLF->setChecked(true);
-    }
-}
-
-std::string MainWindow::getLineEnding(LineEnding lineEnding)
-{
-    if (lineEnding == LineEnding::LE_None) {
-        return "";
-    } else if (lineEnding == LineEnding::LE_CarriageReturn) {
-        return "\r";
-    } else if (lineEnding == LineEnding::LE_LineFeed) {
-        return "\n";
-    } else if (lineEnding == LineEnding::LE_CarriageReturnLineFeed) {
-        return "\r\n";
-    } else {
-        return "";
-    }
-}
-
-*/
-
 void MainWindow::appendReceivedString(const std::string &str)
 {
     using namespace QSerialTerminalStrings;
@@ -202,7 +156,7 @@ void MainWindow::appendTransmittedString(const QString &str)
     using namespace QSerialTerminalStrings;
     if (this->m_serialPort) {
         if (!this->m_serialPort->isOpen()) {
-            this->m_serialPort->openPort();
+            this->openSerialPort();
         }
         if (str.toStdString() != "") {
             this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
@@ -362,20 +316,45 @@ void MainWindow::removeOldSerialPortInfoItem(SerialPortItemType serialPortItemTy
     }
 }
 
-void MainWindow::checkSerialReceive()
+void MainWindow::launchSerialReceiveAsync()
+{
+    try {
+        if (!this->m_serialReceiveAsyncHandle) {
+           this->m_serialReceiveAsyncHandle = std::make_unique<std::future<std::string>>(std::async(std::launch::async,
+                                                                                         &MainWindow::checkSerialReceive,
+                                                                                         this));
+        }
+        if (this->m_serialReceiveAsyncHandle->wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            appendReceivedString(this->m_serialReceiveAsyncHandle->get());
+            this->m_serialReceiveAsyncHandle = std::make_unique<std::future<std::string>>(std::async(std::launch::async,
+                                                                                          &MainWindow::checkSerialReceive,
+                                                                                          this));
+        }
+    } catch (std::exception &e) {
+        std::cout << e.what() << std::endl;
+    }
+}
+
+std::string MainWindow::checkSerialReceive()
 {
     using namespace GeneralUtilities;
-    if (this->m_serialPort) {
-        if (!this->m_serialPort->isOpen()) {
-            this->m_serialPort->openPort();
+    try {
+        if (this->m_serialPort) {
+            if (!this->m_serialPort->isOpen()) {
+                this->m_serialPort->openPort();
+            }
+            this->autoSetLineEnding();
+            this->m_serialPort->setLineEnding(this->m_lineEnding);
+            std::string returnString{this->m_serialPort->readLine()};
+            if (!returnString.empty()) {
+                return returnString;
+            }
         }
-        this->autoSetLineEnding();
-        this->m_serialPort->setLineEnding(this->m_lineEnding);
-        std::string returnString{this->m_serialPort->readLine()};
-        if (!returnString.empty()) {
-            appendReceivedString(returnString);
-        }
+    } catch (std::exception &e) {
+        std::cout << e.what() << std::endl;
+        return "";
     }
+    return "";
 }
 
 void MainWindow::centerAndFitWindow()
@@ -711,7 +690,7 @@ void MainWindow::onActionConnectTriggered(bool checked)
                 closeSerialPort();
             }
         }
-    }
+   }
 }
 
 void MainWindow::openSerialPort()
@@ -722,19 +701,30 @@ void MainWindow::openSerialPort()
     systemCommand.execute();
 #endif
 
-    this->m_serialPort->openPort();
-    this->m_uiPtr->terminal->clear();
-    this->m_uiPtr->connectButton->setChecked(true);
-    this->m_uiPtr->sendButton->setEnabled(true);
-    this->m_uiPtr->actionDisconnect->setEnabled(true);
-    this->m_uiPtr->sendBox->setEnabled(true);
-    this->m_uiPtr->sendBox->setToolTip(SEND_BOX_ENABLED_TOOLTIP);
-    this->m_uiPtr->actionLoadScript->setEnabled(true);
-    this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_ENABLED_TOOLTIP);
-    this->m_uiPtr->sendBox->setFocus();
-    this->m_uiPtr->statusBar->showMessage(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
-    this->m_serialPort->setTimeout(MainWindow::s_SERIAL_READ_TIMEOUT);
-    beginCommunication();
+    try {
+        this->m_serialPort->openPort();
+        this->m_uiPtr->terminal->clear();
+        this->m_uiPtr->connectButton->setChecked(true);
+        this->m_uiPtr->sendButton->setEnabled(true);
+        this->m_uiPtr->actionDisconnect->setEnabled(true);
+        this->m_uiPtr->sendBox->setEnabled(true);
+        this->m_uiPtr->sendBox->setToolTip(SEND_BOX_ENABLED_TOOLTIP);
+        this->m_uiPtr->actionLoadScript->setEnabled(true);
+        this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_ENABLED_TOOLTIP);
+        this->m_uiPtr->sendBox->setFocus();
+        this->m_uiPtr->statusBar->showMessage(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
+        this->m_serialPort->setTimeout(MainWindow::s_SERIAL_READ_TIMEOUT);
+        beginCommunication();
+    } catch (std::exception &e) {
+        std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
+        warningBox->setText(COULD_NOT_OPEN_SERIAL_PORT_STRING + toQString(e.what()));
+        warningBox->setWindowTitle(COULD_NOT_OPEN_SERIAL_PORT_WINDOW_TITLE_STRING);
+        warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
+        warningBox->exec();
+        if (this->m_serialPort) {
+            closeSerialPort();
+        }
+    }
 }
 
 void MainWindow::closeSerialPort()
@@ -824,6 +814,7 @@ void MainWindow::printRxResult(const std::string &str)
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
     if ((str != "") && (!isWhitespace(str))) {
+        std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
         this->m_uiPtr->terminal->setTextColor(QColor(RED_COLOR_STRING));
         this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_RECEIVE_BASE_STRING) + toQString(stripLineEndings(stripNonAsciiCharacters(str))));
     }
@@ -833,6 +824,7 @@ void MainWindow::printTxResult(const std::string &str)
 {
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
+    std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
     this->m_uiPtr->terminal->setTextColor(QColor(BLUE_COLOR_STRING));
     this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_TRANSMIT_BASE_STRING) + toQString(str));
 }
@@ -841,6 +833,7 @@ void MainWindow::printDelayResult(DelayType delayType, int howLong)
 {
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
+    std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
     this->m_uiPtr->terminal->setTextColor(QColor(GREEN_COLOR_STRING));
     QString stringToAppend{toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_DELAY_BASE_STRING) + toQString(howLong)};
     if (delayType == DelayType::SECONDS) {
@@ -857,8 +850,8 @@ void MainWindow::printFlushResult(FlushType flushType)
 {
     using namespace GeneralUtilities;
     using namespace QSerialTerminalStrings;
+    std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
     QString stringToAppend{""};
-
     if (flushType == FlushType::RX) {
         stringToAppend.append(TERMINAL_FLUSH_RX_BASE_STRING);
     } else if (flushType == FlushType::TX) {
@@ -881,6 +874,7 @@ void MainWindow::printLoopResult(LoopType loopType, int currentLoop, int loopCou
 {
     using namespace GeneralUtilities;
     using namespace QSerialTerminalStrings;
+    std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
     QString stringToAppend{""};
     this->m_uiPtr->terminal->setTextColor(QColor(ORANGE_COLOR_STRING));
     if (loopCount == -1) {

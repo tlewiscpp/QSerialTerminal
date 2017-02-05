@@ -3,6 +3,7 @@
 namespace QSerialTerminalStrings
 {
 
+//#if defined(__LANGAUGE_ENGLISH__)
     const char *QUIT_PROMPT_STRING{"Are you sure you want to quit?"};
     const char *QUIT_PROMPT_WINDOW_TITLE_STRING{"Quit QSerialTerminal?"};
     const char *INVALID_SETTINGS_DETECTED_STRING{"Invalid settings detected, please reselect serial port settings: "};
@@ -48,6 +49,8 @@ namespace QSerialTerminalStrings
 
     const char *NULL_SERIAL_PORT_PASSED_TO_EXECUTE_STRING{"WARNING: Null SerialPort passed to ScriptExecutor::execute(), skipping script execution"};
     const char *NULL_MAIN_WINDOW_PASSED_TO_EXECUTE_STRING{"WARNING: Null MainWindow passed to ScriptExecutor::execute(), skipping script execution"};
+    const char *COULD_NOT_OPEN_SERIAL_PORT_STRING{"Could not open serial port ("};
+    const char *COULD_NOT_OPEN_SERIAL_PORT_WINDOW_TITLE_STRING{"Problem Opening Serial Port"};
 
     const char *BEGINNING_INFINITE_LOOP_STRING{"***Beginning infinite loop***"};
     const char *INFINITE_LOOP_COUNT_TAIL_STRING{"/infinite)"};
@@ -65,4 +68,7 @@ namespace QSerialTerminalStrings
     const char *SERIAL_PORT_DISCONNECTED_STRING{"Serial port disconnected: "};
     const char *ANDROID_PERMISSION_BASE_STRING{"su -c \"chmod 666 "};
     const char *INVALID_LINE_ENDING_PASSED_TO_SET_LINE_ENDING_STRING{"ERROR: Invalid line ending passed to MainWindow::setLineEnding(const std::string &): "};
+//#else
+
+//#endif
 }

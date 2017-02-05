@@ -74,7 +74,7 @@ public:
     bool cancelScript() const;
     void processEvents();
 private slots:
-    void checkSerialReceive();
+    void launchSerialReceiveAsync();
     void checkDisconnectedSerialPorts();
     void onActionConnectTriggered(bool checked);
     void onActionDisconnectTriggered(bool checked);
@@ -126,6 +126,8 @@ private:
     std::shared_ptr<QSerialTerminalIcons> m_qstiPtr;
     std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
     std::vector<std::string> m_serialPortNames;
+    std::mutex m_printToTerminalMutex;
+    std::unique_ptr<std::future<std::string>> m_serialReceiveAsyncHandle;
     std::function<void(MainWindow*, const std::string &)> m_packagedRxResultTask;
     std::function<void(MainWindow*, const std::string &)> m_packagedTxResultTask;
     std::function<void(MainWindow*, DelayType, int)> m_packagedDelayResultTask;
@@ -189,6 +191,7 @@ private:
     void removeOldSerialPortInfoItem(SerialPortItemType serialPortItemType, const std::string &actionName);
     void setLineEnding(const std::string &lineEnding);
     void autoSetLineEnding();
+    std::string checkSerialReceive();
 };
 
 #endif //QSERIALTERMINAL_MAINWINDOW_H

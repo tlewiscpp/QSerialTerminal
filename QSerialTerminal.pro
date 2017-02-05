@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = QSerialTerminal
 TEMPLATE = app
 
-LD_LI
+DEFINES += __LANGAUGE_ENGLISH__
 
 CONFIG += c++14 static
 

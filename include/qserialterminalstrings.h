@@ -38,6 +38,8 @@ namespace QSerialTerminalStrings
     extern const char *FINISHED_EXECUTING_SCRIPT_STRING;
     extern const char *OPEN_SCRIPT_FILE_CAPTION;
     extern const char *OPEN_SCRIPT_FILE_DEFAULT_DIRECTORY;
+    extern const char *COULD_NOT_OPEN_SERIAL_PORT_STRING;
+    extern const char *COULD_NOT_OPEN_SERIAL_PORT_WINDOW_TITLE_STRING;
 
     extern const char *SECONDS_SUFFIX_STRING;
     extern const char *MILLISECONDS_SUFFIX_STRING;
