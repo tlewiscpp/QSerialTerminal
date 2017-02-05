@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>650</width>
-    <height>300</height>
+    <width>215</width>
+    <height>100</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -108,7 +108,7 @@
             <x>0</x>
             <y>0</y>
             <width>992</width>
-            <height>476</height>
+            <height>472</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
@@ -203,7 +203,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>14</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="CustomMenu" name="menuFile">
