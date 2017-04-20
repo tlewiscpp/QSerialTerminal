@@ -22,9 +22,7 @@ int main(int argc, char *argv[])
 #if defined(__ANDROID__)
     mainWindow->showMaximized();
 #endif
-    if (QSysInfo::currentCpuArchitecture().contains("arm")) {
         mainWindow->showMaximized();
-    }
 
     return qApplication.exec();
 }
