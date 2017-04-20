@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 
 const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
-const int MainWindow::s_SERIAL_TIMEOUT{250};
+const int MainWindow::s_SERIAL_TIMEOUT{0};
 const int MainWindow::s_TASKBAR_HEIGHT{15};
 const int MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT{750};
 const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{25};
@@ -146,8 +146,8 @@ void MainWindow::appendReceivedString(const std::string &str)
 {
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
-    if ((str != "") && (!isWhitespace(str))) {
-        printRxResult(str);
+    if ((str != "") && (!isWhitespace(str)) && (!isLineEnding(str))) {
+        this->printRxResult(str);
     }
 }
 
@@ -163,7 +163,7 @@ void MainWindow::appendTransmittedString(const QString &str)
             resetCommandHistory();
         }
         this->m_serialPort->writeLine(str.toStdString());
-        printTxResult(str.toStdString());
+        this->printTxResult(str.toStdString());
         this->m_uiPtr->sendBox->clear();
     }
 }
@@ -818,7 +818,7 @@ void MainWindow::printRxResult(const std::string &str)
 {
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
-    if ((str != "") && (!isWhitespace(str))) {
+    if ((str != "") && (!isWhitespace(str)) && (!isLineEnding(str))) {
         std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
         this->m_uiPtr->terminal->setTextColor(QColor(RED_COLOR_STRING));
         this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_RECEIVE_BASE_STRING) + toQString(stripLineEndings(stripNonAsciiCharacters(str))));
