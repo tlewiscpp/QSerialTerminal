@@ -313,7 +313,6 @@ private:
     static const int INVALIDATE_CACHE_TIMEOUT{100};
 
     template <typename T> std::string toStdString(T convert) {
-        std::stringstream stringStream{};
         return (std::stringstream{} << convert).str();
     }
 };
