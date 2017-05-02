@@ -3,33 +3,26 @@
 
 #include <QMainWindow>
 #include <QString>
-#include <QColor>
-#include <QCloseEvent>
-#include <QDesktopWidget>
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QTimer>
-#include <QMenu>
-#include <QAction>
+
 #include <vector>
-#include <list>
+#include <sstream>
 #include <string>
 #include <chrono>
 #include <functional>
+#include <list>
+#include <future>
 #include <memory>
-#include <serialport.h>
-#include <systemcommand.h>
-#include <generalutilities.h>
-#include <eventtimer.h>
-#include <tscriptreader.h>
-#include <tscriptexecutor.h>
-#include <tstream.h>
+#include "tstream.h"
 
-#include "customaction.h"
-#include "custommenu.h"
-#include "qserialterminallineedit.h"
-#include "qserialterminalstrings.h"
-#include "qserialterminalicons.h"
+class QDesktopWidget;
+class QTimer;
+class CustomAction;
+class QAction;
+class QCloseEvent;
+class SerialPort;
+class CustomMenu;
+class QSerialTerminalLineEdit;
+class QSerialTerminalIcons;
 
 namespace Ui
 {
@@ -56,8 +49,15 @@ public:
     ~MainWindow();
     void closeEvent(QCloseEvent *event);
 
+    template<typename T>
+    std::string toStdString(T convert) {
+        std::stringstream stringStream{};
+        stringStream << convert;
+        return stringStream.str();
+    }
+
     template <typename T>
-    QString toQString(const T &convert) { return QString::fromStdString(std::to_string(convert)); }
+    QString toQString(const T &convert) { return QString::fromStdString( toStdString(convert)); }
     QString toQString(const std::string &str) { return QString::fromStdString(str); }
     QString toQString(const char *str) { return QString::fromStdString(static_cast<std::string>(str)); }
     QString toQString(const QString &qstr) { return qstr; }

@@ -1,11 +1,9 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <memory>
-#include <serialport.h>
-#include <tstream.h>
-#include <generalutilities.h>
 
 #include "qserialterminalicons.h"
+#include "qserialterminalstrings.h"
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
@@ -21,6 +19,7 @@ int main(int argc, char *argv[])
     mainWindow->begin();
 #if defined(__ANDROID__)
     mainWindow->showMaximized();
+    system("su");
 #endif
         mainWindow->showMaximized();
 

@@ -1,6 +1,27 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "serialport.h"
+#include "generalutilities.h"
+#include "eventtimer.h"
+#include "tscriptreader.h"
+#include "tscriptexecutor.h"
+#include "customaction.h"
+#include "custommenu.h"
+#include "qserialterminallineedit.h"
+#include "qserialterminalstrings.h"
+#include "qserialterminalicons.h"
+
+#include <QString>
+#include <QColor>
+#include <QCloseEvent>
+#include <QDesktopWidget>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QTimer>
+#include <QMenu>
+#include <QAction>
+
 const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SERIAL_TIMEOUT{0};
 const int MainWindow::s_TASKBAR_HEIGHT{15};
@@ -22,8 +43,8 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
                        QWidget *parent) :
     QMainWindow{parent},
     m_uiPtr{std::make_shared<Ui::MainWindow>()},
-    m_checkPortDisconnectTimer{std::make_unique<QTimer>()},
-    m_checkSerialPortReceiveTimer{std::make_unique<QTimer>()},
+    m_checkPortDisconnectTimer{new QTimer{}},
+    m_checkSerialPortReceiveTimer{new QTimer{}},
     m_qstiPtr{qstiPtr},
     m_qDesktopWidget{qDesktopWidget},
     m_serialPortNames{SerialPort::availableSerialPorts()},
@@ -127,7 +148,7 @@ void MainWindow::onContextMenuActive(CustomMenu *customMenu)
         if (customMenu == this->m_uiPtr->menuPortNames) {
             if (customMenu->actions().empty()) {
                 customMenu->close();
-                std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
+                std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
                 warningBox->setText(NO_AVAILABLE_SERIAL_PORTS_STRING);
                 warningBox->setWindowTitle(NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING);
                 warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
@@ -320,15 +341,15 @@ void MainWindow::launchSerialReceiveAsync()
 {
     try {
         if (!this->m_serialReceiveAsyncHandle) {
-           this->m_serialReceiveAsyncHandle = std::make_unique<std::future<std::string>>(std::async(std::launch::async,
-                                                                                         &MainWindow::checkSerialReceive,
-                                                                                         this));
+           this->m_serialReceiveAsyncHandle = std::unique_ptr< std::future<std::string> >{new std::future<std::string>{std::async(std::launch::async,
+                                                                                        &MainWindow::checkSerialReceive,
+                                                                                        this)}};
         }
         if (this->m_serialReceiveAsyncHandle->wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
             appendReceivedString(this->m_serialReceiveAsyncHandle->get());
-            this->m_serialReceiveAsyncHandle = std::make_unique<std::future<std::string>>(std::async(std::launch::async,
+            this->m_serialReceiveAsyncHandle = std::unique_ptr<std::future<std::string>>{new std::future<std::string>{std::async(std::launch::async,
                                                                                           &MainWindow::checkSerialReceive,
-                                                                                          this));
+                                                                                          this)}};
         }
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;
@@ -375,7 +396,7 @@ int MainWindow::yPlacement() const
 
 void MainWindow::calculateXYPlacement()
 {
-    std::unique_ptr<QRect> avail{std::make_unique<QRect>(this->m_qDesktopWidget->availableGeometry())};
+    std::unique_ptr<QRect> avail{new QRect{(this->m_qDesktopWidget->availableGeometry())}};
     this->m_xPlacement = (avail->width()/2)-(this->width()/2);
     this->m_yPlacement = (avail->height()/2)-(this->height()/2) - MainWindow::s_TASKBAR_HEIGHT;
 }
@@ -666,7 +687,7 @@ void MainWindow::onActionConnectTriggered(bool checked)
                 openSerialPort();
             } catch (std::exception &e) {
                 (void)e;
-                std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
+                std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
                 warningBox->setText(INVALID_SETTINGS_DETECTED_STRING + toQString(e.what()));
                 warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
                 warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
@@ -681,7 +702,7 @@ void MainWindow::onActionConnectTriggered(bool checked)
             this->m_serialPort = std::make_shared<SerialPort>(portName, baudRate, dataBits, stopBits, parity);
             openSerialPort();
         } catch (std::exception &e) {
-            std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
+            std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
             warningBox->setText(INVALID_SETTINGS_DETECTED_STRING + toQString(e.what()));
             warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
             warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
@@ -697,8 +718,8 @@ void MainWindow::openSerialPort()
 {
     using namespace QSerialTerminalStrings;
 #if defined(__ANDROID__)
-    SystemCommand systemCommand{ANDROID_PERMISSION_BASE_STRING + this->m_serialPort->portName() + "\""};
-    systemCommand.execute();
+    //SystemCommand systemCommand{ANDROID_PERMISSION_BASE_STRING + this->m_serialPort->portName() + "\""};
+    //systemCommand.execute();
 #endif
 
     try {
@@ -716,7 +737,7 @@ void MainWindow::openSerialPort()
         this->m_serialPort->setTimeout(MainWindow::s_SERIAL_READ_TIMEOUT);
         beginCommunication();
     } catch (std::exception &e) {
-        std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
+        std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
         warningBox->setText(COULD_NOT_OPEN_SERIAL_PORT_STRING + toQString(e.what()));
         warningBox->setWindowTitle(COULD_NOT_OPEN_SERIAL_PORT_WINDOW_TITLE_STRING);
         warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
@@ -763,7 +784,7 @@ void MainWindow::beginCommunication()
             this->m_uiPtr->statusBar->showMessage(toQString(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING) + toQString(this->m_serialPort->portName()));
             this->m_checkSerialPortReceiveTimer->start();
         } catch (std::exception &e) {
-            std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
+            std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
             warningBox->setText(INVALID_SETTINGS_DETECTED_STRING + toQString(e.what()));
             warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
             warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
@@ -959,9 +980,9 @@ void MainWindow::onActionLoadScriptTriggered(bool checked)
         return;
     }
     if (file.exists()) {
-        std::unique_ptr<TScriptExecutor> scriptExecutor{std::make_unique<TScriptExecutor>(file.fileName().toStdString())};
+        std::unique_ptr<TScriptExecutor> scriptExecutor{new TScriptExecutor{file.fileName().toStdString()}};
         if (scriptExecutor->hasCommands()) {
-            std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
+            std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
             warningBox->setText(EMPTY_SCRIPT_STRING + file.fileName());
             warningBox->setWindowTitle(EMPTY_SCRIPT_WINDOW_TITLE_STRING);
             warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
@@ -992,7 +1013,7 @@ void MainWindow::onActionLoadScriptTriggered(bool checked)
             this->m_uiPtr->sendButton->setText(SEND_STRING);
         }
     } else {
-        std::unique_ptr<QMessageBox> warningBox{std::make_unique<QMessageBox>()};
+        std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
         warningBox->setText(FILE_DOES_NOT_EXIST_STRING + file.fileName());
         warningBox->setWindowTitle(FILE_DOES_NOT_EXIST_WINDOW_TITLE_STRING);
         warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
