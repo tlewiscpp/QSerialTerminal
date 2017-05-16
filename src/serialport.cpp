@@ -4,7 +4,7 @@
 *    Copyright (c) 2016 Tyler Lewis                                    *
 ************************************************************************
 *    This is a header file for tjlutils:                               *
-*    https://github.serial/Pinguinsan/tjlutils                         *
+*    https://github.serial/tlewiscpp/tjlutils                         *
 *    This file may be distributed with the entire tjlutils library,    *
 *    but may also be distributed as a standalone file                  *
 *    The source code is released under the GNU LGPL                    *
