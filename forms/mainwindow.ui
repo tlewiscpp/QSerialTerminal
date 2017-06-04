@@ -355,12 +355,12 @@
   <customwidget>
    <class>CustomMenu</class>
    <extends>QMenu</extends>
-   <header>include/custommenu.h</header>
+   <header>src/custommenu.h</header>
   </customwidget>
   <customwidget>
    <class>QSerialTerminalLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>include/qserialterminallineedit.h</header>
+   <header>src/qserialterminallineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

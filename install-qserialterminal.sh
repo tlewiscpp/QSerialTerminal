@@ -307,7 +307,7 @@ if [[ -z "$dependancyResult" ]]; then
     buildDependancy || { echo "Building dependancy failed, bailing out"; exit 1; }
 fi
 doCygwinCheck
-runQmake "$filePath" || { echo "cmake failed, bailing out"; exit 1; }
+runCmake "$filePath" || { echo "cmake failed, bailing out"; exit 1; }
 runMake || { echo "make failed, bailing out"; exit 1; }
 generateDesktopFile || { echo "Could not generate desktop file, bailing out"; exit 1; }
 copyFile "$buildDir/$desktopFileName" "$appDir" || { echo "Could not copy desktop file to application directory, bailing out"; exit 1; }

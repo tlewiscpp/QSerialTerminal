@@ -1,4 +1,4 @@
-#include "include/custommenu.h"
+#include "custommenu.h"
 
 CustomMenu::CustomMenu(QWidget *parent) :
     QMenu{parent}
