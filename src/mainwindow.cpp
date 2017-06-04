@@ -26,7 +26,7 @@ const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SERIAL_TIMEOUT{0};
 const int MainWindow::s_TASKBAR_HEIGHT{15};
 const int MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT{750};
-const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{25};
+const int MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT{500};
 const int MainWindow::s_NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SCRIPT_INDENT{0};
 const int MainWindow::s_SERIAL_READ_TIMEOUT{500};
@@ -339,6 +339,12 @@ void MainWindow::removeOldSerialPortInfoItem(SerialPortItemType serialPortItemTy
 
 void MainWindow::launchSerialReceiveAsync()
 {
+    if (!this->m_serialPort) {
+        return;
+    }
+    if (!this->m_serialPort->isOpen()) {
+        return;
+    }
     try {
         if (!this->m_serialReceiveAsyncHandle) {
            this->m_serialReceiveAsyncHandle = std::unique_ptr< std::future<std::string> >{new std::future<std::string>{std::async(std::launch::async,
@@ -361,9 +367,6 @@ std::string MainWindow::checkSerialReceive()
     using namespace GeneralUtilities;
     try {
         if (this->m_serialPort) {
-            if (!this->m_serialPort->isOpen()) {
-                this->m_serialPort->openPort();
-            }
             this->autoSetLineEnding();
             this->m_serialPort->setLineEnding(this->m_lineEnding);
             std::string returnString{this->m_serialPort->readLine()};
