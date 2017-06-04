@@ -44,7 +44,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
-                        std::shared_ptr<QSerialTerminalIcons> qstiPtr,
+                        std::shared_ptr<QSerialTerminalIcons> programIcons,
                         QWidget *parent = 0);
     ~MainWindow();
     void closeEvent(QCloseEvent *event);
@@ -119,11 +119,11 @@ private slots:
     void onDisconnectButtonClicked(bool checked);
 
 private:
-    std::shared_ptr<Ui::MainWindow> m_uiPtr;
+    std::shared_ptr<Ui::MainWindow> m_ui;
     std::unique_ptr<QTimer> m_checkPortDisconnectTimer;
     std::unique_ptr<QTimer> m_checkSerialPortReceiveTimer;
     std::shared_ptr<SerialPort> m_serialPort;
-    std::shared_ptr<QSerialTerminalIcons> m_qstiPtr;
+    std::shared_ptr<QSerialTerminalIcons> m_programIcons;
     std::shared_ptr<QDesktopWidget> m_qDesktopWidget;
     std::vector<std::string> m_serialPortNames;
     std::mutex m_printToTerminalMutex;

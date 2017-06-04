@@ -39,13 +39,13 @@ const std::list<std::string> MainWindow::s_AVAILABLE_LINE_ENDINGS{s_CARRIAGE_RET
 const std::string MainWindow::s_DEFAULT_LINE_ENDING{MainWindow::s_CARRIAGE_RETURN_LINE_ENDING};
 
 MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
-                       std::shared_ptr<QSerialTerminalIcons> qstiPtr,
+                       std::shared_ptr<QSerialTerminalIcons> programIcons,
                        QWidget *parent) :
     QMainWindow{parent},
-    m_uiPtr{std::make_shared<Ui::MainWindow>()},
+    m_ui{std::make_shared<Ui::MainWindow>()},
     m_checkPortDisconnectTimer{new QTimer{}},
     m_checkSerialPortReceiveTimer{new QTimer{}},
-    m_qstiPtr{qstiPtr},
+    m_programIcons{programIcons},
     m_qDesktopWidget{qDesktopWidget},
     m_serialPortNames{SerialPort::availableSerialPorts()},
     m_packagedRxResultTask{MainWindow::staticPrintRxResult},
@@ -60,48 +60,48 @@ MainWindow::MainWindow(std::shared_ptr<QDesktopWidget> qDesktopWidget,
     m_yPlacement{0}
 {
     using namespace QSerialTerminalStrings;
-    this->m_uiPtr->setupUi(this);
+    this->m_ui->setupUi(this);
 
     setupAdditionalUiComponents();
 
-    connect(this->m_uiPtr->actionAboutQt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
-    connect(this->m_uiPtr->actionQuit, SIGNAL(triggered(bool)), this, SLOT(close()));
+    connect(this->m_ui->actionAboutQt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
+    connect(this->m_ui->actionQuit, SIGNAL(triggered(bool)), this, SLOT(close()));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(onApplicationAboutToClose()));
 
-    connect(this->m_uiPtr->sendBox, SIGNAL(commandHistoryContextMenuRequested(const QPoint &)), this, SLOT(onCommandHistoryContextMenuRequested(const QPoint &)));
-    connect(this->m_uiPtr->actionConnect, SIGNAL(triggered(bool)), this, SLOT(onActionConnectTriggered(bool)));
-    connect(this->m_uiPtr->connectButton, SIGNAL(clicked(bool)), this, SLOT(onConnectButtonClicked(bool)));
-    connect(this->m_uiPtr->actionDisconnect, SIGNAL(triggered(bool)), this, SLOT(onActionDisconnectTriggered(bool)));
-    connect(this->m_uiPtr->actionLoadScript, SIGNAL(triggered(bool)), this, SLOT(onActionLoadScriptTriggered(bool)));
+    connect(this->m_ui->sendBox, SIGNAL(commandHistoryContextMenuRequested(const QPoint &)), this, SLOT(onCommandHistoryContextMenuRequested(const QPoint &)));
+    connect(this->m_ui->actionConnect, SIGNAL(triggered(bool)), this, SLOT(onActionConnectTriggered(bool)));
+    connect(this->m_ui->connectButton, SIGNAL(clicked(bool)), this, SLOT(onConnectButtonClicked(bool)));
+    connect(this->m_ui->actionDisconnect, SIGNAL(triggered(bool)), this, SLOT(onActionDisconnectTriggered(bool)));
+    connect(this->m_ui->actionLoadScript, SIGNAL(triggered(bool)), this, SLOT(onActionLoadScriptTriggered(bool)));
 
-    connect(this->m_uiPtr->sendButton, SIGNAL(clicked(bool)), this, SLOT(onSendButtonClicked()));
-    connect(this->m_uiPtr->sendBox, SIGNAL(returnPressed(QSerialTerminalLineEdit*)), this, SLOT(onReturnKeyPressed(QSerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(upArrowPressed(QSerialTerminalLineEdit*)), this, SLOT(onUpArrowPressed(QSerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(downArrowPressed(QSerialTerminalLineEdit*)), this, SLOT(onDownArrowPressed(QSerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(escapePressed(QSerialTerminalLineEdit*)), this, SLOT(onEscapeKeyPressed(QSerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(altPressed(QSerialTerminalLineEdit*)), this, SLOT(onAltKeyPressed(QSerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlAPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlAPressed(QSerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlEPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlEPressed(QSerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlUPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlUPressed(QSerialTerminalLineEdit*)));
-    connect(this->m_uiPtr->sendBox, SIGNAL(ctrlGPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlGPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_ui->sendButton, SIGNAL(clicked(bool)), this, SLOT(onSendButtonClicked()));
+    connect(this->m_ui->sendBox, SIGNAL(returnPressed(QSerialTerminalLineEdit*)), this, SLOT(onReturnKeyPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_ui->sendBox, SIGNAL(upArrowPressed(QSerialTerminalLineEdit*)), this, SLOT(onUpArrowPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_ui->sendBox, SIGNAL(downArrowPressed(QSerialTerminalLineEdit*)), this, SLOT(onDownArrowPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_ui->sendBox, SIGNAL(escapePressed(QSerialTerminalLineEdit*)), this, SLOT(onEscapeKeyPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_ui->sendBox, SIGNAL(altPressed(QSerialTerminalLineEdit*)), this, SLOT(onAltKeyPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_ui->sendBox, SIGNAL(ctrlAPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlAPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_ui->sendBox, SIGNAL(ctrlEPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlEPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_ui->sendBox, SIGNAL(ctrlUPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlUPressed(QSerialTerminalLineEdit*)));
+    connect(this->m_ui->sendBox, SIGNAL(ctrlGPressed(QSerialTerminalLineEdit*)), this, SLOT(onCtrlGPressed(QSerialTerminalLineEdit*)));
 
-    connect(this->m_uiPtr->menuAbout, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
-    connect(this->m_uiPtr->menuBaudRate, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
-    connect(this->m_uiPtr->menuDataBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
-    connect(this->m_uiPtr->menuFile, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
-    connect(this->m_uiPtr->menuLineEndings, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
-    connect(this->m_uiPtr->menuParity, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
-    connect(this->m_uiPtr->menuPortNames, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
-    connect(this->m_uiPtr->menuStopBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_ui->menuAbout, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_ui->menuBaudRate, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_ui->menuDataBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_ui->menuFile, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_ui->menuLineEndings, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_ui->menuParity, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_ui->menuPortNames, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
+    connect(this->m_ui->menuStopBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuActive(CustomMenu *)));
 
-    connect(this->m_uiPtr->menuAbout, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
-    connect(this->m_uiPtr->menuBaudRate, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
-    connect(this->m_uiPtr->menuDataBits, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
-    connect(this->m_uiPtr->menuFile, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
-    connect(this->m_uiPtr->menuLineEndings, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
-    connect(this->m_uiPtr->menuParity, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
-    connect(this->m_uiPtr->menuPortNames, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
-    connect(this->m_uiPtr->menuStopBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_ui->menuAbout, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_ui->menuBaudRate, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_ui->menuDataBits, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_ui->menuFile, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_ui->menuLineEndings, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_ui->menuParity, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_ui->menuPortNames, SIGNAL(aboutToHide(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
+    connect(this->m_ui->menuStopBits, SIGNAL(aboutToShow(CustomMenu *)), this, SLOT(onContextMenuInactive(CustomMenu *)));
 
     this->m_checkPortDisconnectTimer->setInterval(MainWindow::s_CHECK_PORT_DISCONNECT_TIMEOUT);
     this->m_checkSerialPortReceiveTimer->setInterval(MainWindow::s_CHECK_PORT_RECEIVE_TIMEOUT);
@@ -145,13 +145,13 @@ void MainWindow::onContextMenuActive(CustomMenu *customMenu)
 {
     using namespace QSerialTerminalStrings;
     if (customMenu) {
-        if (customMenu == this->m_uiPtr->menuPortNames) {
+        if (customMenu == this->m_ui->menuPortNames) {
             if (customMenu->actions().empty()) {
                 customMenu->close();
                 std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
                 warningBox->setText(NO_AVAILABLE_SERIAL_PORTS_STRING);
                 warningBox->setWindowTitle(NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING);
-                warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
+                warningBox->setWindowIcon(this->m_programIcons->MAIN_WINDOW_ICON);
                 warningBox->exec();
             }
         }
@@ -180,12 +180,12 @@ void MainWindow::appendTransmittedString(const QString &str)
             this->openSerialPort();
         }
         if (str.toStdString() != "") {
-            this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
+            this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_ui->sendBox->text());
             resetCommandHistory();
         }
         this->m_serialPort->writeLine(str.toStdString());
         this->printTxResult(str.toStdString());
-        this->m_uiPtr->sendBox->clear();
+        this->m_ui->sendBox->clear();
     }
 }
 
@@ -197,8 +197,8 @@ void MainWindow::bindQDesktopWidget(std::shared_ptr<QDesktopWidget> qDesktopWidg
 
 void MainWindow::bindQSerialTerminalIcons(std::shared_ptr<QSerialTerminalIcons> qstiPtr)
 {
-    this->m_qstiPtr.reset();
-    this->m_qstiPtr = qstiPtr;
+    this->m_programIcons.reset();
+    this->m_programIcons = qstiPtr;
 }
 
 void MainWindow::checkDisconnectedSerialPorts()
@@ -234,42 +234,42 @@ void MainWindow::addNewSerialPortInfoItem(SerialPortItemType serialPortItemType,
     if (serialPortItemType == SerialPortItemType::PORT_NAME) {
         connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionPortNamesChecked(CustomAction*, bool)));
         this->m_availablePortNamesActions.push_back(tempAction);
-        this->m_uiPtr->menuPortNames->addAction(tempAction);
+        this->m_ui->menuPortNames->addAction(tempAction);
     } else if (serialPortItemType == SerialPortItemType::BAUD_RATE) {
         if (tempAction->text().toStdString() == SerialPort::DEFAULT_BAUD_RATE_STRING) {
             tempAction->setChecked(true);
         }
         connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionBaudRateChecked(CustomAction*, bool)));
         this->m_availableBaudRateActions.push_back(tempAction);
-        this->m_uiPtr->menuBaudRate->addAction(tempAction);
+        this->m_ui->menuBaudRate->addAction(tempAction);
     } else if (serialPortItemType == SerialPortItemType::PARITY) {
         if (tempAction->text().toStdString() == SerialPort::DEFAULT_PARITY_STRING) {
             tempAction->setChecked(true);
         }
         connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionParityChecked(CustomAction*, bool)));
         this->m_availableParityActions.push_back(tempAction);
-        this->m_uiPtr->menuParity->addAction(tempAction);
+        this->m_ui->menuParity->addAction(tempAction);
     } else if (serialPortItemType == SerialPortItemType::DATA_BITS) {
         if (tempAction->text().toStdString() == SerialPort::DEFAULT_DATA_BITS_STRING) {
             tempAction->setChecked(true);
         }
         connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionDataBitsChecked(CustomAction*, bool)));
         this->m_availableDataBitsActions.push_back(tempAction);
-        this->m_uiPtr->menuDataBits->addAction(tempAction);
+        this->m_ui->menuDataBits->addAction(tempAction);
     } else if (serialPortItemType == SerialPortItemType::STOP_BITS) {
         if (tempAction->text().toStdString() == SerialPort::DEFAULT_STOP_BITS_STRING) {
             tempAction->setChecked(true);
         }
         connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionStopBitsChecked(CustomAction*, bool)));
         this->m_availableStopBitsActions.push_back(tempAction);
-        this->m_uiPtr->menuStopBits->addAction(tempAction);
+        this->m_ui->menuStopBits->addAction(tempAction);
     } else if (serialPortItemType == SerialPortItemType::LINE_ENDING) {
         if (tempAction->text().toStdString() == MainWindow::s_DEFAULT_LINE_ENDING) {
             tempAction->setChecked(true);
         }
         connect(tempAction, SIGNAL(triggered(CustomAction*, bool)), this, SLOT(onActionLineEndingsChecked(CustomAction*, bool)));
         this->m_availableLineEndingActions.push_back(tempAction);
-        this->m_uiPtr->menuLineEndings->addAction(tempAction);
+        this->m_ui->menuLineEndings->addAction(tempAction);
     } else {
         delete tempAction;
     }
@@ -282,15 +282,15 @@ void MainWindow::removeOldSerialPortInfoItem(SerialPortItemType serialPortItemTy
     if (serialPortItemType == SerialPortItemType::PORT_NAME) {
         for (auto &it : this->m_availablePortNamesActions) {
             if (it->text().toStdString() == actionName) {
-                this->m_uiPtr->statusBar->showMessage(SERIAL_PORT_DISCONNECTED_STRING + it->text());
+                this->m_ui->statusBar->showMessage(SERIAL_PORT_DISCONNECTED_STRING + it->text());
                 if (it->isChecked()) {
-                    this->m_uiPtr->actionConnect->setChecked(false);
-                    this->m_uiPtr->connectButton->setChecked(false);
-                    this->m_uiPtr->actionConnect->setEnabled(false);
-                    this->m_uiPtr->connectButton->setEnabled(false);
-                    this->m_uiPtr->actionLoadScript->setEnabled(false);
-                    this->m_uiPtr->sendBox->setEnabled(false);
-                    this->m_uiPtr->sendButton->setEnabled(false);
+                    this->m_ui->actionConnect->setChecked(false);
+                    this->m_ui->connectButton->setChecked(false);
+                    this->m_ui->actionConnect->setEnabled(false);
+                    this->m_ui->connectButton->setEnabled(false);
+                    this->m_ui->actionLoadScript->setEnabled(false);
+                    this->m_ui->sendBox->setEnabled(false);
+                    this->m_ui->sendButton->setEnabled(false);
                 }
                 it->deleteLater();
                 this->m_availablePortNamesActions.erase(this->m_availablePortNamesActions.begin() + i);
@@ -428,15 +428,15 @@ void MainWindow::onSendButtonClicked()
 {
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
-    if (this->m_uiPtr->sendButton->text() == toQString(SEND_STRING)) {
+    if (this->m_ui->sendButton->text() == toQString(SEND_STRING)) {
         if (this->m_serialPort) {
-            appendTransmittedString(toQString(stripLineEndings(this->m_uiPtr->sendBox->text().toStdString())));
+            appendTransmittedString(toQString(stripLineEndings(this->m_ui->sendBox->text().toStdString())));
         } else {
             if (this->m_availablePortNamesActions.size() != 0) {
                 onActionConnectTriggered(false);
                 onSendButtonClicked();
             } else {
-                this->m_uiPtr->statusBar->showMessage(NO_SERIAL_PORTS_CONNECTED_STRING);
+                this->m_ui->statusBar->showMessage(NO_SERIAL_PORTS_CONNECTED_STRING);
             }
         }
     } else {
@@ -485,7 +485,7 @@ void MainWindow::onCommandHistoryContextMenuActionTriggered(CustomAction *action
     (void)checked;
     if (action) {
         this->m_currentHistoryIndex = action->index();
-        this->m_uiPtr->sendBox->setText(action->text());
+        this->m_ui->sendBox->setText(action->text());
     }
 }
 
@@ -519,19 +519,19 @@ void MainWindow::setupAdditionalUiComponents()
 
     if (!this->m_availablePortNamesActions.empty()) {
         (*std::begin(this->m_availablePortNamesActions))->setChecked(true);
-        this->m_uiPtr->connectButton->setEnabled(true);
-        this->m_uiPtr->actionConnect->setEnabled(true);
+        this->m_ui->connectButton->setEnabled(true);
+        this->m_ui->actionConnect->setEnabled(true);
     } else {
-        this->m_uiPtr->connectButton->setEnabled(false);
-        this->m_uiPtr->actionConnect->setEnabled(false);
+        this->m_ui->connectButton->setEnabled(false);
+        this->m_ui->actionConnect->setEnabled(false);
     }
-    this->m_uiPtr->sendBox->setEnabled(false);
-    this->m_uiPtr->sendButton->setEnabled(false);
-    this->m_uiPtr->sendBox->setToolTip(SEND_BOX_DISABLED_TOOLTIP);
-    this->m_uiPtr->actionLoadScript->setEnabled(false);
-    this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_DISABLED_TOOLTIP);
-    this->m_uiPtr->sendBox->setTabOrder(this->m_uiPtr->sendBox, this->m_uiPtr->sendButton);
-    this->m_uiPtr->statusBar->showMessage(CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING);
+    this->m_ui->sendBox->setEnabled(false);
+    this->m_ui->sendButton->setEnabled(false);
+    this->m_ui->sendBox->setToolTip(SEND_BOX_DISABLED_TOOLTIP);
+    this->m_ui->actionLoadScript->setEnabled(false);
+    this->m_ui->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_DISABLED_TOOLTIP);
+    this->m_ui->sendBox->setTabOrder(this->m_ui->sendBox, this->m_ui->sendButton);
+    this->m_ui->statusBar->showMessage(CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING);
 }
 
 void MainWindow::onActionBaudRateChecked(CustomAction *action, bool checked)
@@ -602,9 +602,9 @@ void MainWindow::onActionPortNamesChecked(CustomAction *action, bool checked)
 {
     (void)checked;
     if (!action->isChecked()) {
-        this->m_uiPtr->connectButton->setEnabled(false);
+        this->m_ui->connectButton->setEnabled(false);
     } else {
-        this->m_uiPtr->connectButton->setEnabled(true);
+        this->m_ui->connectButton->setEnabled(true);
     }
     for (auto &it : this->m_availablePortNamesActions) {
         if (it == action) {
@@ -690,7 +690,7 @@ void MainWindow::onActionConnectTriggered(bool checked)
                 std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
                 warningBox->setText(INVALID_SETTINGS_DETECTED_STRING + toQString(e.what()));
                 warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
-                warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
+                warningBox->setWindowIcon(this->m_programIcons->MAIN_WINDOW_ICON);
                 warningBox->exec();
                 if (this->m_serialPort) {
                     closeSerialPort();
@@ -705,7 +705,7 @@ void MainWindow::onActionConnectTriggered(bool checked)
             std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
             warningBox->setText(INVALID_SETTINGS_DETECTED_STRING + toQString(e.what()));
             warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
-            warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
+            warningBox->setWindowIcon(this->m_programIcons->MAIN_WINDOW_ICON);
             warningBox->exec();
             if (this->m_serialPort) {
                 closeSerialPort();
@@ -724,23 +724,23 @@ void MainWindow::openSerialPort()
 
     try {
         this->m_serialPort->openPort();
-        this->m_uiPtr->terminal->clear();
-        this->m_uiPtr->connectButton->setChecked(true);
-        this->m_uiPtr->sendButton->setEnabled(true);
-        this->m_uiPtr->actionDisconnect->setEnabled(true);
-        this->m_uiPtr->sendBox->setEnabled(true);
-        this->m_uiPtr->sendBox->setToolTip(SEND_BOX_ENABLED_TOOLTIP);
-        this->m_uiPtr->actionLoadScript->setEnabled(true);
-        this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_ENABLED_TOOLTIP);
-        this->m_uiPtr->sendBox->setFocus();
-        this->m_uiPtr->statusBar->showMessage(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
+        this->m_ui->terminal->clear();
+        this->m_ui->connectButton->setChecked(true);
+        this->m_ui->sendButton->setEnabled(true);
+        this->m_ui->actionDisconnect->setEnabled(true);
+        this->m_ui->sendBox->setEnabled(true);
+        this->m_ui->sendBox->setToolTip(SEND_BOX_ENABLED_TOOLTIP);
+        this->m_ui->actionLoadScript->setEnabled(true);
+        this->m_ui->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_ENABLED_TOOLTIP);
+        this->m_ui->sendBox->setFocus();
+        this->m_ui->statusBar->showMessage(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
         this->m_serialPort->setTimeout(MainWindow::s_SERIAL_READ_TIMEOUT);
         beginCommunication();
     } catch (std::exception &e) {
         std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
         warningBox->setText(COULD_NOT_OPEN_SERIAL_PORT_STRING + toQString(e.what()));
         warningBox->setWindowTitle(COULD_NOT_OPEN_SERIAL_PORT_WINDOW_TITLE_STRING);
-        warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
+        warningBox->setWindowIcon(this->m_programIcons->MAIN_WINDOW_ICON);
         warningBox->exec();
         if (this->m_serialPort) {
             closeSerialPort();
@@ -752,13 +752,13 @@ void MainWindow::closeSerialPort()
 {
     using namespace QSerialTerminalStrings;
     this->m_serialPort->closePort();
-    this->m_uiPtr->connectButton->setChecked(false);
-    this->m_uiPtr->actionDisconnect->setEnabled(false);
-    this->m_uiPtr->sendBox->setEnabled(false);
-    this->m_uiPtr->sendBox->setToolTip(SEND_BOX_DISABLED_TOOLTIP);
-    this->m_uiPtr->actionLoadScript->setEnabled(false);
-    this->m_uiPtr->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_DISABLED_TOOLTIP);
-    this->m_uiPtr->statusBar->showMessage(SUCCESSFULLY_CLOSED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
+    this->m_ui->connectButton->setChecked(false);
+    this->m_ui->actionDisconnect->setEnabled(false);
+    this->m_ui->sendBox->setEnabled(false);
+    this->m_ui->sendBox->setToolTip(SEND_BOX_DISABLED_TOOLTIP);
+    this->m_ui->actionLoadScript->setEnabled(false);
+    this->m_ui->actionLoadScript->setToolTip(ACTION_LOAD_SCRIPT_DISABLED_TOOLTIP);
+    this->m_ui->statusBar->showMessage(SUCCESSFULLY_CLOSED_SERIAL_PORT_STRING + toQString(this->m_serialPort->portName()));
     this->setWindowTitle(MAIN_WINDOW_TITLE);
 }
 
@@ -781,13 +781,13 @@ void MainWindow::beginCommunication()
                 return;
             }
             this->setWindowTitle(this->windowTitle() + " - " + toQString(this->m_serialPort->portName()));
-            this->m_uiPtr->statusBar->showMessage(toQString(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING) + toQString(this->m_serialPort->portName()));
+            this->m_ui->statusBar->showMessage(toQString(SUCCESSFULLY_OPENED_SERIAL_PORT_STRING) + toQString(this->m_serialPort->portName()));
             this->m_checkSerialPortReceiveTimer->start();
         } catch (std::exception &e) {
             std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
             warningBox->setText(INVALID_SETTINGS_DETECTED_STRING + toQString(e.what()));
             warningBox->setWindowTitle(INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING);
-            warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
+            warningBox->setWindowIcon(this->m_programIcons->MAIN_WINDOW_ICON);
             warningBox->exec();
         }
     } else {
@@ -825,7 +825,7 @@ void MainWindow::onActionDisconnectTriggered(bool checked)
     using namespace QSerialTerminalStrings;
     if (this->m_serialPort) {
         closeSerialPort();
-        this->m_uiPtr->connectButton->setChecked(false);
+        this->m_ui->connectButton->setChecked(false);
         std::cout << "Waiting for async read of serial port " << this->m_serialPort->portName() << " to finish..." << std::endl;
         while (this->m_serialReceiveAsyncHandle->wait_for(std::chrono::seconds(0)) != std::future_status::ready) {
             std::this_thread::yield();
@@ -841,8 +841,8 @@ void MainWindow::printRxResult(const std::string &str)
     using namespace GeneralUtilities;
     if ((str != "") && (!isWhitespace(str)) && (!isLineEnding(str))) {
         std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
-        this->m_uiPtr->terminal->setTextColor(QColor(RED_COLOR_STRING));
-        this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_RECEIVE_BASE_STRING) + toQString(stripLineEndings(stripNonAsciiCharacters(str))));
+        this->m_ui->terminal->setTextColor(QColor(RED_COLOR_STRING));
+        this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_RECEIVE_BASE_STRING) + toQString(stripLineEndings(stripNonAsciiCharacters(str))));
     }
 }
 
@@ -851,8 +851,8 @@ void MainWindow::printTxResult(const std::string &str)
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
     std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
-    this->m_uiPtr->terminal->setTextColor(QColor(BLUE_COLOR_STRING));
-    this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_TRANSMIT_BASE_STRING) + toQString(str));
+    this->m_ui->terminal->setTextColor(QColor(BLUE_COLOR_STRING));
+    this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_TRANSMIT_BASE_STRING) + toQString(str));
 }
 
 void MainWindow::printDelayResult(DelayType delayType, int howLong)
@@ -860,7 +860,7 @@ void MainWindow::printDelayResult(DelayType delayType, int howLong)
     using namespace QSerialTerminalStrings;
     using namespace GeneralUtilities;
     std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
-    this->m_uiPtr->terminal->setTextColor(QColor(GREEN_COLOR_STRING));
+    this->m_ui->terminal->setTextColor(QColor(GREEN_COLOR_STRING));
     QString stringToAppend{toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(TERMINAL_DELAY_BASE_STRING) + toQString(howLong)};
     if (delayType == DelayType::SECONDS) {
         stringToAppend.append(SECONDS_SUFFIX_STRING);
@@ -869,7 +869,7 @@ void MainWindow::printDelayResult(DelayType delayType, int howLong)
     } else if (delayType == DelayType::MICROSECONDS) {
         stringToAppend.append(MICROSECONDS_SUFFIX_STRING);
     }
-    this->m_uiPtr->terminal->append(stringToAppend);
+    this->m_ui->terminal->append(stringToAppend);
 }
 
 void MainWindow::printFlushResult(FlushType flushType)
@@ -885,9 +885,9 @@ void MainWindow::printFlushResult(FlushType flushType)
     } else if (flushType == FlushType::RX_TX) {
         stringToAppend.append(TERMINAL_FLUSH_RX_TX_BASE_STRING);
     }
-    this->m_uiPtr->terminal->setTextColor(QColor(GRAY_COLOR_STRING));
-    this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + stringToAppend);
-    this->m_uiPtr->terminal->setTextColor(QColor());
+    this->m_ui->terminal->setTextColor(QColor(GRAY_COLOR_STRING));
+    this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + stringToAppend);
+    this->m_ui->terminal->setTextColor(QColor());
 }
 
 QApplication *MainWindow::application()
@@ -902,29 +902,29 @@ void MainWindow::printLoopResult(LoopType loopType, int currentLoop, int loopCou
     using namespace QSerialTerminalStrings;
     std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
     QString stringToAppend{""};
-    this->m_uiPtr->terminal->setTextColor(QColor(ORANGE_COLOR_STRING));
+    this->m_ui->terminal->setTextColor(QColor(ORANGE_COLOR_STRING));
     if (loopCount == -1) {
         if (loopType == LoopType::START) {
             if (currentLoop == 0) {
-                this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + BEGINNING_INFINITE_LOOP_STRING);
+                this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + BEGINNING_INFINITE_LOOP_STRING);
             }
-            this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
+            this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
         } else if (loopType == LoopType::END) {
-            this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
+            this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString(INFINITE_LOOP_COUNT_TAIL_STRING));
         }
     } else {
         if (loopType == LoopType::START) {
             if (currentLoop == 0) {
-                this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(BEGINNING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
+                this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(BEGINNING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
             }
-            this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
+            this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(BEGIN_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
         } else if (loopType == LoopType::END) {
-            this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
+            this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(END_LOOP_BASE_STRING) + toQString(currentLoop + 1) + toQString("/") + toQString(loopCount) + toQString(")"));
             if ((currentLoop+1) == loopCount) {
-                this->m_uiPtr->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(ENDING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
+                this->m_ui->terminal->append(toQString(tWhitespace(MainWindow::s_SCRIPT_INDENT)) + toQString(ENDING_LOOPS_BASE_STRING) + toQString(loopCount) + toQString(LOOPS_TAIL_STRING));
             }
         }
-        this->m_uiPtr->terminal->setTextColor(QColor());
+        this->m_ui->terminal->setTextColor(QColor());
     }
 }
 
@@ -985,13 +985,13 @@ void MainWindow::onActionLoadScriptTriggered(bool checked)
             std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
             warningBox->setText(EMPTY_SCRIPT_STRING + file.fileName());
             warningBox->setWindowTitle(EMPTY_SCRIPT_WINDOW_TITLE_STRING);
-            warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
+            warningBox->setWindowIcon(this->m_programIcons->MAIN_WINDOW_ICON);
             warningBox->exec();
         } else {
-            this->m_uiPtr->terminal->append("");
-            this->m_uiPtr->terminal->append(EXECUTING_SCRIPT_STRING + file.fileName());
-            this->m_uiPtr->sendBox->setEnabled(false);
-            this->m_uiPtr->sendButton->setText(CANCEL_SCRIPT_STRING);
+            this->m_ui->terminal->append("");
+            this->m_ui->terminal->append(EXECUTING_SCRIPT_STRING + file.fileName());
+            this->m_ui->sendBox->setEnabled(false);
+            this->m_ui->sendButton->setText(CANCEL_SCRIPT_STRING);
             scriptExecutor->execute(this,
                                     this->m_serialPort,
                                     this->m_packagedRxResultTask,
@@ -999,24 +999,24 @@ void MainWindow::onActionLoadScriptTriggered(bool checked)
                                     this->m_packagedDelayResultTask,
                                     this->m_packagedFlushResultTask,
                                     this->m_packagedLoopResultTask);
-           this->m_uiPtr->terminal->setTextColor(QColor());
+           this->m_ui->terminal->setTextColor(QColor());
             if (this->m_cancelScript) {
-                this->m_uiPtr->terminal->append(CANCELED_EXECUTING_SCRIPT_STRING + file.fileName());
+                this->m_ui->terminal->append(CANCELED_EXECUTING_SCRIPT_STRING + file.fileName());
                 this->m_cancelScript = false;
             } else {
-                this->m_uiPtr->terminal->append(FINISHED_EXECUTING_SCRIPT_STRING + file.fileName());
+                this->m_ui->terminal->append(FINISHED_EXECUTING_SCRIPT_STRING + file.fileName());
             }
             this->m_serialPort->flushRXTX();
             printFlushResult(FlushType::RX_TX);
-            this->m_uiPtr->sendBox->setEnabled(false);
-            this->m_uiPtr->sendBox->setFocus();
-            this->m_uiPtr->sendButton->setText(SEND_STRING);
+            this->m_ui->sendBox->setEnabled(false);
+            this->m_ui->sendBox->setFocus();
+            this->m_ui->sendButton->setText(SEND_STRING);
         }
     } else {
         std::unique_ptr<QMessageBox> warningBox{new QMessageBox{}};
         warningBox->setText(FILE_DOES_NOT_EXIST_STRING + file.fileName());
         warningBox->setWindowTitle(FILE_DOES_NOT_EXIST_WINDOW_TITLE_STRING);
-        warningBox->setWindowIcon(this->m_qstiPtr->MAIN_WINDOW_ICON);
+        warningBox->setWindowIcon(this->m_programIcons->MAIN_WINDOW_ICON);
         warningBox->exec();
     }
     this->m_checkSerialPortReceiveTimer->start();
@@ -1037,7 +1037,7 @@ void MainWindow::keyPressEvent(QKeyEvent *qke)
 {
     if (qke) {
         if ((qke->key() == Qt::Key_Enter) || (qke->key() == Qt::Key_Return)) {
-            this->m_uiPtr->sendBox->clearFocus();
+            this->m_ui->sendBox->clearFocus();
             this->onReturnKeyPressed();
         } else if (qke->key() == Qt::Key_Up) {
             this->onUpArrowPressed();
@@ -1131,7 +1131,7 @@ void MainWindow::onCtrlCPressed(QSerialTerminalLineEdit *stle)
 void MainWindow::onReturnKeyPressed()
 {
     using namespace GeneralUtilities;
-    this->m_uiPtr->sendButton->click();
+    this->m_ui->sendButton->click();
 }
 
 void MainWindow::onUpArrowPressed()
@@ -1141,12 +1141,12 @@ void MainWindow::onUpArrowPressed()
     }
     if (this->m_currentHistoryIndex == 0) {
         if (!this->m_currentLinePushedIntoCommandHistory) {
-            this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_uiPtr->sendBox->text());
+            this->m_commandHistory.insert(this->m_commandHistory.begin(), this->m_ui->sendBox->text());
             this->m_currentLinePushedIntoCommandHistory = true;
         }
     }
     this->m_currentHistoryIndex++;
-    this->m_uiPtr->sendBox->setText(this->m_commandHistory.at(this->m_currentHistoryIndex));
+    this->m_ui->sendBox->setText(this->m_commandHistory.at(this->m_currentHistoryIndex));
 }
 
 void MainWindow::onDownArrowPressed()
@@ -1154,7 +1154,7 @@ void MainWindow::onDownArrowPressed()
     if (this->m_currentHistoryIndex == 0) {
         return;
     }
-    this->m_uiPtr->sendBox->setText(this->m_commandHistory.at(--this->m_currentHistoryIndex));
+    this->m_ui->sendBox->setText(this->m_commandHistory.at(--this->m_currentHistoryIndex));
 }
 
 void MainWindow::onEscapeKeyPressed()
@@ -1169,35 +1169,35 @@ void MainWindow::onAltKeyPressed()
 
 void MainWindow::onCtrlAPressed()
 {
-     this->m_uiPtr->sendBox->setCursorPosition(0);
+     this->m_ui->sendBox->setCursorPosition(0);
 }
 
 void MainWindow::onCtrlEPressed()
 {
-    this->m_uiPtr->sendBox->setCursorPosition(this->m_uiPtr->sendBox->text().size());
+    this->m_ui->sendBox->setCursorPosition(this->m_ui->sendBox->text().size());
 }
 
 void MainWindow::onCtrlUPressed()
 {
-    this->m_uiPtr->sendBox->clear();
+    this->m_ui->sendBox->clear();
 }
 
 void MainWindow::onCtrlGPressed()
 {
-    this->m_uiPtr->terminal->clear();
+    this->m_ui->terminal->clear();
 }
 
 void MainWindow::onCtrlCPressed()
 {
     using namespace QSerialTerminalStrings;
-    if (this->m_uiPtr->sendButton->text() == toQString(CANCEL_SCRIPT_STRING)) {
+    if (this->m_ui->sendButton->text() == toQString(CANCEL_SCRIPT_STRING)) {
         this->m_cancelScript = true;
     }
 }
 
 void MainWindow::onConnectButtonClicked(bool checked)
 {
-    if ((this->m_uiPtr->connectButton->isChecked()) || (checked)) {
+    if ((this->m_ui->connectButton->isChecked()) || (checked)) {
         this->onActionConnectTriggered(checked);
     } else {
         this->onActionDisconnectTriggered(checked);
