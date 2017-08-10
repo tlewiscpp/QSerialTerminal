@@ -6,7 +6,7 @@
 #include <QDir>
 #include <QFile>
 
-namespace QSerialTerminalStrings
+namespace ApplicationStrings
 {
     extern const char *QUIT_PROMPT_STRING;
     extern const char *QUIT_PROMPT_WINDOW_TITLE_STRING;

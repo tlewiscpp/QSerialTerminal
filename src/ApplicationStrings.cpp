@@ -1,9 +1,7 @@
-#include "qserialterminalstrings.h"
+#include "ApplicationStrings.h"
 
-namespace QSerialTerminalStrings
+namespace ApplicationStrings
 {
-
-//#if defined(__LANGAUGE_ENGLISH__)
     const char *QUIT_PROMPT_STRING{"Are you sure you want to quit?"};
     const char *QUIT_PROMPT_WINDOW_TITLE_STRING{"Quit QSerialTerminal?"};
     const char *INVALID_SETTINGS_DETECTED_STRING{"Invalid settings detected, please reselect serial port settings: "};
@@ -47,28 +45,13 @@ namespace QSerialTerminalStrings
     const char *SEND_BOX_ENABLED_TOOLTIP{""};
     const char *SEND_BOX_DISABLED_TOOLTIP{"Connect to a serial port to begin sending and receiving data"};
 
-    const char *NULL_SERIAL_PORT_PASSED_TO_EXECUTE_STRING{"WARNING: Null SerialPort passed to ScriptExecutor::execute(), skipping script execution"};
-    const char *NULL_MAIN_WINDOW_PASSED_TO_EXECUTE_STRING{"WARNING: Null MainWindow passed to ScriptExecutor::execute(), skipping script execution"};
     const char *COULD_NOT_OPEN_SERIAL_PORT_STRING{"Could not open serial port ("};
     const char *COULD_NOT_OPEN_SERIAL_PORT_WINDOW_TITLE_STRING{"Problem Opening Serial Port"};
 
-    const char *BEGINNING_INFINITE_LOOP_STRING{"***Beginning infinite loop***"};
-    const char *INFINITE_LOOP_COUNT_TAIL_STRING{"/infinite)"};
-    const char *LOOPS_TAIL_STRING{" loops***"};
-    const char *BEGINNING_LOOPS_BASE_STRING{"***Starting "};
-    const char *ENDING_LOOPS_BASE_STRING{"***Finished "};
-    const char *BEGIN_LOOP_BASE_STRING{"Begin loop ("};
-    const char *END_LOOP_BASE_STRING{"End loop ("};
-    const char *CANCEL_SCRIPT_STRING{"Cancel Script"};
     const char *SEND_STRING{"Send"};
     const char *CANCELED_EXECUTING_SCRIPT_STRING{"Canceled execution of script file: "};
     const char *COMMAND_HISTORY_CONTEXT_MENU_STRING{"Command History"};
     const char *NO_AVAILABLE_SERIAL_PORTS_STRING{"No serial ports are connected to device, please connect a device"};
     const char *NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING{"No Serial Ports Available"};
     const char *SERIAL_PORT_DISCONNECTED_STRING{"Serial port disconnected: "};
-    const char *ANDROID_PERMISSION_BASE_STRING{"su -c \"chmod 666 "};
-    const char *INVALID_LINE_ENDING_PASSED_TO_SET_LINE_ENDING_STRING{"ERROR: Invalid line ending passed to MainWindow::setLineEnding(const std::string &): "};
-//#else
-
-//#endif
 }

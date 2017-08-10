@@ -1,4 +1,4 @@
-#include "qserialterminalicons.h"
+#include "ApplicationIcons.h"
 
 QSerialTerminalIcons::QSerialTerminalIcons() :
     MAIN_WINDOW_ICON{QIcon{":/icons/icons/qserialterminal.png"}}

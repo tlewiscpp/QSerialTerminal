@@ -15,17 +15,19 @@ include_directories(src/)
 
 set (QSERIALTERMINAL_SOURCES 
     src/Main.cpp
+        src/GlobalDefinitions.h
+        src/ApplicationSettings.cpp src/ApplicationSettings.h
+        src/ApplicationSettingsLoader.cpp src/ApplicationSettingsLoader.h
     src/MainWindow.cpp src/MainWindow.h
     src/ApplicationIcons.cpp src/ApplicationIcons.h
     src/ApplicationStrings.cpp src/ApplicationStrings.h
     src/CustomAction.cpp src/CustomAction.h
-    src/CustomMenu.cpp src/CustoMenu.h
     src/QSerialTerminalLineEdit.cpp src/QSerialTerminalLineEdit.h
     src/ApplicationUtilities.cpp src/ApplicationUtilities.h
     src/SerialPort.cpp src/SerialPort.h
     src/IByteStream.cpp src/IByteStream.h
-    src/FileUtilities.cpp src/FileUtilities.h
-    src/SystemCommand.cpp src/SystemCommand.h
+        src/FileUtilities.h
+        src/SystemCommand.h
     src/EventTimer.h
     src/Version.h
 )
@@ -41,10 +43,12 @@ set (QSERIALTERMINAL_RESOURCES
 qt5_wrap_ui (QSERIALTERMINAL_FORMS_MOC  ${QSERIALTERMINAL_FORMS})
 qt5_add_resources(QSERIALTERMINAL_RESOURCES_RCC ${QSERIALTERMINAL_RESOURCES})
 
-add_executable(QSerialTerminal "${QSERIALTERMINAL_SOURCES}"
-                               "${QSERIALTERMINAL_HEADERS}"
-                               "${QSERIALTERMINAL_FORMS}"
-                               "${QSERIALTERMINAL_RESOURCES}")
+add_executable(${PROJECT_NAME}
+        ${QSERIALTERMINAL_SOURCES}
+        ${QSERIALTERMINAL_HEADERS}
+        ${QSERIALTERMINAL_FORMS}
+        ${QSERIALTERMINAL_RESOURCES}
+        )
 
 if (win32)
     target_link_libraries (QSerialTerminal 

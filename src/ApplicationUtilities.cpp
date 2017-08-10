@@ -1,404 +1,407 @@
-/***********************************************************************
-*    generalutilities.cpp:                                             *
-*    Namespace GeneralUtilities, for general use functions             *
-*    Copyright (c) 2016 Tyler Lewis                                    *
-************************************************************************
-*    This is a header file for tjlutils:                               *
-*    https://github.com/tlewiscpp/tjlutils                            *
-*    This file may be distributed with the entire tjlutils library,    *
-*    but may also be distributed as a standalone file                  *
-*    The source code is released under the GNU LGPL                    *
-*    This file holds the implementation of a GeneralUtilities namespace*
-*    The namespace contains several general use functions, including   *
-*    STL algorithm fuinctions, delay functions, char to int functions, *
-*    logging functions, and mathematical rounding functions            *
-*                                                                      *
-*    You should have received a copy of the GNU Lesser General         *
-*    Public license along with tjlutils                                *
-*    If not, see <http://www.gnu.org/licenses/>                        *
-***********************************************************************/
+#include "ApplicationUtilities.h"
+#include "GlobalDefinitions.h"
+#include "ApplicationSettings.h"
+#include "ApplicationStrings.h"
+#include <QDateTime>
+#include <QByteArray>
+#include <QDir>
 
-#include "generalutilities.h"
-
-namespace GeneralUtilities
+namespace ApplicationUtilities
 {
-    float decStringToFloat(const std::string &str)
+
+    static QString installDirectory{""};
+    static QString programSettingsDirectory{""};
+    static QString logFileName{""};
+    static QString configurationFilePath{""};
+    static QString userConfigurationFilePath{""};
+
+    QString getUserConfigurationFilePath()
     {
-        std::string copyString{""};
-        for (auto &it : str) {
-            if ((it != '0') && (it != '.')) {
-                copyString += it;
-            }
+        if (!userConfigurationFilePath.isEmpty()) {
+            return userConfigurationFilePath;
         }
-        if (copyString.length() == 0) {
-            return 0;
-        }
-        auto returnValue = atof(str.c_str());
-        if (returnValue == 0) {
-            throw std::invalid_argument("stof: invalid string " + str);
-        }
-        return returnValue;
+        QString settingsDirectory{getProgramSettingsDirectory()};
+    #if defined(_WIN32)
+        return QString{settingsDirectory + "config\\settings.xml"};
+    #else
+        return QString{settingsDirectory + "config/settings.xml"};
+    #endif
+
     }
 
-    double decStringToDouble(const std::string &str)
+    QString getConfigurationFilePath()
     {
-        return GeneralUtilities::decStringToFloat(str);
-    }
-
-    int decStringToInt(const std::string &str)
-    {
-        std::string copyString{""};
-        for (auto &it : str) {
-            if (it != '0') {
-                copyString += it;
-            }
+        if (!configurationFilePath.isEmpty()) {
+            return configurationFilePath;
         }
-        if (copyString.length() == 0) {
-            return 0;
-        }
-        auto returnValue = atoi(str.c_str());
-        if (returnValue == 0) {
-            throw std::invalid_argument("stoi: invalid string " + str);
-        }
-        return returnValue;
-    }
-
-    long int decStringToLong(const std::string &str)
-    {
-        std::string copyString{""};
-        for (auto &it : str) {
-            if (it != '0') {
-                copyString += it;
-            }
-        }
-        if (copyString.length() == 0) {
-            return 0;
-        }
-        auto returnValue = atoi(str.c_str());
-        if (returnValue == 0) {
-            throw std::invalid_argument("stol: invalid string " + str);
-        }
-        return returnValue;
-    }
-
-    long long int decStringToLongLong(const std::string &str)
-    {
-        std::string copyString{""};
-        for (auto &it : str) {
-            if (it != '0') {
-                copyString += it;
-            }
-        }
-        if (copyString.length() == 0) {
-            return 0;
-        }
-        auto returnValue = atoi(str.c_str());
-        if (returnValue == 0) {
-            throw std::invalid_argument("stoll: invalid string " + str);
-        }
-        return returnValue;
-    }
-
-    std::string toBinaryString(int number)
-    {
-        if (number == 0) {
-            return "0";
-        }
-        int digitCount = 0;
-        int copy = number;
-        do {
-            digitCount++;
-        } while (copy /= 2);
-        copy = number;
-        std::string returnString{""};
-        for (int i = 0; i < digitCount; i++) {
-            copy = number % 2;
-            if (copy == 0) returnString.insert(returnString.begin(), '0');
-            else if ((copy % 1) == 0) returnString.insert(returnString.begin(), '1');
-            number /= 2;
-        }
-        return returnString;
-    }
-
-    std::string toDecString(int number)
-    {
-        if (number == 0) {
-            return "0";
-        }
-        int digitCount = 0;
-        int copy = number;
-        while (copy > 0) {
-            copy /= 10;
-            digitCount++;
-        }
-        copy = number;
-        std::string returnString{""};
-        for (int i = 0; i < digitCount; i++) {
-            copy = number % 10;
-            if (copy == 0) returnString.insert(returnString.begin(), '0');
-            else if ((copy % 9 ) == 0) returnString.insert(returnString.begin(), '9');
-            else if ((copy % 8) == 0) returnString.insert(returnString.begin(), '8');
-            else if ((copy % 7) == 0) returnString.insert(returnString.begin(), '7');
-            else if ((copy % 6) == 0) returnString.insert(returnString.begin(), '6');
-            else if ((copy % 5) == 0) returnString.insert(returnString.begin(), '5');
-            else if ((copy % 4) == 0) returnString.insert(returnString.begin(), '4');
-            else if ((copy % 3) == 0) returnString.insert(returnString.begin(), '3');
-            else if ((copy % 2) == 0) returnString.insert(returnString.begin(), '2');
-            else if ((copy % 1) == 0) returnString.insert(returnString.begin(), '1');
-            number /= 10;
-        }
-        return returnString;
-    }
-
-    std::string toHexString(int number)
-    {
-        if (number == 0) {
-            return "0";
-        }
-        int digitCount = 0;
-        int copy = number;
-        do {
-            digitCount++;
-        } while (copy /= 16);
-        copy = number;
-        std::string returnString{""};
-        for (int i = 0; i < digitCount; i++) {
-            copy = number % 16;
-            if (copy == 0) returnString.insert(returnString.begin(), '0');
-            else if ((copy % 15) == 0) returnString.insert(returnString.begin(), 'f');
-            else if ((copy % 14) == 0) returnString.insert(returnString.begin(), 'e');
-            else if ((copy % 13) == 0) returnString.insert(returnString.begin(), 'd');
-            else if ((copy % 12) == 0) returnString.insert(returnString.begin(), 'c');
-            else if ((copy % 11) == 0) returnString.insert(returnString.begin(), 'b');
-            else if ((copy % 10) == 0) returnString.insert(returnString.begin(), 'a');                        
-            else if ((copy % 9) == 0) returnString.insert(returnString.begin(), '9');
-            else if ((copy % 8) == 0) returnString.insert(returnString.begin(), '8');
-            else if ((copy % 7) == 0) returnString.insert(returnString.begin(), '7');
-            else if ((copy % 6) == 0) returnString.insert(returnString.begin(), '6');
-            else if ((copy % 5) == 0) returnString.insert(returnString.begin(), '5');
-            else if ((copy % 4) == 0) returnString.insert(returnString.begin(), '4');
-            else if ((copy % 3) == 0) returnString.insert(returnString.begin(), '3');
-            else if ((copy % 2) == 0) returnString.insert(returnString.begin(), '2');
-            else if ((copy % 1) == 0) returnString.insert(returnString.begin(), '1');
-            number /= 16;
-        }
-        return returnString;
-    }
-
-    std::string toBinaryString(bool number) { return (number ? toBinaryString(1) : toBinaryString(0)); }
-    std::string toDecString(bool number) { return (number ? toDecString(1) : toDecString(0)); }
-    std::string toHexString(bool number) { return (number ? toHexString(1) : toHexString(0)); }
-    
-    std::string toBinaryString(uint32_t number)
-    {
-        return toBinaryString(static_cast<int>(number));
-    }
-
-    std::string toDecString(uint32_t number)
-    {
-        return toDecString(static_cast<int>(number));
-    }
-
-
-    std::string toHexString(uint32_t number)
-    {
-        return toHexString(static_cast<int>(number));
-    }
-
-    std::string toBinaryString(uint8_t number)
-    {
-        return toBinaryString(static_cast<int>(number));
-    }
-
-    std::string toDecString(uint8_t number)
-    {
-        return toHexString(static_cast<int>(number));
-    }    
-    
-    std::string toHexString(uint8_t number)
-    {
-        return toHexString(static_cast<int>(number));
-    }
-
-    std::string stripLineEndings(const std::string &str)
-    {
-        std::string copyString{str};
-        copyString = stripAllFromString(copyString, "\r");
-        copyString = stripAllFromString(copyString, "\n");
-        return copyString;
-    }
-
-    bool isNonAsciiChar (char c)
-    {  
-        return !isprint( static_cast<unsigned char>( c ) );
-    } 
-
-    std::string stripNonAsciiCharacters(const std::string &str) 
-    { 
-        std::string copyString{str};
-        copyString.erase(remove_if(copyString.begin(), copyString.end(), isNonAsciiChar), copyString.end());  
-        return copyString;
-    }
-
-    std::string toLowercase(const std::string &str)
-    {
-        std::string returnString{str};
-        std::transform(returnString.begin(), returnString.end(), returnString.begin(), ::tolower);
-        return returnString;
-    }
-
-    std::string toUppercase(const std::string &str)
-    {
-        std::string returnString{str};
-        std::transform(returnString.begin(), returnString.end(), returnString.begin(), ::toupper);
-        return returnString;
-    }
-
-    std::vector<std::string> trimWhitespaceFromBeginning (const std::vector<std::string> &vec)
-    {
-        std::vector<std::string> returnVec{vec};
-        for (auto &it : returnVec) {
-            it = trimWhitespaceFromBeginning(it);
-        }
-        return returnVec;
-    }
-
-    std::vector<std::string> trimWhitespaceFromEnd (const std::vector<std::string> &vec)
-    {
-        std::vector<std::string> returnVec{vec};
-        for (auto &it : returnVec) {
-            it = trimWhitespaceFromEnd(it);
-        }
-        return returnVec;
-    }
-
-    std::vector<std::string> trimWhitespace (const std::vector<std::string> &vec)
-    {
-        std::vector<std::string> returnVec{vec};
-        for (auto &it : returnVec) {
-            it = trimWhitespace(it);
-        }
-        return returnVec;
-    }
-
-    std::string trimWhitespace(const std::string &str)
-    {
-        if (str.length() == 0) {
-            return str;
-        }
-        std::string copyString{str};
-        copyString = trimWhitespaceFromBeginning(copyString);
-        copyString = trimWhitespaceFromEnd(copyString);
-        return copyString;
-    }
-    
-    std::string trimWhitespaceFromBeginning(const std::string &str)
-    {
-        if (str.length() == 0) {
-            return str;
-        }
-        std::string copyString{str};
-        while ((copyString.length() != 0) && (copyString[0] == ' ')) {
-            copyString = copyString.substr(1);
-        }
-        return copyString;
-    }
-    
-    std::string trimWhitespaceFromEnd(const std::string &str)
-    {
-        if (str.length() == 0) {
-            return str;
-        }
-        std::string copyString{str};
-        while ((copyString.length() != 0) && (copyString[copyString.length()-1] == ' ')) {
-            copyString = copyString.substr(0, copyString.length()-1);
-        }
-        return copyString;
-    }
-    
-    bool isWhitespace(const std::string &stringToCheck)
-    {
-        for (std::string::const_iterator iter = stringToCheck.begin(); iter != stringToCheck.end(); iter++) {
-            if (static_cast<unsigned>(*iter) > ASCII_WHITESPACE_MAXIMUM_VALUE) {
-                return false;
-            } else if (((*iter) != '\r') || ((*iter) != '\n')) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool isWhitespace(char charToCheck)
-    {
-        return isWhitespace(std::string(1, charToCheck));
-    }
-    
-    std::string getBetween(const std::string &beginning, const std::string &ending, const std::string &findString)
-    {
-        size_t foundPosition{0};
-        size_t foundEndPosition{0};
-        if (beginning == ending) {
-            size_t tempFound{findString.find(beginning)};
-            foundPosition = findString.find(beginning);
-            foundEndPosition = foundPosition + (findString.substr(tempFound+1).find(ending));
-        } else {    
-            foundPosition = findString.find(beginning);
-            foundEndPosition = findString.find(ending);
-        }
-        if (foundPosition == std::string::npos) {
-            if (ending.length() == 0) {
-                return findString;
-            } else {
-                return "";
-            }
-        } else if (foundEndPosition == std::string::npos) {
-            if (ending.length() == 0) {
-                return findString.substr(foundPosition+1);
-            } else {
-                return "";
-            }
+    #if defined(_WIN32)
+        QString testString{getInstallDirectory() + "config\\settings.xml"};
+    #else
+        QString testString{getInstallDirectory() + "config/settings.xml"};
+    #endif
+        if (QFile(testString).exists()) {
+            //Systemwide settings
+            configurationFilePath = testString;
         } else {
-            return findString.substr(foundPosition+1, foundEndPosition-foundPosition-1);
+            configurationFilePath = testString;
         }
+        return configurationFilePath;
     }
 
-    std::vector<std::string> getAllBetween(const std::string &beginning, const std::string &ending, const std::string &findString)
+
+    QString getProgramSettingsDirectory()
     {
-        std::vector<std::string> returnVector{};
-        std::string copyString{findString};
-        do {
-            std::string gotString{getBetween(beginning, ending, copyString)};
-            if (gotString.length() != 0) {
-                returnVector.push_back(gotString);
+        if (!programSettingsDirectory.isEmpty()) {
+            return programSettingsDirectory;
+        }
+        QString homeDirectory{QDir::toNativeSeparators(QDir::homePath())};
+        QDir baseDirectory{homeDirectory};
+        if (!baseDirectory.exists()) {
+            throw std::runtime_error("You don't exist, go away");
+        }
+        QString additionalSettingsPath{""};
+        #if defined(_WIN32)
+            if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
+                additionalSettingsPath += (QString{"\\AppData\\Local\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
+            } else {
+                additionalSettingsPath += (QString{"\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
             }
-            copyString = copyString.substr(copyString.find(ending)+1);
-        } while (copyString != "");
-        return returnVector;
+        #else
+            additionalSettingsPath += (QString{"/.local/share/"} + GlobalSettings::PROGRAM_LONG_NAME + "/");
+        #endif
+        programSettingsDirectory = homeDirectory + additionalSettingsPath;
+        return programSettingsDirectory;
+
     }
 
-    std::string stripBetween(const std::string &beginning, const std::string &ending, const std::string &findString)
+    QString getInstallDirectory()
     {
-        std::string removeString{getBetween(beginning, ending, findString)};
-        if (removeString == "") {
-            return "";
+    #if defined(_WIN32)
+        if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
+            return (QString{"C:\\Program Files (x86)\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
+        } else {
+            return (QString{"C:\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
         }
-        size_t foundPosition{findString.find(removeString)};
-        long long unsigned int offsetPosition{foundPosition + (removeString.length())};
-        return (findString.substr(0, foundPosition) + findString.substr(offsetPosition));
+    #else
+        return (QString{"/opt/"} + GlobalSettings::PROGRAM_LONG_NAME + "/");
+    #endif
     }
 
-    std::string stripAllBetween(const std::string &beginning, const std::string &ending, const std::string &findString)
+    QString getOSVersion()
+    {
+    #if defined(_WIN32)
+        if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_32s) {
+            return "Windows 3.1";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_95) {
+            return "Windows 95";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_98) {
+            return "Windows 98";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_Me) {
+            return "Windows Me";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_NT) {
+            return "Windows NT";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_2000) {
+            return "Windows 2000";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_XP) {
+            return "Windows XP";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_2003) {
+            return "Windows 2003";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_VISTA) {
+            return "Windows Vista";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_WINDOWS7) {
+            return "Windows 7";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_WINDOWS8) {
+            return "Windows 8";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_WINDOWS8_1) {
+            return "Windows 8.1";
+        } else if (QSysInfo::windowsVersion() == QSysInfo::WinVersion::WV_WINDOWS10) {
+            return "Windows 10";
+        } else {
+            return "I dunno, maybe DOS or something";
+        }
+    #elif defined(__linux__)
+        return "Linux, or something";
+    #elif defined(__MAC_OSX__)
+        if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_None) {
+            return "Non Darwin-based MacOS";
+        }else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_9) {
+            return "MacOS 9";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_0) {
+            return "MacOS 10.0 (Cheetah)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_1) {
+            return "MacOS 10.1 (Puma)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_2) {
+            return "MacOS 10.2 (Jaguar)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_3) {
+            return "MacOS 10.3 (Panther)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_4) {
+            return "MacOS 10.4 (Tiger)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_5) {
+            return "MacOS 10.5 (Leopard)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_6) {
+            return "MacOS 10.6 (Snow Leopard)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_7) {
+            return "MacOS 10.7 (Lion)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_8) {
+            return "MacOS 10.8 (Mountain Lion)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_9) {
+            return "MacOS 10.9 (Mavericks)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_10) {
+            return "MacOS 10.10 (Yosemite)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_11) {
+            return "MacOS 10.11 (El Capitan)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_10_12) {
+            return "MacOS 10.12 (Sierra)";
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_4_3) {
+            return "iOS 4.3"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_5_0) {
+            return "iOS 5.0"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_5_1) {
+            return "iOS 5.1"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_6_0) {
+            return "iOS 6.0"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_6_1) {
+            return "iOS 6.1"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_7_0) {
+            return "iOS 7.0"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_7_1) {
+            return "iOS 7.1"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_8_0) {
+            return "iOS 8.0"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_8_1) {
+            return "iOS 8.1"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_8_2) {
+            return "iOS 8.2"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_8_3) {
+            return "iOS 8.3"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_8_4) {
+            return "iOS 8.4"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_9_0) {
+            return "iOS 9.0"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_9_0) {
+            return "iOS 9.1"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_9_0) {
+            return "iOS 9.2"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_9_0) {
+            return "iOS 9.3"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_10_0) {
+            return "iOS 10.0"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_TVOS_9_0) {
+            return "tvOS 9.0"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_TVOS_9_1) {
+            return "tvOS 9.1"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_TVOS_9_2) {
+            return "tvOS 9.2"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_IOS_10_0) {
+            return "tvOS 10.0"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_WATCH_2_0) {
+            return "watchOS 2.0"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_WATCH_2_1) {
+            return "watchOS 2.1"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_WATCH_2_2) {
+            return "watchOS 2.2"
+        } else if (QSysInfo::macVersion() == QSysInfo::MacintoshVersion::MV_WATCH_3_0) {
+            return "watchOS 3.0"
+        } else {
+            return "Unknown MacOS version";
+        }
+    #else
+        return "Unknown OS";
+    #endif
+    }
+
+    QString getBuildArchitecture()
+    {
+        return QSysInfo::buildCpuArchitecture();
+    }
+
+    QString getCurrentArchitecture()
+    {
+        return QSysInfo::currentCpuArchitecture();
+    }
+
+    void checkOrCreateProgramSettingsDirectory()
+    {
+        QString settings{getProgramSettingsDirectory()};
+        QDir settingsDirectory{settings};
+        std::vector<QString> toLogInfo{};
+        if (settingsDirectory.exists()) {
+            toLogInfo.push_back(QString{"Detected settings directory at %1"}.arg(settings));
+        } else {
+            if (settingsDirectory.mkpath(".")) {
+                toLogInfo.push_back(QString{"Settings directory not found, created new directory at %1"}.arg(settings));
+            } else {
+                throw std::runtime_error(QString{"Settings directory not found, and one could not be created at %1"}.arg(settings).toStdString());
+            }
+        }
+#if defined(_WIN32)
+        settings = settings + "log\\";
+#else
+        settings = QString{"/tmp/"} + ApplicationStrings::PROGRAM_NAME;
+#endif
+        settingsDirectory = QDir{settings};
+        if (settingsDirectory.exists()) {
+            toLogInfo.push_back(QString{"Detected log directory at %1"}.arg(settings));
+        } else {
+            if (settingsDirectory.mkpath(".")) {
+                toLogInfo.push_back(QString{"Log directory not found, created new directory at %1"}.arg(settings));
+            } else {
+                throw std::runtime_error(QString{"Log directory not found, and one could not be created at %1"}.arg(settings).toStdString());
+            }
+        }
+        for (auto &it : toLogInfo) {
+            LOG_INFO() << it;
+        }
+    }
+
+#if defined(_WIN32)
+    QString getLogFilePath()
+    {
+        if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
+            return QString{"%1log\\%2"}.arg(programSettingsDirectory, logFileName);
+        } else {
+            QString log{getLogFileName()};
+            QString settings{getProgramSettingsDirectory()};
+            return  QString{"%1log\\%2"}.arg(settings, log);
+        }
+    }
+#else
+    QString getLogFilePath()
+    {
+        if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
+            return QString{"/tmp/%1/%2"}.arg(GlobalSettings::PROGRAM_NAME, logFileName);
+        } else {
+            QString log{getLogFileName()};
+            QString settings{getProgramSettingsDirectory()};
+            (void)settings;
+            return QString{"/tmp/%1/%2"}.arg(GlobalSettings::PROGRAM_NAME, logFileName);
+        }
+    }
+#endif
+
+
+    QString getLogFileName()
+    {
+        if (logFileName.isEmpty()) {
+            QString currentDateTime{QDateTime::currentDateTime().toString()};
+            QString newDateTime{""};
+            for (const auto &it : currentDateTime) {
+                if ((it == ' ') || (it == ':')) {
+                    newDateTime += '-';
+                } else {
+                    newDateTime += it.toLower();
+                }
+            }
+            //logFileName = QString{"%1-%2.log"}.arg(newDateTime, QS_NUMBER(randomBetween(0, 60000)));
+            logFileName = QString{"%1.log"}.arg(newDateTime);
+        }
+        return logFileName;
+    }
+
+
+    static std::unique_ptr<Random> randomDevice = std::unique_ptr<Random>{new Random()};
+
+    Random::Random(std::mt19937::result_type seed) :
+        m_randomEngine{seed}
+    {
+
+    }
+
+    int Random::drawNumber(int min, int max)
+    {
+        return std::uniform_int_distribution<int>{min, max}(this->m_randomEngine);
+    }
+
+    int randomBetween(int lowLimit, int highLimit, bool lowInclusive, bool highInclusive)
+    {
+        int low{lowInclusive ? lowLimit : lowLimit + 1};
+        int high{highInclusive ? highLimit : highLimit - 1};
+        return randomDevice->drawNumber(low, high);
+    }
+
+    void logString(const std::string &str) { std::cout << str << std::endl; }
+    std::string toString(const std::string &str) { return str; }
+    std::string toString(const char *str) { return static_cast<std::string>(str); }
+
+    QString toQString(const std::string &convert) { return QString::fromStdString(convert); }
+    QString toQString(const char *convert) { return QString::fromStdString(static_cast<std::string>(convert)); }
+    QString toQString(const QString &convert) { return convert; }
+
+    int roundIntuitively(double numberToRound)
+    {
+        double tempContainer{numberToRound - static_cast<int>(numberToRound)};
+        if (tempContainer >= 0.5) {
+            return (static_cast<int>(numberToRound) + 1);
+        } else {
+            return static_cast<int>(numberToRound);
+        }
+    }
+
+    std::string getPadding(size_t howMuch, char padChar)
     {
         std::string returnString{""};
-        std::string copyString{findString};
-        while (getBetween(beginning, ending, copyString).length() != 0) {
-            std::string gotString{beginning + getBetween(beginning, ending, copyString) + ending};
-            returnString += (beginning + ending);
-            copyString = stripFromString(copyString, gotString);
+        for (size_t i = 0; i < howMuch; i++) {
+            returnString += padChar;
         }
         return returnString;
     }
-    
+
+    std::string getPadding(size_t howMuch, const char *padString)
+    {
+        std::string returnString{""};
+        for (size_t i = 0; i < howMuch; i++) {
+            returnString += padString;
+        }
+        return returnString;
+    }
+
+    std::string getPadding(size_t howMuch, const std::string &padString)
+    {
+        std::string returnString{""};
+        for (size_t i = 0; i < howMuch; i++) {
+            returnString += padString;
+        }
+        return returnString;
+    }
+
+    int stringToInt(const std::string &str)
+    {
+        std::string copyString{""};
+        std::copy_if(str.begin(), str.end(), std::back_inserter(copyString), [](char c) -> bool { return std::isdigit(c); });
+        if (std::all_of(copyString.begin(), copyString.end(), [](char c) -> bool { return c == '0'; })) {
+            return 0;
+        }
+        int returnValue{atoi(copyString.c_str())};
+        if (!returnValue) {
+            throw std::runtime_error("");
+        } else {
+            return returnValue;
+        }
+    }
+
+    int stringToInt(const char *str)
+    {
+        return stringToInt(std::string{str});
+    }
+
+    bool endsWith(const std::string &stringToCheck, const std::string &matchString)
+    {
+        if (matchString.size() > stringToCheck.size()) {
+            return false;
+        }
+        return std::equal(matchString.rbegin(), matchString.rend(), stringToCheck.rbegin());
+    }
+
+    bool endsWith(const std::string &stringToCheck, char matchChar)
+    {
+        return endsWith(stringToCheck, std::string{1, matchChar});
+    }
+
+    std::string TStringFormat(const char *formatting)
+    {
+        return std::string{formatting};
+    }
+
     std::string stripFromString(const std::string &stringToStrip, const std::string &whatToStrip)
     {
         std::string returnString{stringToStrip};
@@ -421,273 +424,115 @@ namespace GeneralUtilities
         return stripFromString(stringToStrip, std::string(1, whatToStrip));
     }
 
+
     std::string stripAllFromString(const std::string &stringToStrip, const std::string &whatToStrip)
-    {
-        std::string returnString = stringToStrip;
-        if (returnString.find(whatToStrip) == std::string::npos) {
-            return returnString;
-        }
-        while (returnString.find(whatToStrip) != std::string::npos) {
-            returnString = stripFromString(returnString, whatToStrip);
-        }
-        return returnString;
-    }
+       {
+           std::string returnString = stringToStrip;
+           if (returnString.find(whatToStrip) == std::string::npos) {
+               return returnString;
+           }
+           while (returnString.find(whatToStrip) != std::string::npos) {
+               returnString = stripFromString(returnString, whatToStrip);
+           }
+           return returnString;
+       }
 
-    std::string stripAllFromString(const std::string &stringToStrip, char whatToStrip)
-    {
-        return stripAllFromString(stringToStrip, std::string(1, whatToStrip));
-    }
-
-    std::string tWhitespace(int howMuch) 
-    {
-        std::string returnString{""};
-        for (int i = 0; i < howMuch; i++) {
-            returnString += " ";
-        }
-        return returnString;
-    }
-
-    std::string toFixedWidth(const std::string &inputString, int fixedWidth)
-    {
-        std::string copyString{inputString};
-        size_t copyLength{copyString.length()};
-        if (static_cast<int>(copyLength) < fixedWidth) {
-            copyLength = (fixedWidth - copyLength);
-            while (copyLength--) {
-                copyString = "0" + copyString;
-            }
-        }
-        return copyString;
-    }
-
-    std::string toFixedWidth(const char *inputString, int fixedWidth)
-    {
-        return toFixedWidth(static_cast<std::string>(inputString), fixedWidth);
-    }
-
-    int charToInt(char charToConvert)
-    {
-        switch(charToConvert) {
-        case '0': return 0;
-        case '1': return 1;
-        case '2': return 2;
-        case '3': return 3;
-        case '4': return 4;
-        case '5': return 5;
-        case '6': return 6;
-        case '7': return 7;
-        case '8': return 8;
-        case '9': return 9;
-        default: return 0;
-        }
-    }
-
-    char intToChar (int intToConvert)
-    {
-        switch(intToConvert) {
-        case 0: return '0';
-        case 1: return '1';
-        case 2: return '2';
-        case 3: return '3';
-        case 4: return '4';
-        case 5: return '5';
-        case 6: return '6';
-        case 7: return '7';
-        case 8: return '8';
-        case 9: return '9';
-        default: return '0';
-        }
-    }
-
-    void delayHours(unsigned long long howLong)
-    {
-        std::this_thread::sleep_for(std::chrono::hours(howLong));
-    }
-
-    void delayMinutes(unsigned long long howLong)
-    {
-        std::this_thread::sleep_for(std::chrono::minutes(howLong));
-    }
-
-    void delaySeconds(unsigned long long howLong)
-    {
-        std::this_thread::sleep_for(std::chrono::seconds(howLong));
-    }
-
-    void delayMilliseconds(unsigned long long howLong)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(howLong));
-    }
-
-    void delayMicroseconds(unsigned long long howLong)
-    {
-        std::this_thread::sleep_for(std::chrono::microseconds(howLong));
-    }
-
-    void delayNanoseconds(unsigned long long howLong)
-    {
-        std::this_thread::sleep_for(std::chrono::nanoseconds(howLong));
-    }
-
-    std::pair<std::string, std::string> splitFileName(const std::string &fullPath)
-    {
-        std::string filePath{""};
-        std::string fileName{""};
-        std::pair<std::string, std::string> returnPair;
-        std::size_t lastFoundSlash{fullPath.find_last_of("/\\")};
-        if (lastFoundSlash != std::string::npos) {
-            filePath = fullPath.substr(0, lastFoundSlash);
-            fileName = fullPath.substr(lastFoundSlash+1);
-            returnPair = {filePath, fileName};
-            return returnPair;
-        }
-        else {
-            returnPair = {"", ""};
-            return returnPair;
-
-        }
-    }
-
-    bool isDigit(char charToCheck)
-    {
-        return ((charToCheck == '0') || (charToCheck == '1') || (charToCheck == '2') || (charToCheck == '3') || (charToCheck == '4') || (charToCheck == '5') || (charToCheck == '6') || (charToCheck == '7') || (charToCheck == '8') || (charToCheck == '9'));
-    }
-
-    unsigned int hexStringToUInt(const std::string &str)
-    {
-        std::string copyString{str};
-        if (startsWith(copyString, "0x")) {
-            copyString = copyString.substr(2);
-        }
-        unsigned int ret{0};   
-        std::stringstream ss;
-        ss << std::hex << copyString;
-        ss >> ret;
-        return ret;
-    }
-
-    unsigned char hexStringToUChar(const std::string &str)
-    {
-        std::string copyString{str};
-        if (startsWith(copyString, "0x")) {
-            copyString = copyString.substr(2);
-        }
-        unsigned int ret{0};   
-        std::stringstream ss;
-        ss << std::hex << copyString;
-        ss >> ret;
-        return ret;
-    }
-
-    bool endsWith(const std::string &stringToCheck, const std::string &matchString)
-    {
-        if (matchString.size() > stringToCheck.size()) {
-            return false;
-        }
-        return std::equal(matchString.rbegin(), matchString.rend(), stringToCheck.rbegin());
-    }
-
-    bool endsWith(const std::string &stringToCheck, char matchChar)
-    {
-        return endsWith(stringToCheck, std::string(1, matchChar));
-    }
-
-    bool endsWithNotIncludingWhitespace(const std::string &stringToCheck, const std::string &matchString)
-    {
-        (void)stringToCheck;
-        (void)matchString;
-        return false;
-    }
+       std::string stripAllFromString(const std::string &stringToStrip, char whatToStrip)
+       {
+           return stripAllFromString(stringToStrip, std::string(1, whatToStrip));
+       }
 
 
-    bool endsWithNotIncludingWhitespace(const std::string &stringToCheck, char matchChar)
-    {
-        return endsWithNotIncludingWhitespace(stringToCheck, std::string(1, matchChar));
-    }
+   std::string boolToString(bool value)
+   {
+       return (value ? "true" : "false");
+   }
 
-    bool startsWith(const std::string &stringToCheck, const std::string &matchString)
-    {
-       return (stringToCheck.find(matchString) == 0);
-    }
+   bool stringToBool(const std::string &value)
+   {
+       std::string copyString{value};
+       std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
+       return (copyString == "true" ? true : false);
+   }
 
-    bool startsWith(const std::string &stringToCheck, char matchChar)
-    {
-       return startsWith(stringToCheck, std::string{1, matchChar});
-    } 
+   QString boolToQString(bool value)
+   {
+       return QString::fromStdString(boolToString(value));
+   }
 
-    bool startsWith(const std::string &str, const char *compare)
-    {
-        return startsWith(str, static_cast<std::string>(compare));
-    }
+   bool qStringToBool(const QString &value)
+   {
+       return stringToBool(value.toStdString());
+   }
 
-    bool startsWithNotIncludingWhitespace(const std::string &stringToCheck, const std::string &matchString)
-    {
-        (void)stringToCheck;
-        (void)matchString;
-        return false;
-    }
+   QByteArray getFileChecksum(const QString &fileName, QCryptographicHash::Algorithm hashAlgorithm)
+   {
+       QFile inputFile{fileName};
+       if (!inputFile.exists()) {
+           throw std::runtime_error(QString{"In QmsUtilities::getFileChecksum(const QString &, QCryptographicHash::Algorithm): input file %1 does not exist"}.arg(fileName).toStdString());
+       }
+       if (!inputFile.open(QIODevice::OpenModeFlag::ReadOnly)) {
+           throw std::runtime_error(QString{"In QmsUtilities::getFileChecksum(const QString &, QCryptographicHash::Algorithm): could not open file %1"}.arg(fileName).toStdString());
+       }
+       QCryptographicHash hash{hashAlgorithm};
+       hash.addData(&inputFile);
+       return hash.result();
+   }
 
-    bool startsWithNotIncludingWhitespace(const std::string &stringToCheck, char matchChar)
-    {
-        return startsWithNotIncludingWhitespace(stringToCheck, std::string{1, matchChar});
-    }
+   QByteArray getFileChecksum(QIODevice *inputDevice, QCryptographicHash::Algorithm hashAlgorithm)
+   {
+       if (!inputDevice) {
+           throw std::runtime_error("In QmsUtilities::getFileChecksum(QIODevice *, QCryptographicHash::Algorithm): input QIODevice is a nullptr");
+       }
+       if (!inputDevice->isOpen()) {
+           if (!inputDevice->open(QIODevice::OpenModeFlag::ReadOnly)) {
+               throw std::runtime_error("In QmsUtilities::getFileChecksum(QIODevice *, QCryptographicHash::Algorithm): could not open QIODevice");
+           }
+       }
+       QCryptographicHash hash{hashAlgorithm};
+       hash.addData(inputDevice);
+       return hash.result();
+   }
 
-    bool startsWithNotIncludingWhitespace(const std::string &stringToCheck, const char *compare)
-    {
-        return startsWithNotIncludingWhitespace(stringToCheck, static_cast<std::string>(compare));
-    }
+   QString getFileDirectoryPath(const QFile &file)
+   {
+       if (!file.exists()) {
+           return QString{""};
+       }
+       QChar pathSeparator{'/'};
+       if (looksLikeWindowsFilePath(file.fileName())) {
+           pathSeparator = '\\';
+       }
+       QString tempString{file.fileName()};
+       auto lastSeparator = tempString.lastIndexOf(pathSeparator);
+       if (lastSeparator == -1) {
+           return QString{""};
+       }
+       return tempString.mid(0, lastSeparator + 1);
+   }
 
-    /*Logging simple strings to stdout or to a file. On file opening failure, the string will be output to stdout*/
-    void logString(const std::string &stringToLog) { std::cout << stringToLog << std::endl; }
-    void logString(const std::string &stringToLog, std::string fileName)
-    {
-        std::ofstream writeToFile;
-        writeToFile.open(stringToLog);
-        if (writeToFile.is_open()) {
-            writeToFile << stringToLog << std::endl;
-            writeToFile.close();
-        }
-        else {
-            std::cout << "Error opening file " << tQuoted(fileName) << " for writing, writing to stdout instead:" << std::endl;
-            std::cout << "    " << stringToLog << std::endl;
-        }
-    }
+   QString getFileName(const QFile &file)
+   {
+       if (!file.exists()) {
+           return QString{""};
+       }
+       QChar pathSeparator{'/'};
+       if (looksLikeWindowsFilePath(file.fileName())) {
+           pathSeparator = '\\';
+       }
+       QString tempString{file.fileName()};
+       auto lastSeparator = tempString.lastIndexOf(pathSeparator);
+       if (lastSeparator == -1) {
+           return QString{""};
+       }
+       return tempString.mid(lastSeparator + 1);
+   }
 
-    std::string toString(const std::string &convert)
-    {
-        return convert;
-    }
-
-    std::string toString(const char *convert)
-    {
-        return static_cast<std::string>(convert);
-    }
-
-    std::string tQuoted(const std::string &convert)
-    {
-        return ("\"" + convert + "\"");
-    }
-
-    std::string tQuoted(const char *convert)
-    {
-        return ("\"" + static_cast<std::string>(convert) + "\"");
-    }
-    std::string tEndl()
-    {
-        #if (defined(_WIN32) || defined(_MSC_VER))
-            return "\r\n";
-        #else
-            return "\n";
-        #endif
-    }
-
-    std::string tParenthesis(const std::string &convert)
-    {
-        return ("(" + convert + ")");
-    }
-
-    std::string tParenthesis(const char *convert)
-    {
-        return ("(" + static_cast<std::string>(convert) + ")");
-    }
+   bool looksLikeWindowsFilePath(const QString &path)
+   {
+       std::string copyString{path.toStdString()};
+       auto windowsPathCount = std::count_if(copyString.begin(), copyString.end(), [] (char c) { return c == '\\'; });
+       auto nixPathCount = std::count_if(copyString.begin(), copyString.end(), [](char c) { return c == '/'; });
+       return windowsPathCount > nixPathCount;
+   }
 }

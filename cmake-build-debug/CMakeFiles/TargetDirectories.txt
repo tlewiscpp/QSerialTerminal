@@ -1,0 +1,4 @@
+/home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/CMakeFiles/QSerialTerminal.dir
+/home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/CMakeFiles/QSerialTerminal_autogen.dir

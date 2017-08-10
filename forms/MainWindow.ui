@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>877</width>
+    <height>561</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -107,8 +107,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>992</width>
-            <height>472</height>
+            <width>845</width>
+            <height>447</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
@@ -202,49 +202,49 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
-     <height>18</height>
+     <width>877</width>
+     <height>25</height>
     </rect>
    </property>
-   <widget class="CustomMenu" name="menuFile">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
     <addaction name="actionLoadScript"/>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="CustomMenu" name="menuAbout">
+   <widget class="QMenu" name="menuAbout">
     <property name="title">
      <string>About</string>
     </property>
     <addaction name="actionAboutQt"/>
    </widget>
-   <widget class="CustomMenu" name="menuLineEndings">
+   <widget class="QMenu" name="menuLineEndings">
     <property name="title">
      <string>Line Endings</string>
     </property>
    </widget>
-   <widget class="CustomMenu" name="menuBaudRate">
+   <widget class="QMenu" name="menuBaudRate">
     <property name="title">
      <string>Baud Rate</string>
     </property>
    </widget>
-   <widget class="CustomMenu" name="menuParity">
+   <widget class="QMenu" name="menuParity">
     <property name="title">
      <string>Parity</string>
     </property>
    </widget>
-   <widget class="CustomMenu" name="menuStopBits">
+   <widget class="QMenu" name="menuStopBits">
     <property name="title">
      <string>Stop Bits</string>
     </property>
    </widget>
-   <widget class="CustomMenu" name="menuDataBits">
+   <widget class="QMenu" name="menuDataBits">
     <property name="title">
      <string>Data Bits</string>
     </property>
    </widget>
-   <widget class="CustomMenu" name="menuPortNames">
+   <widget class="QMenu" name="menuPortNames">
     <property name="title">
      <string>Port</string>
     </property>
@@ -353,14 +353,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>CustomMenu</class>
-   <extends>QMenu</extends>
-   <header>src/custommenu.h</header>
-  </customwidget>
-  <customwidget>
    <class>QSerialTerminalLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>src/qserialterminallineedit.h</header>
+   <header>src/QSerialTerminalLineEdit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
