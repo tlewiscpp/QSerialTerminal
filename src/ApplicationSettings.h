@@ -7,6 +7,7 @@ namespace GlobalSettings
 {
     extern const char *PROGRAM_NAME;
     extern const char *PROGRAM_LONG_NAME;
+    extern const char *PROGRAM_DESCRIPTION;
     extern const char *REMOTE_URL;
     extern const char *AUTHOR_NAME;
     extern const int SOFTWARE_MAJOR_VERSION;

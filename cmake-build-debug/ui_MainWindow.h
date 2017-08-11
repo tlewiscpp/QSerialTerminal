@@ -40,6 +40,7 @@ public:
     QAction *actionLECR;
     QAction *actionLELF;
     QAction *actionLECRLF;
+    QAction *actionAboutQSerialTerminal;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QFrame *frame;
@@ -73,6 +74,9 @@ public:
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
         MainWindow->setMinimumSize(QSize(215, 100));
+        QFont font;
+        font.setPointSize(14);
+        MainWindow->setFont(font);
         actionConnect = new QAction(MainWindow);
         actionConnect->setObjectName(QStringLiteral("actionConnect"));
         actionConnect->setCheckable(true);
@@ -80,8 +84,12 @@ public:
         actionDisconnect->setObjectName(QStringLiteral("actionDisconnect"));
         actionQuit = new QAction(MainWindow);
         actionQuit->setObjectName(QStringLiteral("actionQuit"));
+        QFont font1;
+        font1.setPointSize(11);
+        actionQuit->setFont(font1);
         actionAboutQt = new QAction(MainWindow);
         actionAboutQt->setObjectName(QStringLiteral("actionAboutQt"));
+        actionAboutQt->setFont(font);
         actionLoadScript = new QAction(MainWindow);
         actionLoadScript->setObjectName(QStringLiteral("actionLoadScript"));
         actionLENone = new QAction(MainWindow);
@@ -97,6 +105,8 @@ public:
         actionLECRLF = new QAction(MainWindow);
         actionLECRLF->setObjectName(QStringLiteral("actionLECRLF"));
         actionLECRLF->setCheckable(true);
+        actionAboutQSerialTerminal = new QAction(MainWindow);
+        actionAboutQSerialTerminal->setObjectName(QStringLiteral("actionAboutQSerialTerminal"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -116,9 +126,9 @@ public:
         sendBox = new QSerialTerminalLineEdit(frame);
         sendBox->setObjectName(QStringLiteral("sendBox"));
         sendBox->setMinimumSize(QSize(0, 25));
-        QFont font;
-        font.setPointSize(10);
-        sendBox->setFont(font);
+        QFont font2;
+        font2.setPointSize(10);
+        sendBox->setFont(font2);
         sendBox->setAutoFillBackground(false);
         sendBox->setStyleSheet(QStringLiteral(""));
 
@@ -135,7 +145,7 @@ public:
         scrollArea->setAlignment(Qt::AlignCenter);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QStringLiteral("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 845, 447));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 845, 432));
         scrollAreaGridLayout = new QGridLayout(scrollAreaWidgetContents);
         scrollAreaGridLayout->setSpacing(0);
         scrollAreaGridLayout->setContentsMargins(11, 11, 11, 11);
@@ -144,12 +154,12 @@ public:
         terminal = new QTextBrowser(scrollAreaWidgetContents);
         terminal->setObjectName(QStringLiteral("terminal"));
         terminal->setMinimumSize(QSize(0, 0));
-        QFont font1;
-        font1.setFamily(QStringLiteral("DejaVu Sans Mono"));
-        font1.setPointSize(10);
-        font1.setBold(true);
-        font1.setWeight(75);
-        terminal->setFont(font1);
+        QFont font3;
+        font3.setFamily(QStringLiteral("DejaVu Sans Mono"));
+        font3.setPointSize(10);
+        font3.setBold(true);
+        font3.setWeight(75);
+        terminal->setFont(font3);
         terminal->setAutoFillBackground(true);
         terminal->setStyleSheet(QStringLiteral("background-color: rgb(0, 0, 0);"));
 
@@ -175,23 +185,30 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 877, 25));
+        menuBar->setGeometry(QRect(0, 0, 877, 30));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
+        menuFile->setFont(font);
         menuAbout = new QMenu(menuBar);
         menuAbout->setObjectName(QStringLiteral("menuAbout"));
         menuLineEndings = new QMenu(menuBar);
         menuLineEndings->setObjectName(QStringLiteral("menuLineEndings"));
+        menuLineEndings->setFont(font);
         menuBaudRate = new QMenu(menuBar);
         menuBaudRate->setObjectName(QStringLiteral("menuBaudRate"));
+        menuBaudRate->setFont(font);
         menuParity = new QMenu(menuBar);
         menuParity->setObjectName(QStringLiteral("menuParity"));
+        menuParity->setFont(font);
         menuStopBits = new QMenu(menuBar);
         menuStopBits->setObjectName(QStringLiteral("menuStopBits"));
+        menuStopBits->setFont(font);
         menuDataBits = new QMenu(menuBar);
         menuDataBits->setObjectName(QStringLiteral("menuDataBits"));
+        menuDataBits->setFont(font);
         menuPortNames = new QMenu(menuBar);
         menuPortNames->setObjectName(QStringLiteral("menuPortNames"));
+        menuPortNames->setFont(font);
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
@@ -205,9 +222,9 @@ public:
         menuBar->addAction(menuDataBits->menuAction());
         menuBar->addAction(menuLineEndings->menuAction());
         menuBar->addAction(menuAbout->menuAction());
-        menuFile->addAction(actionLoadScript);
         menuFile->addAction(actionQuit);
         menuAbout->addAction(actionAboutQt);
+        menuAbout->addAction(actionAboutQSerialTerminal);
 
         retranslateUi(MainWindow);
 
@@ -234,7 +251,7 @@ public:
 #endif // QT_NO_SHORTCUT
         actionAboutQt->setText(QApplication::translate("MainWindow", "About Qt", Q_NULLPTR));
 #ifndef QT_NO_SHORTCUT
-        actionAboutQt->setShortcut(QApplication::translate("MainWindow", "Ctrl+Shift+N", Q_NULLPTR));
+        actionAboutQt->setShortcut(QApplication::translate("MainWindow", "Alt+Shift+A", Q_NULLPTR));
 #endif // QT_NO_SHORTCUT
         actionLoadScript->setText(QApplication::translate("MainWindow", "Load Script", Q_NULLPTR));
 #ifndef QT_NO_SHORTCUT
@@ -255,6 +272,10 @@ public:
         actionLECRLF->setText(QApplication::translate("MainWindow", "CR & LF (\\r\\n) ", Q_NULLPTR));
 #ifndef QT_NO_SHORTCUT
         actionLECRLF->setShortcut(QApplication::translate("MainWindow", "Ctrl+Shift+A", Q_NULLPTR));
+#endif // QT_NO_SHORTCUT
+        actionAboutQSerialTerminal->setText(QApplication::translate("MainWindow", "About QSerialTerminal", Q_NULLPTR));
+#ifndef QT_NO_SHORTCUT
+        actionAboutQSerialTerminal->setShortcut(QApplication::translate("MainWindow", "Shift+A", Q_NULLPTR));
 #endif // QT_NO_SHORTCUT
 #ifndef QT_NO_TOOLTIP
         sendButton->setToolTip(QApplication::translate("MainWindow", "<html><head/><body><p>Select a serial port from the &quot;port&quot; menu above, then connect by clicking the &quot;connect&quot; button at the bottom, then enter some text to send, then click this button to send the text to the serial device</p></body></html>", Q_NULLPTR));

@@ -37,6 +37,8 @@ namespace ApplicationUtilities
     bool containsSeparator(const char *testString);
     std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions);
     std::pair<int, int> tryParseDimensions(const char *maybeDimensions);
+    std::string nWhitespace(size_t howMuch);
+
 
 
     class Random

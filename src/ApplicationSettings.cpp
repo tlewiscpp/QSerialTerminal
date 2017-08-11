@@ -5,6 +5,7 @@ namespace GlobalSettings
 {
     const char *PROGRAM_NAME{"QSerialTerminal"};
     const char *PROGRAM_LONG_NAME{"QSerialTerminal"};
+    const char *PROGRAM_DESCRIPTION{"A graphical application for communicating with RS232 serial ports"};
     const char *REMOTE_URL{"https://github.com/tlewiscpp/QSerialTerminal"};
     const char *AUTHOR_NAME{"Tyler Lewis"};
     const int SOFTWARE_MAJOR_VERSION{1};

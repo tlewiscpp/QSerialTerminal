@@ -20,6 +20,14 @@ QAction
 QPoint
 -
 
+/home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/QSerialTerminal_autogen/UVLADIE3JM/moc_AboutApplicationWidget.cpp
+../../../../../../../mnt/hdd/GitHub/QSerialTerminal/src/AboutApplicationWidget.h
+/mnt/hdd/GitHub/QSerialTerminal/src/AboutApplicationWidget.h
+QtCore/qbytearray.h
+-
+QtCore/qmetatype.h
+-
+
 /home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/QSerialTerminal_autogen/UVLADIE3JM/moc_ApplicationSettingsLoader.cpp
 ../../../../../../../mnt/hdd/GitHub/QSerialTerminal/src/ApplicationSettingsLoader.h
 /mnt/hdd/GitHub/QSerialTerminal/src/ApplicationSettingsLoader.h
@@ -53,6 +61,8 @@ QtCore/qmetatype.h
 -
 
 /home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/QSerialTerminal_autogen/moc_compilation.cpp
+UVLADIE3JM/moc_AboutApplicationWidget.cpp
+/home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/QSerialTerminal_autogen/UVLADIE3JM/moc_AboutApplicationWidget.cpp
 UVLADIE3JM/moc_ApplicationSettingsLoader.cpp
 /home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/QSerialTerminal_autogen/UVLADIE3JM/moc_ApplicationSettingsLoader.cpp
 UVLADIE3JM/moc_CustomAction.cpp
@@ -61,6 +71,32 @@ UVLADIE3JM/moc_MainWindow.cpp
 /home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/QSerialTerminal_autogen/UVLADIE3JM/moc_MainWindow.cpp
 UVLADIE3JM/moc_QSerialTerminalLineEdit.cpp
 /home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/QSerialTerminal_autogen/UVLADIE3JM/moc_QSerialTerminalLineEdit.cpp
+
+/home/pinguinsan/GitHub/QSerialTerminal/src/AboutApplicationWidget.cpp
+AboutApplicationWidget.h
+/home/pinguinsan/GitHub/QSerialTerminal/src/AboutApplicationWidget.h
+ui_AboutApplicationWidget.h
+/home/pinguinsan/GitHub/QSerialTerminal/src/ui_AboutApplicationWidget.h
+GlobalDefinitions.h
+/home/pinguinsan/GitHub/QSerialTerminal/src/GlobalDefinitions.h
+ApplicationStrings.h
+/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationStrings.h
+ApplicationSettings.h
+/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationSettings.h
+QDesktopWidget
+-
+QDateTime
+-
+QPushButton
+-
+QtGui/QTextCursor
+-
+
+/home/pinguinsan/GitHub/QSerialTerminal/src/AboutApplicationWidget.h
+memory
+-
+QWidget
+-
 
 /home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationIcons.cpp
 ApplicationIcons.h
@@ -124,10 +160,6 @@ ApplicationSettings.h
 ApplicationStrings.h
 /home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationStrings.h
 QDateTime
--
-QByteArray
--
-QDir
 -
 
 /home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationUtilities.h
@@ -255,12 +287,8 @@ ApplicationStrings.h
 /home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationStrings.h
 ApplicationIcons.h
 /home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationIcons.h
-QString
--
-QColor
--
-QCloseEvent
--
+GlobalDefinitions.h
+/home/pinguinsan/GitHub/QSerialTerminal/src/GlobalDefinitions.h
 QDesktopWidget
 -
 QMessageBox
@@ -269,9 +297,7 @@ QFileDialog
 -
 QTimer
 -
-QMenu
--
-QAction
+QtWidgets/QStatusBar
 -
 
 /home/pinguinsan/GitHub/QSerialTerminal/src/MainWindow.h
@@ -295,8 +321,14 @@ future
 -
 memory
 -
+QtWidgets/QLabel
+-
 IByteStream.h
 /home/pinguinsan/GitHub/QSerialTerminal/src/IByteStream.h
+SerialPort.h
+/home/pinguinsan/GitHub/QSerialTerminal/src/SerialPort.h
+AboutApplicationWidget.h
+/home/pinguinsan/GitHub/QSerialTerminal/src/AboutApplicationWidget.h
 
 /home/pinguinsan/GitHub/QSerialTerminal/src/QSerialTerminalLineEdit.cpp
 QSerialTerminalLineEdit.h
@@ -384,9 +416,11 @@ sstream
 IByteStream.h
 /home/pinguinsan/GitHub/QSerialTerminal/src/IByteStream.h
 
-/home/pinguinsan/GitHub/QSerialTerminal/src/SystemCommand.cpp
-systemcommand.h
-/home/pinguinsan/GitHub/QSerialTerminal/src/systemcommand.h
+/mnt/hdd/GitHub/QSerialTerminal/src/AboutApplicationWidget.h
+memory
+-
+QWidget
+-
 
 /mnt/hdd/GitHub/QSerialTerminal/src/ApplicationSettingsLoader.h
 QObject
@@ -425,8 +459,14 @@ future
 -
 memory
 -
+QtWidgets/QLabel
+-
 IByteStream.h
 /mnt/hdd/GitHub/QSerialTerminal/src/IByteStream.h
+SerialPort.h
+/mnt/hdd/GitHub/QSerialTerminal/src/SerialPort.h
+AboutApplicationWidget.h
+/mnt/hdd/GitHub/QSerialTerminal/src/AboutApplicationWidget.h
 
 /mnt/hdd/GitHub/QSerialTerminal/src/QSerialTerminalLineEdit.h
 QLineEdit
@@ -442,9 +482,17 @@ QAction
 QPoint
 -
 
-/usr/include/qt/QtCore/QByteArray
-qbytearray.h
-/usr/include/qt/QtCore/qbytearray.h
+/mnt/hdd/GitHub/QSerialTerminal/src/SerialPort.h
+termios.h
+-
+string
+-
+vector
+-
+sstream
+-
+IByteStream.h
+/mnt/hdd/GitHub/QSerialTerminal/src/IByteStream.h
 
 /usr/include/qt/QtCore/QCryptographicHash
 qcryptographichash.h
@@ -1272,14 +1320,6 @@ QtCore/qpoint.h
 QtCore/qglobal.h
 -
 
-/usr/include/qt/QtGui/QCloseEvent
-qevent.h
-/usr/include/qt/QtGui/qevent.h
-
-/usr/include/qt/QtGui/QColor
-qcolor.h
-/usr/include/qt/QtGui/qcolor.h
-
 /usr/include/qt/QtGui/QIcon
 qicon.h
 /usr/include/qt/QtGui/qicon.h
@@ -1287,6 +1327,10 @@ qicon.h
 /usr/include/qt/QtGui/QKeyEvent
 qevent.h
 /usr/include/qt/QtGui/qevent.h
+
+/usr/include/qt/QtGui/QTextCursor
+qtextcursor.h
+/usr/include/qt/QtGui/qtextcursor.h
 
 /usr/include/qt/QtGui/qbrush.h
 QtGui/qtguiglobal.h
@@ -1720,9 +1764,17 @@ qframe.h
 qgridlayout.h
 /usr/include/qt/QtWidgets/qgridlayout.h
 
+/usr/include/qt/QtWidgets/QHBoxLayout
+qboxlayout.h
+/usr/include/qt/QtWidgets/qboxlayout.h
+
 /usr/include/qt/QtWidgets/QHeaderView
 qheaderview.h
 /usr/include/qt/QtWidgets/qheaderview.h
+
+/usr/include/qt/QtWidgets/QLabel
+qlabel.h
+/usr/include/qt/QtWidgets/qlabel.h
 
 /usr/include/qt/QtWidgets/QLineEdit
 qlineedit.h
@@ -1752,6 +1804,10 @@ qpushbutton.h
 qscrollarea.h
 /usr/include/qt/QtWidgets/qscrollarea.h
 
+/usr/include/qt/QtWidgets/QSpacerItem
+qlayoutitem.h
+/usr/include/qt/QtWidgets/qlayoutitem.h
+
 /usr/include/qt/QtWidgets/QStatusBar
 qstatusbar.h
 /usr/include/qt/QtWidgets/qstatusbar.h
@@ -1759,6 +1815,14 @@ qstatusbar.h
 /usr/include/qt/QtWidgets/QTextBrowser
 qtextbrowser.h
 /usr/include/qt/QtWidgets/qtextbrowser.h
+
+/usr/include/qt/QtWidgets/QTextEdit
+qtextedit.h
+/usr/include/qt/QtWidgets/qtextedit.h
+
+/usr/include/qt/QtWidgets/QVBoxLayout
+qboxlayout.h
+/usr/include/qt/QtWidgets/qboxlayout.h
 
 /usr/include/qt/QtWidgets/QWidget
 qwidget.h
@@ -1914,6 +1978,12 @@ limits.h
 QtWidgets/qtwidgetsglobal.h
 -
 QtWidgets/qabstractitemview.h
+-
+
+/usr/include/qt/QtWidgets/qlabel.h
+QtWidgets/qtwidgetsglobal.h
+-
+QtWidgets/qframe.h
 -
 
 /usr/include/qt/QtWidgets/qlayout.h
@@ -2146,6 +2216,32 @@ QtGui/qcursor.h
 QtGui/qkeysequence.h
 -
 QtGui/qevent.h
+-
+
+ui_AboutApplicationWidget.h
+QtCore/QVariant
+-
+QtWidgets/QAction
+-
+QtWidgets/QApplication
+-
+QtWidgets/QButtonGroup
+-
+QtWidgets/QHBoxLayout
+-
+QtWidgets/QHeaderView
+-
+QtWidgets/QLabel
+-
+QtWidgets/QPushButton
+-
+QtWidgets/QSpacerItem
+-
+QtWidgets/QTextEdit
+-
+QtWidgets/QVBoxLayout
+-
+QtWidgets/QWidget
 -
 
 ui_MainWindow.h

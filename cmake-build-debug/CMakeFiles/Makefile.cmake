@@ -11,6 +11,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.8.2/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.8.2/CMakeSystem.cmake"
   "../resources/icons.qrc"
+  "../resources/licenses.qrc"
   "/opt/clion/bin/cmake/share/cmake-3.8/Modules/AutogenInfo.cmake.in"
   "/opt/clion/bin/cmake/share/cmake-3.8/Modules/CMakeCXXInformation.cmake"
   "/opt/clion/bin/cmake/share/cmake-3.8/Modules/CMakeCommonLanguageInclude.cmake"
@@ -89,6 +90,7 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "resources/icons.qrc.depends"
+  "resources/licenses.qrc.depends"
   "CMakeFiles/QSerialTerminal_autogen.dir/AutogenInfo.cmake"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
   )

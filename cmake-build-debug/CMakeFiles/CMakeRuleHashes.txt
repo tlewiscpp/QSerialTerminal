@@ -1,4 +1,6 @@
 # Hashes of file build rules.
 27b6326dea8be52694a10a95b8aab502 CMakeFiles/QSerialTerminal_autogen
 707981fe0bcda68fed868cd257ce5a1f qrc_icons.cpp
+1e68d05f0793185b984f733c28d35f1e qrc_licenses.cpp
+c2a812fd65d67bf02b9d7b80a295f4e9 ui_AboutApplicationWidget.h
 01126b7d6b7338a07f0f0dec5d925ce8 ui_MainWindow.h

@@ -26,18 +26,19 @@ set (QSERIALTERMINAL_SOURCES
     src/ApplicationUtilities.cpp src/ApplicationUtilities.h
     src/SerialPort.cpp src/SerialPort.h
     src/IByteStream.cpp src/IByteStream.h
-        src/FileUtilities.h
-        src/SystemCommand.h
+        src/AboutApplicationWidget.cpp src/AboutApplicationWidget.h
     src/EventTimer.h
     src/Version.h
 )
 
 set (QSERIALTERMINAL_FORMS
         forms/MainWindow.ui
+        forms/AboutApplicationWidget.ui
 )
 
 set (QSERIALTERMINAL_RESOURCES 
     resources/icons.qrc
+        resources/licenses.qrc
 )
 
 qt5_wrap_ui (QSERIALTERMINAL_FORMS_MOC  ${QSERIALTERMINAL_FORMS})
@@ -57,7 +58,7 @@ if (win32)
         Qt5::Core 
     )
 else()
-    target_link_libraries (QSerialTerminal 
+    target_link_libraries (${PROJECT_NAME}
         Qt5::Widgets 
         Qt5::Gui 
         Qt5::Core 

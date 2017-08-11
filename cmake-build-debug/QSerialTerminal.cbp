@@ -116,6 +116,99 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug/QSerialTerminal_autogen/moc_compilation.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/forms/AboutApplicationWidget.ui">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/forms/MainWindow.ui">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/resources/icons.qrc">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/resources/licenses.qrc">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/AboutApplicationWidget.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/AboutApplicationWidget.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationIcons.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationIcons.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationSettings.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationSettings.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationSettingsLoader.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationSettingsLoader.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationStrings.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationStrings.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationUtilities.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/ApplicationUtilities.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/CustomAction.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/CustomAction.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/EventTimer.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/GlobalDefinitions.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/IByteStream.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/IByteStream.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/Main.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/MainWindow.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/MainWindow.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/QSerialTerminalLineEdit.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/QSerialTerminalLineEdit.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/SerialPort.cpp">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/SerialPort.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/src/Version.h">
+			<Option target="QSerialTerminal"/>
+		</Unit>
 		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
@@ -282,6 +375,9 @@
 			<Option virtualFolder="CMake Files\..\..\..\..\usr\lib64\cmake\Qt5Core\"/>
 		</Unit>
 		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/resources/icons.qrc">
+			<Option virtualFolder="CMake Files\resources\"/>
+		</Unit>
+		<Unit filename="/home/pinguinsan/GitHub/QSerialTerminal/resources/licenses.qrc">
 			<Option virtualFolder="CMake Files\resources\"/>
 		</Unit>
 	</Project>

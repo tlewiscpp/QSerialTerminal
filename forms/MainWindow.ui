@@ -22,6 +22,11 @@
     <height>100</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>14</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -108,7 +113,7 @@
             <x>0</x>
             <y>0</y>
             <width>845</width>
-            <height>447</height>
+            <height>432</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
@@ -203,14 +208,18 @@
      <x>0</x>
      <y>0</y>
      <width>877</width>
-     <height>25</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionLoadScript"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
@@ -218,33 +227,64 @@
      <string>About</string>
     </property>
     <addaction name="actionAboutQt"/>
+    <addaction name="actionAboutQSerialTerminal"/>
    </widget>
    <widget class="QMenu" name="menuLineEndings">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Line Endings</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuBaudRate">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Baud Rate</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuParity">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Parity</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuStopBits">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Stop Bits</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuDataBits">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Data Bits</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuPortNames">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Port</string>
     </property>
@@ -282,6 +322,11 @@
    <property name="text">
     <string>Quit</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
@@ -290,8 +335,13 @@
    <property name="text">
     <string>About Qt</string>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
    <property name="shortcut">
-    <string>Ctrl+Shift+N</string>
+    <string>Alt+Shift+A</string>
    </property>
   </action>
   <action name="actionLoadScript">
@@ -347,6 +397,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+A</string>
+   </property>
+  </action>
+  <action name="actionAboutQSerialTerminal">
+   <property name="text">
+    <string>About QSerialTerminal</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+A</string>
    </property>
   </action>
  </widget>

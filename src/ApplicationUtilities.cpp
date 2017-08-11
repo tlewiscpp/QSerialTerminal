@@ -3,8 +3,7 @@
 #include "ApplicationSettings.h"
 #include "ApplicationStrings.h"
 #include <QDateTime>
-#include <QByteArray>
-#include <QDir>
+
 
 namespace ApplicationUtilities
 {
@@ -27,6 +26,11 @@ namespace ApplicationUtilities
         return QString{settingsDirectory + "config/settings.xml"};
     #endif
 
+    }
+
+    std::string nWhitespace(size_t howMuch)
+    {
+        return std::string(howMuch, ' ');
     }
 
     QString getConfigurationFilePath()
@@ -237,7 +241,7 @@ namespace ApplicationUtilities
 #if defined(_WIN32)
         settings = settings + "log\\";
 #else
-        settings = QString{"/tmp/"} + ApplicationStrings::PROGRAM_NAME;
+        settings = QString{"/tmp/"} + GlobalSettings::PROGRAM_NAME;
 #endif
         settingsDirectory = QDir{settings};
         if (settingsDirectory.exists()) {

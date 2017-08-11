@@ -1,16 +1,16 @@
-#ifndef QSERIALTERMINAL_QSERIALTERMINALICONS_H
-#define QSERIALTERMINAL_QSERIALTERMINALICONS_H
+#ifndef QSERIALTERMINAL_APPLICATIONICONS_H
+#define QSERIALTERMINAL_APPLICATIONICONS_H
 
 #include <QIcon>
 #include <QString>
 
-class QSerialTerminalIcons
+class ApplicationIcons
 {
 public:
-    QSerialTerminalIcons();
-    ~QSerialTerminalIcons();
+    ApplicationIcons();
+    ~ApplicationIcons();
 
     const QIcon MAIN_WINDOW_ICON;
 };
 
-#endif //QSERIALTERMINAL_QSERIALTERMINALICONS_H
+#endif //QSERIALTERMINAL_APPLICATIONICONS_H

@@ -136,6 +136,357 @@ QSerialTerminal_autogen/fast:
 	$(MAKE) -f CMakeFiles/QSerialTerminal_autogen.dir/build.make CMakeFiles/QSerialTerminal_autogen.dir/build
 .PHONY : QSerialTerminal_autogen/fast
 
+QSerialTerminal_autogen/moc_compilation.o: QSerialTerminal_autogen/moc_compilation.cpp.o
+
+.PHONY : QSerialTerminal_autogen/moc_compilation.o
+
+# target to build an object file
+QSerialTerminal_autogen/moc_compilation.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/QSerialTerminal_autogen/moc_compilation.cpp.o
+.PHONY : QSerialTerminal_autogen/moc_compilation.cpp.o
+
+QSerialTerminal_autogen/moc_compilation.i: QSerialTerminal_autogen/moc_compilation.cpp.i
+
+.PHONY : QSerialTerminal_autogen/moc_compilation.i
+
+# target to preprocess a source file
+QSerialTerminal_autogen/moc_compilation.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/QSerialTerminal_autogen/moc_compilation.cpp.i
+.PHONY : QSerialTerminal_autogen/moc_compilation.cpp.i
+
+QSerialTerminal_autogen/moc_compilation.s: QSerialTerminal_autogen/moc_compilation.cpp.s
+
+.PHONY : QSerialTerminal_autogen/moc_compilation.s
+
+# target to generate assembly for a file
+QSerialTerminal_autogen/moc_compilation.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/QSerialTerminal_autogen/moc_compilation.cpp.s
+.PHONY : QSerialTerminal_autogen/moc_compilation.cpp.s
+
+src/AboutApplicationWidget.o: src/AboutApplicationWidget.cpp.o
+
+.PHONY : src/AboutApplicationWidget.o
+
+# target to build an object file
+src/AboutApplicationWidget.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/AboutApplicationWidget.cpp.o
+.PHONY : src/AboutApplicationWidget.cpp.o
+
+src/AboutApplicationWidget.i: src/AboutApplicationWidget.cpp.i
+
+.PHONY : src/AboutApplicationWidget.i
+
+# target to preprocess a source file
+src/AboutApplicationWidget.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/AboutApplicationWidget.cpp.i
+.PHONY : src/AboutApplicationWidget.cpp.i
+
+src/AboutApplicationWidget.s: src/AboutApplicationWidget.cpp.s
+
+.PHONY : src/AboutApplicationWidget.s
+
+# target to generate assembly for a file
+src/AboutApplicationWidget.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/AboutApplicationWidget.cpp.s
+.PHONY : src/AboutApplicationWidget.cpp.s
+
+src/ApplicationIcons.o: src/ApplicationIcons.cpp.o
+
+.PHONY : src/ApplicationIcons.o
+
+# target to build an object file
+src/ApplicationIcons.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationIcons.cpp.o
+.PHONY : src/ApplicationIcons.cpp.o
+
+src/ApplicationIcons.i: src/ApplicationIcons.cpp.i
+
+.PHONY : src/ApplicationIcons.i
+
+# target to preprocess a source file
+src/ApplicationIcons.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationIcons.cpp.i
+.PHONY : src/ApplicationIcons.cpp.i
+
+src/ApplicationIcons.s: src/ApplicationIcons.cpp.s
+
+.PHONY : src/ApplicationIcons.s
+
+# target to generate assembly for a file
+src/ApplicationIcons.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationIcons.cpp.s
+.PHONY : src/ApplicationIcons.cpp.s
+
+src/ApplicationSettings.o: src/ApplicationSettings.cpp.o
+
+.PHONY : src/ApplicationSettings.o
+
+# target to build an object file
+src/ApplicationSettings.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationSettings.cpp.o
+.PHONY : src/ApplicationSettings.cpp.o
+
+src/ApplicationSettings.i: src/ApplicationSettings.cpp.i
+
+.PHONY : src/ApplicationSettings.i
+
+# target to preprocess a source file
+src/ApplicationSettings.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationSettings.cpp.i
+.PHONY : src/ApplicationSettings.cpp.i
+
+src/ApplicationSettings.s: src/ApplicationSettings.cpp.s
+
+.PHONY : src/ApplicationSettings.s
+
+# target to generate assembly for a file
+src/ApplicationSettings.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationSettings.cpp.s
+.PHONY : src/ApplicationSettings.cpp.s
+
+src/ApplicationSettingsLoader.o: src/ApplicationSettingsLoader.cpp.o
+
+.PHONY : src/ApplicationSettingsLoader.o
+
+# target to build an object file
+src/ApplicationSettingsLoader.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationSettingsLoader.cpp.o
+.PHONY : src/ApplicationSettingsLoader.cpp.o
+
+src/ApplicationSettingsLoader.i: src/ApplicationSettingsLoader.cpp.i
+
+.PHONY : src/ApplicationSettingsLoader.i
+
+# target to preprocess a source file
+src/ApplicationSettingsLoader.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationSettingsLoader.cpp.i
+.PHONY : src/ApplicationSettingsLoader.cpp.i
+
+src/ApplicationSettingsLoader.s: src/ApplicationSettingsLoader.cpp.s
+
+.PHONY : src/ApplicationSettingsLoader.s
+
+# target to generate assembly for a file
+src/ApplicationSettingsLoader.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationSettingsLoader.cpp.s
+.PHONY : src/ApplicationSettingsLoader.cpp.s
+
+src/ApplicationStrings.o: src/ApplicationStrings.cpp.o
+
+.PHONY : src/ApplicationStrings.o
+
+# target to build an object file
+src/ApplicationStrings.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationStrings.cpp.o
+.PHONY : src/ApplicationStrings.cpp.o
+
+src/ApplicationStrings.i: src/ApplicationStrings.cpp.i
+
+.PHONY : src/ApplicationStrings.i
+
+# target to preprocess a source file
+src/ApplicationStrings.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationStrings.cpp.i
+.PHONY : src/ApplicationStrings.cpp.i
+
+src/ApplicationStrings.s: src/ApplicationStrings.cpp.s
+
+.PHONY : src/ApplicationStrings.s
+
+# target to generate assembly for a file
+src/ApplicationStrings.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationStrings.cpp.s
+.PHONY : src/ApplicationStrings.cpp.s
+
+src/ApplicationUtilities.o: src/ApplicationUtilities.cpp.o
+
+.PHONY : src/ApplicationUtilities.o
+
+# target to build an object file
+src/ApplicationUtilities.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationUtilities.cpp.o
+.PHONY : src/ApplicationUtilities.cpp.o
+
+src/ApplicationUtilities.i: src/ApplicationUtilities.cpp.i
+
+.PHONY : src/ApplicationUtilities.i
+
+# target to preprocess a source file
+src/ApplicationUtilities.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationUtilities.cpp.i
+.PHONY : src/ApplicationUtilities.cpp.i
+
+src/ApplicationUtilities.s: src/ApplicationUtilities.cpp.s
+
+.PHONY : src/ApplicationUtilities.s
+
+# target to generate assembly for a file
+src/ApplicationUtilities.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/ApplicationUtilities.cpp.s
+.PHONY : src/ApplicationUtilities.cpp.s
+
+src/CustomAction.o: src/CustomAction.cpp.o
+
+.PHONY : src/CustomAction.o
+
+# target to build an object file
+src/CustomAction.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/CustomAction.cpp.o
+.PHONY : src/CustomAction.cpp.o
+
+src/CustomAction.i: src/CustomAction.cpp.i
+
+.PHONY : src/CustomAction.i
+
+# target to preprocess a source file
+src/CustomAction.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/CustomAction.cpp.i
+.PHONY : src/CustomAction.cpp.i
+
+src/CustomAction.s: src/CustomAction.cpp.s
+
+.PHONY : src/CustomAction.s
+
+# target to generate assembly for a file
+src/CustomAction.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/CustomAction.cpp.s
+.PHONY : src/CustomAction.cpp.s
+
+src/IByteStream.o: src/IByteStream.cpp.o
+
+.PHONY : src/IByteStream.o
+
+# target to build an object file
+src/IByteStream.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/IByteStream.cpp.o
+.PHONY : src/IByteStream.cpp.o
+
+src/IByteStream.i: src/IByteStream.cpp.i
+
+.PHONY : src/IByteStream.i
+
+# target to preprocess a source file
+src/IByteStream.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/IByteStream.cpp.i
+.PHONY : src/IByteStream.cpp.i
+
+src/IByteStream.s: src/IByteStream.cpp.s
+
+.PHONY : src/IByteStream.s
+
+# target to generate assembly for a file
+src/IByteStream.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/IByteStream.cpp.s
+.PHONY : src/IByteStream.cpp.s
+
+src/Main.o: src/Main.cpp.o
+
+.PHONY : src/Main.o
+
+# target to build an object file
+src/Main.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/Main.cpp.o
+.PHONY : src/Main.cpp.o
+
+src/Main.i: src/Main.cpp.i
+
+.PHONY : src/Main.i
+
+# target to preprocess a source file
+src/Main.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/Main.cpp.i
+.PHONY : src/Main.cpp.i
+
+src/Main.s: src/Main.cpp.s
+
+.PHONY : src/Main.s
+
+# target to generate assembly for a file
+src/Main.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/Main.cpp.s
+.PHONY : src/Main.cpp.s
+
+src/MainWindow.o: src/MainWindow.cpp.o
+
+.PHONY : src/MainWindow.o
+
+# target to build an object file
+src/MainWindow.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/MainWindow.cpp.o
+.PHONY : src/MainWindow.cpp.o
+
+src/MainWindow.i: src/MainWindow.cpp.i
+
+.PHONY : src/MainWindow.i
+
+# target to preprocess a source file
+src/MainWindow.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/MainWindow.cpp.i
+.PHONY : src/MainWindow.cpp.i
+
+src/MainWindow.s: src/MainWindow.cpp.s
+
+.PHONY : src/MainWindow.s
+
+# target to generate assembly for a file
+src/MainWindow.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/MainWindow.cpp.s
+.PHONY : src/MainWindow.cpp.s
+
+src/QSerialTerminalLineEdit.o: src/QSerialTerminalLineEdit.cpp.o
+
+.PHONY : src/QSerialTerminalLineEdit.o
+
+# target to build an object file
+src/QSerialTerminalLineEdit.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/QSerialTerminalLineEdit.cpp.o
+.PHONY : src/QSerialTerminalLineEdit.cpp.o
+
+src/QSerialTerminalLineEdit.i: src/QSerialTerminalLineEdit.cpp.i
+
+.PHONY : src/QSerialTerminalLineEdit.i
+
+# target to preprocess a source file
+src/QSerialTerminalLineEdit.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/QSerialTerminalLineEdit.cpp.i
+.PHONY : src/QSerialTerminalLineEdit.cpp.i
+
+src/QSerialTerminalLineEdit.s: src/QSerialTerminalLineEdit.cpp.s
+
+.PHONY : src/QSerialTerminalLineEdit.s
+
+# target to generate assembly for a file
+src/QSerialTerminalLineEdit.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/QSerialTerminalLineEdit.cpp.s
+.PHONY : src/QSerialTerminalLineEdit.cpp.s
+
+src/SerialPort.o: src/SerialPort.cpp.o
+
+.PHONY : src/SerialPort.o
+
+# target to build an object file
+src/SerialPort.cpp.o:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/SerialPort.cpp.o
+.PHONY : src/SerialPort.cpp.o
+
+src/SerialPort.i: src/SerialPort.cpp.i
+
+.PHONY : src/SerialPort.i
+
+# target to preprocess a source file
+src/SerialPort.cpp.i:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/SerialPort.cpp.i
+.PHONY : src/SerialPort.cpp.i
+
+src/SerialPort.s: src/SerialPort.cpp.s
+
+.PHONY : src/SerialPort.s
+
+# target to generate assembly for a file
+src/SerialPort.cpp.s:
+	$(MAKE) -f CMakeFiles/QSerialTerminal.dir/build.make CMakeFiles/QSerialTerminal.dir/src/SerialPort.cpp.s
+.PHONY : src/SerialPort.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -146,6 +497,45 @@ help:
 	@echo "... edit_cache"
 	@echo "... QSerialTerminal"
 	@echo "... QSerialTerminal_autogen"
+	@echo "... QSerialTerminal_autogen/moc_compilation.o"
+	@echo "... QSerialTerminal_autogen/moc_compilation.i"
+	@echo "... QSerialTerminal_autogen/moc_compilation.s"
+	@echo "... src/AboutApplicationWidget.o"
+	@echo "... src/AboutApplicationWidget.i"
+	@echo "... src/AboutApplicationWidget.s"
+	@echo "... src/ApplicationIcons.o"
+	@echo "... src/ApplicationIcons.i"
+	@echo "... src/ApplicationIcons.s"
+	@echo "... src/ApplicationSettings.o"
+	@echo "... src/ApplicationSettings.i"
+	@echo "... src/ApplicationSettings.s"
+	@echo "... src/ApplicationSettingsLoader.o"
+	@echo "... src/ApplicationSettingsLoader.i"
+	@echo "... src/ApplicationSettingsLoader.s"
+	@echo "... src/ApplicationStrings.o"
+	@echo "... src/ApplicationStrings.i"
+	@echo "... src/ApplicationStrings.s"
+	@echo "... src/ApplicationUtilities.o"
+	@echo "... src/ApplicationUtilities.i"
+	@echo "... src/ApplicationUtilities.s"
+	@echo "... src/CustomAction.o"
+	@echo "... src/CustomAction.i"
+	@echo "... src/CustomAction.s"
+	@echo "... src/IByteStream.o"
+	@echo "... src/IByteStream.i"
+	@echo "... src/IByteStream.s"
+	@echo "... src/Main.o"
+	@echo "... src/Main.i"
+	@echo "... src/Main.s"
+	@echo "... src/MainWindow.o"
+	@echo "... src/MainWindow.i"
+	@echo "... src/MainWindow.s"
+	@echo "... src/QSerialTerminalLineEdit.o"
+	@echo "... src/QSerialTerminalLineEdit.i"
+	@echo "... src/QSerialTerminalLineEdit.s"
+	@echo "... src/SerialPort.o"
+	@echo "... src/SerialPort.i"
+	@echo "... src/SerialPort.s"
 .PHONY : help
 
 

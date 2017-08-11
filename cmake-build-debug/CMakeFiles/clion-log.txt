@@ -1,15 +1,4 @@
 /opt/clion/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/pinguinsan/GitHub/QSerialTerminal
 -- Configuring done
-CMake Error at CMakeLists.txt:46 (add_executable):
-  Cannot find source file:
-
-    src/FileUtilities.h
-
-  Tried extensions .c .C .c++ .cc .cpp .cxx .m .M .mm .h .hh .h++ .hm .hpp
-  .hxx .in .txx
-
-
-CMake Error: CMake can not determine linker language for target: QSerialTerminal
-CMake Error: Cannot determine link language for target "QSerialTerminal".
 -- Generating done
 -- Build files have been written to: /home/pinguinsan/GitHub/QSerialTerminal/cmake-build-debug
