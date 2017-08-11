@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/icons">
-        <file>icons/qserialterminal.png</file>
-    </qresource>
-</RCC>
