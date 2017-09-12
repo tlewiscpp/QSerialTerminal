@@ -323,9 +323,7 @@
     <string>Quit</string>
    </property>
    <property name="font">
-    <font>
-     <pointsize>11</pointsize>
-    </font>
+    <font/>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -402,6 +400,11 @@
   <action name="actionAboutQSerialTerminal">
    <property name="text">
     <string>About QSerialTerminal</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
    </property>
    <property name="shortcut">
     <string>Shift+A</string>

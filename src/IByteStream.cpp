@@ -79,6 +79,7 @@ ssize_t IByteStream::write(const std::string &str)
     for (auto &it : str) {
         returnValue += this->write(static_cast<int>(it));
     }
+    return returnValue;
 }
 std::string IByteStream::readLine(bool *timeout)
 {
@@ -162,6 +163,14 @@ uint64_t IByteStream::getEpoch()
 bool IByteStream::available()
 {
     return (this->peek() != '\0');
+}
+
+bool IByteStream::endsWith(const std::string &fullString, const std::string &ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
 }
 
 #endif //defined(_MSC_VER)

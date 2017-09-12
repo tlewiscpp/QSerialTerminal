@@ -6,6 +6,8 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Gui REQUIRED)
@@ -13,11 +15,11 @@ find_package(Qt5Core REQUIRED)
 
 include_directories(src/)
 
-set (QSERIALTERMINAL_SOURCES 
+set (${PROJECT_NAME}_SOURCES 
     src/Main.cpp
-        src/GlobalDefinitions.h
-        src/ApplicationSettings.cpp src/ApplicationSettings.h
-        src/ApplicationSettingsLoader.cpp src/ApplicationSettingsLoader.h
+    src/GlobalDefinitions.h
+    src/ApplicationSettings.cpp src/ApplicationSettings.h
+    src/ApplicationSettingsLoader.cpp src/ApplicationSettingsLoader.h
     src/MainWindow.cpp src/MainWindow.h
     src/ApplicationIcons.cpp src/ApplicationIcons.h
     src/ApplicationStrings.cpp src/ApplicationStrings.h
@@ -26,33 +28,37 @@ set (QSERIALTERMINAL_SOURCES
     src/ApplicationUtilities.cpp src/ApplicationUtilities.h
     src/SerialPort.cpp src/SerialPort.h
     src/IByteStream.cpp src/IByteStream.h
-        src/AboutApplicationWidget.cpp src/AboutApplicationWidget.h
-    src/EventTimer.h
+    src/AboutApplicationWidget.cpp src/AboutApplicationWidget.h
     src/Version.h
 )
 
-set (QSERIALTERMINAL_FORMS
+set (${PROJECT_NAME}_FORMS
         forms/MainWindow.ui
         forms/AboutApplicationWidget.ui
 )
 
-set (QSERIALTERMINAL_RESOURCES 
+set (${PROJECT_NAME}_RESOURCES 
     resources/icons.qrc
         resources/licenses.qrc
 )
 
-qt5_wrap_ui (QSERIALTERMINAL_FORMS_MOC  ${QSERIALTERMINAL_FORMS})
-qt5_add_resources(QSERIALTERMINAL_RESOURCES_RCC ${QSERIALTERMINAL_RESOURCES})
+set (${PROJECT_NAME}_TRANSLATION_TEMPLATES
+    resources/translations/english.ts
+    resources/translations/japanese.ts
+        )
+
+qt5_wrap_cpp(${PROJECT_NAME}_HEADERS_MOC ${${PROJECT_NAME}_HEADERS})
+qt5_wrap_ui (${PROJECT_NAME}_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
+#qt5_add_translation(${PROJECT_NAME}_TRANSLATIONS ${TRMIDOUBLECHECK_TRANSLATION_TEMPLATES})
 
 add_executable(${PROJECT_NAME}
-        ${QSERIALTERMINAL_SOURCES}
-        ${QSERIALTERMINAL_HEADERS}
-        ${QSERIALTERMINAL_FORMS}
-        ${QSERIALTERMINAL_RESOURCES}
+        ${${PROJECT_NAME}_SOURCES}
+        ${${PROJECT_NAME}_FORMS}
+        ${${PROJECT_NAME}_RESOURCES}
         )
 
 if (win32)
-    target_link_libraries (QSerialTerminal 
+    target_link_libraries (${PROJECT_NAME}
         Qt5::Widgets 
         Qt5::Gui 
         Qt5::Core 

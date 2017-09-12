@@ -15,6 +15,9 @@
 #include <QFileDialog>
 #include <QTimer>
 #include <QtWidgets/QStatusBar>
+#include <QLabel>
+
+using namespace CppSerialPort;
 
 const int MainWindow::s_SUCCESSFULLY_OPENED_SERIAL_PORT_MESSAGE_TIMEOUT{5000};
 const int MainWindow::s_SERIAL_TIMEOUT{0};

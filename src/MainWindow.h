@@ -2,7 +2,6 @@
 #define QSERIALTERMINAL_MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QString>
 
 #include <vector>
 #include <sstream>
@@ -12,7 +11,6 @@
 #include <list>
 #include <future>
 #include <memory>
-#include <QtWidgets/QLabel>
 #include "IByteStream.h"
 #include "SerialPort.h"
 #include "AboutApplicationWidget.h"
@@ -24,11 +22,12 @@ class QAction;
 class QCloseEvent;
 class QSerialTerminalLineEdit;
 class ApplicationIcons;
+class QLabel;
+class QString;
 
 namespace Ui
 {
     class MainWindow;
-    class SettingsDialog;
 }
 
 class MainWindow : public QMainWindow

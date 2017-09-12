@@ -46,7 +46,7 @@ public:
     std::string lineEnding() const;
     void setLineEnding(const std::string &str);
 
-    ssize_t writeLine(const std::string &str);
+    virtual ssize_t writeLine(const std::string &str);
 
     virtual std::string readLine(bool *timeout);
     virtual std::string readUntil(const std::string &until, bool *timeout);
@@ -54,6 +54,8 @@ public:
 
 protected:
     virtual void putBack(int c) = 0;
+
+    bool endsWith (const std::string &fullString, const std::string &ending);
 
     template<typename T> static inline std::string toStdString(const T &t) {
         return dynamic_cast<std::stringstream &>(std::stringstream{""} << t).str();

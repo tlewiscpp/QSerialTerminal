@@ -78,7 +78,7 @@ public:
     SerialPort(const std::string &name, StopBits stopBits, Parity parity);
     SerialPort(const std::string &name, Parity parity);
 
-    SerialPort(SerialPort &&other);
+    SerialPort(SerialPort &&other) noexcept;
 
     friend bool operator==(const SerialPort &lhs, const SerialPort &rhs);
     SerialPort &operator=(const SerialPort &rhs) = delete;
@@ -90,10 +90,21 @@ public:
 
     std::string readLine(bool *timeout) override;
 
+    static BaudRate parseBaudRateFromRaw(const std::string &baudRate);
+    static DataBits parseDataBitsFromRaw(const std::string &dataBits);
+    static StopBits parseStopBitsFromRaw(const std::string &stopBits);
+    static Parity parseParityFromRaw(const std::string &parity);
+
     static std::string baudRateToString(BaudRate baudRate);
     static std::string stopBitsToString(StopBits stopBits);
     static std::string dataBitsToString(DataBits dataBits);
     static std::string parityToString(Parity parity);
+
+public:
+    ssize_t writeLine(const std::string &str) override;
+    std::string readUntil(const std::string &until, bool *timeout) override;
+    std::string readUntil(char until, bool *timeout) override;
+
 
     std::string portName() const override;
     bool isOpen() const override;
@@ -129,25 +140,19 @@ public:
 
     static const long DEFAULT_RETRY_COUNT;
 
-
-    static DataBits parseDataBitsFromRaw(const std::string &dataBits);
-    static StopBits parseStopBitsFromRaw(const std::string &stopBits);
-    static Parity parseParityFromRaw(const std::string &parity);
-    static BaudRate parseBaudRateFromRaw(const std::string &baudRate);
-
-
 private:
 #if (defined(_WIN32) || defined(__CYGWIN__))
     static const char *DTR_RTS_ON_IDENTIFIER;
         static const int constexpr NUMBER_OF_POSSIBLE_SERIAL_PORTS{256};
         static const char *SERIAL_PORT_REGISTRY_PATH;
-        HANDLE m_byteStream[NUMBER_OF_POSSIBLE_SERIAL_PORTS];
+        HANDLE m_serialPort[NUMBER_OF_POSSIBLE_SERIAL_PORTS];
 #else
     static const int constexpr NUMBER_OF_POSSIBLE_SERIAL_PORTS{256*9};
     int m_serialPort[NUMBER_OF_POSSIBLE_SERIAL_PORTS];
     struct termios m_oldPortSettings[NUMBER_OF_POSSIBLE_SERIAL_PORTS];
     struct termios m_newPortSettings;
 #endif
+    std::string m_readBuffer;
     std::string m_portName;
     int m_portNumber;
     FILE *m_fileStream;
@@ -169,13 +174,16 @@ private:
     static const std::vector<const char *> AVAILABLE_PORT_NAMES_BASE;
     static const std::vector<std::string> SERIAL_PORT_NAMES;
 
-    static int parseDataBits(DataBits dataBits);
-    static int parseStopBits(StopBits stopBits);
-    static std::pair<int, int> parseParity(Parity parity);
+    int parseDataBits(DataBits dataBits);
+    int parseStopBits(StopBits stopBits);
+    std::pair<int, int> parseParity(Parity parity);
     static int parseBaudRate(BaudRate baudRate);
 
 
     void putBack(int c);
+
+    int getFileDescriptor() const;
+
 };
 
 } //namespace CppSerialPort
