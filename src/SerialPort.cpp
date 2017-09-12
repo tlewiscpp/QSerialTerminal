@@ -160,7 +160,7 @@ SerialPort::SerialPort(const std::string &name, Parity parity) :
 
 }
 
-SerialPort::SerialPort(SerialPort &&other) :
+SerialPort::SerialPort(SerialPort &&other) noexcept :
         m_portName{std::move(other.m_portName)},
         m_portNumber{std::move(other.m_portNumber)},
         m_fileStream{std::move(other.m_fileStream)},
