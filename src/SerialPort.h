@@ -19,18 +19,6 @@
 #ifndef CPPSERIALPORT_SERIALPORT_H
 #define CPPSERIALPORT_SERIALPORT_H
 
-#if (defined(_WIN32) || defined(__CYGWIN__)) && defined(_MSC_VER)
-    #if _MSC_VER < 1700
-        #error This library needs at least a C++11 compliant compiler
-    #endif
-#else
-#include <termios.h>
-    #if __cplusplus <= 199711L
-        #error This library needs at least a C++11 compliant compiler
-    #endif
-#endif
-
-
 #include <string>
 #include <vector>
 #include <sstream>
@@ -39,29 +27,89 @@
 
 namespace CppSerialPort {
 
-enum class StopBits { ONE, TWO };
-enum class DataBits { FIVE, SIX, SEVEN, EIGHT };
 enum class Parity { EVEN, ODD, NONE };
 
 #if (defined(_WIN32) || defined(__CYGWIN__))
-enum class BaudRate { BAUD110, BAUD300, BAUD600, BAUD1200,
-                      BAUD2400, BAUD4800, BAUD9600, BAUD19200,
-                      BAUD38400, BAUD57600, BAUD115200,
-                      BAUD128000, BAUD256000, BAUD500000, BAUD1000000 };
+enum class StopBits {
+    ONE = 1,
+    TWO = 2
+};
+enum class DataBits {
+    FIVE = 5,
+    SIX = 6,
+    SEVEN = 7,
+    EIGHT = 8
+};
+enum class BaudRate {
+    BAUD110 = 110,
+    BAUD300 = 300,
+    BAUD600 = 600,
+    BAUD1200 = 1200,
+    BAUD2400 = 2400,
+    BAUD4800 = 4800,
+    BAUD9600 = 9600,
+    BAUD19200 = 19200,
+    BAUD38400 = 38400,
+    BAUD57600 = 57600,
+    BAUD115200 = 115200,
+    BAUD128000 = 128000,
+    BAUD256000 = 256000,
+    BAUD500000 = 500000,
+    BAUD1000000 = 1000000
+};
 #else
-enum class BaudRate { BAUD50, BAUD75, BAUD110, BAUD134, BAUD150,
-    BAUD200, BAUD300, BAUD600, BAUD1200, BAUD1800,
-    BAUD2400, BAUD4800, BAUD9600, BAUD19200, BAUD38400,
-    BAUD57600, BAUD115200, BAUD230400, BAUD460800,
-    BAUD500000, BAUD576000, BAUD921600, BAUD1000000,
-    BAUD1152000, BAUD1500000, BAUD2000000, BAUD2500000,
-    BAUD3000000, BAUD3500000, BAUD4000000 };
+#include <termios.h>
+
+enum class StopBits {
+    ONE = 0,
+    TWO = CSTOPB
+};
+enum class DataBits {
+    FIVE = CS5,
+    SIX = CS6,
+    SEVEN = CS7,
+    EIGHT = CS8
+};
+enum class BaudRate {
+    BAUD50 = B50,
+    BAUD75 = B75,
+    BAUD110 = B110,
+    BAUD134 = B134,
+    BAUD150 = B150,
+    BAUD200 = B200,
+    BAUD300 = B300,
+    BAUD600 = B600,
+    BAUD1200 = B1200,
+    BAUD1800 = B1800,
+    BAUD2400 = B2400,
+    BAUD4800 = B4800,
+    BAUD9600 = B9600,
+    BAUD19200 = B19200,
+    BAUD38400 = B38400,
+    BAUD57600 = B57600,
+    BAUD115200 = B115200,
+    BAUD230400 = B230400,
+    BAUD460800 = B460800,
+    BAUD500000 = B500000,
+    BAUD576000 = B576000,
+    BAUD921600 = B921600,
+    BAUD1000000 = B1000000,
+    BAUD1152000 = B1152000,
+    BAUD1500000 = B1500000,
+    BAUD2000000 = B2000000,
+    BAUD2500000 = B2500000,
+    BAUD3000000 = B3000000,
+    BAUD3500000 = B3500000,
+    BAUD4000000 = B4000000
+};
 #endif
+
+    using HANDLE = void *;
 
 class SerialPort : public IByteStream
 {
 public:
-    SerialPort(const std::string &name);
+    explicit SerialPort(const std::string &name);
     SerialPort(const std::string &name, BaudRate baudRate);
     SerialPort(const std::string &name, BaudRate baudRate, DataBits dataBits);
     SerialPort(const std::string &name, BaudRate baudRate, StopBits stopBits);
@@ -78,18 +126,20 @@ public:
     SerialPort(const std::string &name, StopBits stopBits, Parity parity);
     SerialPort(const std::string &name, Parity parity);
 
-    SerialPort(SerialPort &&other) noexcept;
+    friend inline bool operator==(const SerialPort &lhs, const SerialPort &rhs) {
+        (void)lhs;
+        (void)rhs;
+        return false;
+    }
 
-    friend bool operator==(const SerialPort &lhs, const SerialPort &rhs);
+    SerialPort(SerialPort &&other) = delete;
     SerialPort &operator=(const SerialPort &rhs) = delete;
+    SerialPort &operator=(SerialPort &&rhs) = delete;
     SerialPort(const SerialPort &other) = delete;
 
     void openPort() override;
     void closePort() override;
     int read() override;
-
-    std::string readLine(bool *timeout) override;
-
     static BaudRate parseBaudRateFromRaw(const std::string &baudRate);
     static DataBits parseDataBitsFromRaw(const std::string &dataBits);
     static StopBits parseStopBitsFromRaw(const std::string &stopBits);
@@ -101,11 +151,6 @@ public:
     static std::string parityToString(Parity parity);
 
 public:
-    ssize_t writeLine(const std::string &str) override;
-    std::string readUntil(const std::string &until, bool *timeout) override;
-    std::string readUntil(char until, bool *timeout) override;
-
-
     std::string portName() const override;
     bool isOpen() const override;
 
@@ -116,8 +161,8 @@ public:
     void disableDTR();
     void enableRTS();
     void disableRTS();
-    void flushRX();
-    void flushTX();
+    void flushRx() override;
+    void flushTx() override;
 
     void setBaudRate(BaudRate baudRate);
     void setStopBits(StopBits stopBits);
@@ -141,17 +186,6 @@ public:
     static const long DEFAULT_RETRY_COUNT;
 
 private:
-#if (defined(_WIN32) || defined(__CYGWIN__))
-    static const char *DTR_RTS_ON_IDENTIFIER;
-        static const int constexpr NUMBER_OF_POSSIBLE_SERIAL_PORTS{256};
-        static const char *SERIAL_PORT_REGISTRY_PATH;
-        HANDLE m_serialPort[NUMBER_OF_POSSIBLE_SERIAL_PORTS];
-#else
-    static const int constexpr NUMBER_OF_POSSIBLE_SERIAL_PORTS{256*9};
-    int m_serialPort[NUMBER_OF_POSSIBLE_SERIAL_PORTS];
-    struct termios m_oldPortSettings[NUMBER_OF_POSSIBLE_SERIAL_PORTS];
-    struct termios m_newPortSettings;
-#endif
     std::string m_readBuffer;
     std::string m_portName;
     int m_portNumber;
@@ -174,15 +208,24 @@ private:
     static const std::vector<const char *> AVAILABLE_PORT_NAMES_BASE;
     static const std::vector<std::string> SERIAL_PORT_NAMES;
 
-    int parseDataBits(DataBits dataBits);
-    int parseStopBits(StopBits stopBits);
     std::pair<int, int> parseParity(Parity parity);
-    static int parseBaudRate(BaudRate baudRate);
 
-
-    void putBack(int c);
+    void putBack(int c) override;
 
     int getFileDescriptor() const;
+
+#if (defined(_WIN32) || defined(__CYGWIN__))
+    static const char *DTR_RTS_ON_IDENTIFIER;
+        static const int constexpr NUMBER_OF_POSSIBLE_SERIAL_PORTS{256};
+        static const char *SERIAL_PORT_REGISTRY_PATH;
+        HANDLE m_serialPortHandle;
+        int m_fileDescriptor;
+#else
+    static const int constexpr NUMBER_OF_POSSIBLE_SERIAL_PORTS{256*9};
+    int m_serialPortPool[NUMBER_OF_POSSIBLE_SERIAL_PORTS];
+    termios m_newPortSettings;
+    termios m_oldPortSettings[NUMBER_OF_POSSIBLE_SERIAL_PORTS];
+#endif
 
 };
 

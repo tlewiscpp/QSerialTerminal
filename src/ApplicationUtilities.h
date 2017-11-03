@@ -22,6 +22,7 @@ class QByteArray;
 
 namespace ApplicationUtilities
 {
+std::string stripLineEndings(std::string str);
     QString getUserConfigurationFilePath();
     QString getConfigurationFilePath();
     void regenerateSystemwideSettingsFile(const QString &systemSettingsFilePath);

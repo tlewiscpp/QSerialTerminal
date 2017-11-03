@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>877</width>
-    <height>561</height>
+    <width>1084</width>
+    <height>724</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -112,8 +112,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>845</width>
-            <height>432</height>
+            <width>1052</width>
+            <height>578</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
@@ -207,8 +207,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>877</width>
-     <height>30</height>
+     <width>1084</width>
+     <height>35</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -236,7 +236,7 @@
      </font>
     </property>
     <property name="title">
-     <string>Line Endings</string>
+     <string>&amp;Line Endings</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuBaudRate">
@@ -246,7 +246,7 @@
      </font>
     </property>
     <property name="title">
-     <string>Baud Rate</string>
+     <string>Ba&amp;ud Rate</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuParity">
@@ -256,7 +256,7 @@
      </font>
     </property>
     <property name="title">
-     <string>Parity</string>
+     <string>Parit&amp;y</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuStopBits">
@@ -276,7 +276,7 @@
      </font>
     </property>
     <property name="title">
-     <string>Data Bits</string>
+     <string>&amp;Data Bits</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuPortNames">
@@ -320,7 +320,7 @@
   </action>
   <action name="actionQuit">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
    </property>
    <property name="font">
     <font/>
@@ -331,7 +331,7 @@
   </action>
   <action name="actionAboutQt">
    <property name="text">
-    <string>About Qt</string>
+    <string>&amp;About Qt</string>
    </property>
    <property name="font">
     <font>
@@ -399,7 +399,7 @@
   </action>
   <action name="actionAboutQSerialTerminal">
    <property name="text">
-    <string>About QSerialTerminal</string>
+    <string>About &amp;QSerialTerminal</string>
    </property>
    <property name="font">
     <font>

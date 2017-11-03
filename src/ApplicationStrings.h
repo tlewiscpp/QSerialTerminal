@@ -8,33 +8,34 @@
 
 namespace ApplicationStrings
 {
-    extern const char *QUIT_PROMPT_STRING;
-    extern const char *QUIT_PROMPT_WINDOW_TITLE_STRING;
-    extern const char *INVALID_SETTINGS_DETECTED_STRING;
-    extern const char *INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING;
-    extern const char *MAIN_WINDOW_TITLE;
-    extern const char *SUCCESSFULLY_OPENED_SERIAL_PORT_STRING;
-    extern const char *SUCCESSFULLY_CLOSED_SERIAL_PORT_STRING;
-    extern const char *MAIN_WINDOW_STYLESHEET;
-    extern const char *BLUE_COLOR_STRING;
-    extern const char *RED_COLOR_STRING;
-    extern const char *TERMINAL_RECEIVE_BASE_STRING;
-    extern const char *TERMINAL_TRANSMIT_BASE_STRING;
-    extern const char *NO_SERIAL_PORTS_CONNECTED_STRING;
-    extern const char *CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING;
-    extern const char *OPEN_SCRIPT_FILE_DEFAULT_DIRECTORY;
-    extern const char *COULD_NOT_OPEN_SERIAL_PORT_STRING;
-    extern const char *COULD_NOT_OPEN_SERIAL_PORT_WINDOW_TITLE_STRING;
+const char * const QUIT_PROMPT_STRING{"Are you sure you want to quit?"};
+const char * const QUIT_PROMPT_WINDOW_TITLE_STRING{"Quit QSerialTerminal?"};
+const char * const INVALID_SETTINGS_DETECTED_STRING{"Invalid settings detected, please reselect serial port settings: "};
+const char * const INVALID_SETTINGS_DETECTED_WINDOW_TITLE_STRING{"Invalid Serial Port Settings"};
+const char * const MAIN_WINDOW_TITLE{"QSerialTerminal"};
+const char * const SUCCESSFULLY_OPENED_SERIAL_PORT_STRING{"Successfully opened serial port "};
+const char * const SUCCESSFULLY_CLOSED_SERIAL_PORT_STRING{"Successfully closed serial port "};
+const char * const MAIN_WINDOW_STYLESHEET{ "" };
+const char * const BLUE_COLOR_STRING{"blue"};
+const char * const RED_COLOR_STRING{"red"};
+const char * const LICENSE_PATH{":/licenses/licenses/LICENSE"};
+const char * const ACTION_INDEX_PROPERTY_TAG{"Index"};
 
-    extern const char *SEND_BOX_ENABLED_TOOLTIP;
-    extern const char *SEND_BOX_DISABLED_TOOLTIP;
-    extern const char *LICENSE_PATH;
+const char * const TERMINAL_RECEIVE_BASE_STRING{"Rx << "};
+const char * const TERMINAL_TRANSMIT_BASE_STRING{"Tx >> "};
+const char * const NO_SERIAL_PORTS_CONNECTED_STRING{"No serial ports connected"};
+const char * const CONNECT_TO_SERIAL_PORT_TO_BEGIN_STRING{"Select a serial port and press connect"};
 
-    extern const char *COMMAND_HISTORY_CONTEXT_MENU_STRING;
-    extern const char *NO_AVAILABLE_SERIAL_PORTS_STRING;
-    extern const char *NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING;
-    extern const char *SERIAL_PORT_DISCONNECTED_STRING;
-    extern const char *INVALID_LINE_ENDING_PASSED_TO_SET_LINE_ENDING_STRING;
+const char * const SEND_BOX_ENABLED_TOOLTIP{""};
+const char * const SEND_BOX_DISABLED_TOOLTIP{"Connect to a serial port to begin sending and receiving data"};
+
+const char * const COULD_NOT_OPEN_SERIAL_PORT_STRING{"Could not open serial port ("};
+const char * const COULD_NOT_OPEN_SERIAL_PORT_WINDOW_TITLE_STRING{"Problem Opening Serial Port"};
+
+const char * const COMMAND_HISTORY_CONTEXT_MENU_STRING{"Command History"};
+const char * const NO_AVAILABLE_SERIAL_PORTS_STRING{"No serial ports are connected to device, please connect a device"};
+const char * const NO_AVAILABLE_SERIAL_PORTS_WINDOW_TITLE_STRING{"No Serial Ports Available"};
+const char * const SERIAL_PORT_DISCONNECTED_STRING{"Serial port disconnected: "};
 }
 
 

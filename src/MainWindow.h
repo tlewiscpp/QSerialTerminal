@@ -11,18 +11,18 @@
 #include <list>
 #include <future>
 #include <memory>
+#include <QLabel>
+#include <QTimer>
+
 #include "IByteStream.h"
 #include "SerialPort.h"
 #include "AboutApplicationWidget.h"
 
 class QDesktopWidget;
-class QTimer;
-class CustomAction;
 class QAction;
 class QCloseEvent;
 class QSerialTerminalLineEdit;
 class ApplicationIcons;
-class QLabel;
 class QString;
 
 namespace Ui
@@ -43,9 +43,8 @@ class MainWindow : public QMainWindow
     };
 
 public:
-    explicit MainWindow(std::shared_ptr<ApplicationIcons> programIcons,
-                        QWidget *parent = 0);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override { delete this->m_ui; }
     void closeEvent(QCloseEvent *event) override;
 
     void keyPressEvent(QKeyEvent *qke) override;
@@ -55,27 +54,17 @@ private slots:
     void onActionConnectTriggered(bool checked);
     void onActionDisconnectTriggered(bool checked);
     void onCommandHistoryContextMenuRequested(const QPoint &point);
-    void onCommandHistoryContextMenuActionTriggered(CustomAction *action, bool checked);
+    void onCommandHistoryContextMenuActionTriggered(bool checked);
 
 
-    void onActionBaudRateChecked(CustomAction *action, bool checked);
-    void onActionParityChecked(CustomAction *action, bool checked);
-    void onActionDataBitsChecked(CustomAction *action, bool checked);
-    void onActionStopBitsChecked(CustomAction *action, bool checked);
-    void onActionPortNamesChecked(CustomAction *action, bool checked);
-    void onActionLineEndingsChecked(CustomAction *action, bool checked);
+    void onActionBaudRateChecked(bool checked);
+    void onActionParityChecked(bool checked);
+    void onActionDataBitsChecked(bool checked);
+    void onActionStopBitsChecked(bool checked);
+    void onActionPortNamesChecked(bool checked);
+    void onActionLineEndingsChecked(bool checked);
 
     void onSendButtonClicked();
-    void onReturnKeyPressed(QSerialTerminalLineEdit *stle);
-    void onUpArrowPressed(QSerialTerminalLineEdit *stle);
-    void onDownArrowPressed(QSerialTerminalLineEdit *stle);
-    void onEscapeKeyPressed(QSerialTerminalLineEdit *stle);
-    void onAltKeyPressed(QSerialTerminalLineEdit *stle);
-    void onCtrlAPressed(QSerialTerminalLineEdit *stle);
-    void onCtrlEPressed(QSerialTerminalLineEdit *stle);
-    void onCtrlUPressed(QSerialTerminalLineEdit *stle);
-    void onCtrlGPressed(QSerialTerminalLineEdit *stle);
-    void onCtrlCPressed(QSerialTerminalLineEdit *stle);
     void onReturnKeyPressed();
     void onUpArrowPressed();
     void onDownArrowPressed();
@@ -90,15 +79,15 @@ private slots:
     void onApplicationAboutToClose();
     void onConnectButtonClicked(bool checked);
     void onDisconnectButtonClicked(bool checked);
+    bool eventFilter(QObject *sender, QEvent *event) override;
 
 private:
-    std::shared_ptr<Ui::MainWindow> m_ui;
+    Ui::MainWindow *m_ui;
     std::shared_ptr<AboutApplicationWidget> m_aboutApplicationWidget;
     std::unique_ptr<QLabel> m_statusBarLabel;
     std::unique_ptr<QTimer> m_checkPortDisconnectTimer;
     std::unique_ptr<QTimer> m_checkSerialPortReceiveTimer;
     std::shared_ptr<CppSerialPort::IByteStream> m_byteStream;
-    std::shared_ptr<ApplicationIcons> m_applicationIcons;
     std::vector<std::string> m_serialPortNames;
     std::mutex m_printToTerminalMutex;
     std::unique_ptr<std::future<std::string>> m_serialReceiveAsyncHandle;
@@ -108,11 +97,11 @@ private:
     unsigned int m_currentHistoryIndex;
     std::string m_lineEnding;
 
-    std::vector<CustomAction *> m_availableBaudRateActions;
-    std::vector<CustomAction *> m_availableParityActions;
-    std::vector<CustomAction *> m_availableStopBitsActions;
-    std::vector<CustomAction *> m_availableDataBitsActions;
-    std::vector<CustomAction *> m_availablePortNamesActions;
+    std::vector<QAction *> m_availableBaudRateActions;
+    std::vector<QAction *> m_availableParityActions;
+    std::vector<QAction *> m_availableStopBitsActions;
+    std::vector<QAction *> m_availableDataBitsActions;
+    std::vector<QAction *> m_availablePortNamesActions;
     std::vector<QAction *> m_availableLineEndingActions;
 
     void resetCommandHistory();

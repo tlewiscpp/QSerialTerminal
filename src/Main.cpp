@@ -2,6 +2,8 @@
 #include <QDesktopWidget>
 #include <memory>
 #include <QtCore/QDateTime>
+#include <QLabel>
+#include <QTimer>
 
 #include "ApplicationIcons.h"
 #include "ApplicationStrings.h"
@@ -40,7 +42,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName(PROGRAM_LONG_NAME);
 
     ApplicationUtilities::checkOrCreateProgramSettingsDirectory();
-
     std::cout << std::endl;
     for (auto iter = argv + 1; iter != (argv + argc); iter++) {
         if (isSwitch(*iter, HELP_SWITCHES)) {
@@ -55,14 +56,11 @@ int main(int argc, char *argv[])
 
     displayVersion();
 
-
-
     using namespace ApplicationStrings;
-    QApplication qApplication(argc, argv);
-    std::shared_ptr<QDesktopWidget> qDesktopWidget{std::make_shared<QDesktopWidget>()};
-    std::shared_ptr<ApplicationIcons> programIcons{std::make_shared<ApplicationIcons>()};
-    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>(programIcons)};
-    mainWindow->setWindowIcon(programIcons->MAIN_WINDOW_ICON);
+    QApplication qApplication{argc, argv};
+    ApplicationIcons::initializeInstance();
+    std::shared_ptr<MainWindow> mainWindow{std::make_shared<MainWindow>()};
+    mainWindow->setWindowIcon(applicationIcons->MAIN_WINDOW_ICON);
     mainWindow->setWindowTitle(MAIN_WINDOW_TITLE);
     mainWindow->setStyleSheet(MAIN_WINDOW_STYLESHEET);
     QRect screenGeometry{QApplication::desktop()->screenGeometry()};
@@ -151,10 +149,11 @@ void logToFile(const StringType &str, const FileStringType &filePath)
     QString stringCopy{toQString(str)};
     if (qFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
         if (qFile.write(toStdString(str).c_str(), toStdString(str).length()) == -1) {
-            throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (file was opened, but not writable, permission problem?)"}.arg(toQString(str), toQString(filePath)).toStdString());
+            throw std::runtime_error(QString{
+                    R"(Failed to log data "%1" to file "%2" (file was opened, but not writable, permission problem?))"}.arg(toQString(str), toQString(filePath)).toStdString());
         }
     } else {
-        throw std::runtime_error(QString{"Failed to log data \"%1\" to file \"%2\" (could not open file)"}.arg(toQString(str), toQString(filePath)).toStdString());
+        throw std::runtime_error(QString{R"(Failed to log data "%1" to file "%2" (could not open file))"}.arg(toQString(str), toQString(filePath)).toStdString());
     }
 
 }
@@ -166,15 +165,15 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     auto *outputStream = &std::cout;
     switch (type) {
         case QtDebugMsg:
-            logContext = "{Debug}: ";
+            logContext = "{  Debug }: ";
             outputStream = &std::cout;
             break;
         case QtInfoMsg:
-            logContext = "{Info}: ";
+            logContext = "{  Info  }: ";
             outputStream = &std::clog;
             break;
         case QtWarningMsg:
-            logContext = "{Warning}: ";
+            logContext = "{  Warn  }: ";
             outputStream = &std::cout;
             break;
         case QtCriticalMsg:
@@ -182,9 +181,8 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
             outputStream = &std::cerr;
             break;
         case QtFatalMsg:
-            logContext = "{Fatal}: ";
+            logContext = "{  Fatal }: ";
             outputStream = &std::cerr;
-            abort();
     }
     QString logMessage{""};
     std::string coreLogMessage{QString{localMsg}.toStdString()};
@@ -215,5 +213,8 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
     }
     logToFile(logMessage.toStdString(), ApplicationUtilities::getLogFilePath());
     outputStream->flush();
+    if (type == QtMsgType::QtFatalMsg) {
+        _Exit(1);
+    }
 }
 

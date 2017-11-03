@@ -22,9 +22,8 @@ set (${PROJECT_NAME}_SOURCES
     src/ApplicationSettingsLoader.cpp src/ApplicationSettingsLoader.h
     src/MainWindow.cpp src/MainWindow.h
     src/ApplicationIcons.cpp src/ApplicationIcons.h
-    src/ApplicationStrings.cpp src/ApplicationStrings.h
-    src/CustomAction.cpp src/CustomAction.h
-    src/QSerialTerminalLineEdit.cpp src/QSerialTerminalLineEdit.h
+        src/ApplicationStrings.h
+        src/QSerialTerminalLineEdit.cpp src/QSerialTerminalLineEdit.h
     src/ApplicationUtilities.cpp src/ApplicationUtilities.h
     src/SerialPort.cpp src/SerialPort.h
     src/IByteStream.cpp src/IByteStream.h

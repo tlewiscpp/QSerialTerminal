@@ -14,6 +14,24 @@ namespace ApplicationUtilities
     static QString configurationFilePath{""};
     static QString userConfigurationFilePath{""};
 
+    std::string stripLineEndings(std::string str)
+    {
+        if (str.length() == 0) {
+            return str;
+        }
+        if (endsWith(str, '\r')) {
+            str.pop_back();
+        }
+        if (str.length() == 0) {
+            return str;
+        }
+        if (endsWith(str, '\n')) {
+            str.pop_back();
+            return str;
+        }
+        return str;
+    }
+
     QString getUserConfigurationFilePath()
     {
         if (!userConfigurationFilePath.isEmpty()) {
