@@ -32,16 +32,7 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout" rowstretch="0">
-    <property name="leftMargin">
-     <number>7</number>
-    </property>
-    <property name="topMargin">
-     <number>7</number>
-    </property>
-    <property name="rightMargin">
-     <number>7</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>7</number>
     </property>
     <property name="spacing">
@@ -113,20 +104,11 @@
             <x>0</x>
             <y>0</y>
             <width>1052</width>
-            <height>578</height>
+            <height>595</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="scrollAreaGridLayout">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>0</number>
            </property>
            <property name="spacing">
@@ -208,7 +190,7 @@
      <x>0</x>
      <y>0</y>
      <width>1084</width>
-     <height>35</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -289,6 +271,16 @@
      <string>Port</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuFlowControl">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Flow Control</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPortNames"/>
    <addaction name="menuBaudRate"/>
@@ -296,6 +288,7 @@
    <addaction name="menuStopBits"/>
    <addaction name="menuDataBits"/>
    <addaction name="menuLineEndings"/>
+   <addaction name="menuFlowControl"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>

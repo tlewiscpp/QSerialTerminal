@@ -24,42 +24,48 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += src/
+SOURCE_ROOT = src
+FORMS_ROOT = forms
+RESOURCES_ROOT = resources
 
+INCLUDEPATH += $${SOURCE_ROOT}
 
 SOURCES += \
-    src/Main.cpp \
-src/ApplicationSettings.cpp \
-src/ApplicationSettingsLoader.cpp \
-src/MainWindow.cpp \
-src/ApplicationIcons.cpp \
-src/ApplicationStrings.cpp \
-src/CustomAction.cpp \
-src/QSerialTerminalLineEdit.cpp \
-src/ApplicationUtilities.cpp \
-src/AboutApplicationWidget.cpp
+    $${SOURCE_ROOT}/Main.cpp \
+    $${SOURCE_ROOT}/ApplicationSettings.cpp \
+    $${SOURCE_ROOT}/ApplicationSettingsLoader.cpp \
+    $${SOURCE_ROOT}/MainWindow.cpp \
+    $${SOURCE_ROOT}/ApplicationIcons.cpp \
+    $${SOURCE_ROOT}/QSerialTerminalLineEdit.cpp \
+    $${SOURCE_ROOT}/ApplicationUtilities.cpp \
+    $${SOURCE_ROOT}/SerialPort.cpp \
+    $${SOURCE_ROOT}/IByteStream.cpp \
+    $${SOURCE_ROOT}/SingleInstanceGuard.cpp \
+    $${SOURCE_ROOT}/AboutApplicationWidget.cpp \
+    src/win32_getopt.cpp
 
 HEADERS += \
-    src/GlobalDefinitions.h \
-    src/ApplicationSettings.h \
-    src/ApplicationSettingsLoader.h \
-    src/MainWindow.h \
-    src/ApplicationIcons.h \
-    src/ApplicationStrings.h \
-    src/CustomAction.h \
-    src/QSerialTerminalLineEdit.h \
-    src/ApplicationUtilities.h \
-    src/SerialPort.h \
-    src/IByteStream.h \
-    src/AboutApplicationWidget.h \
-    src/Version.h
+    $${SOURCE_ROOT}/GlobalDefinitions.h \
+    $${SOURCE_ROOT}/ApplicationSettings.h\ \
+    $${SOURCE_ROOT}/ApplicationSettingsLoader.h \
+    $${SOURCE_ROOT}/MainWindow.h \
+    $${SOURCE_ROOT}/ApplicationIcons.h \
+    $${SOURCE_ROOT}/QSerialTerminalLineEdit.h \
+    $${SOURCE_ROOT}/ApplicationUtilities.h \
+    $${SOURCE_ROOT}/SerialPort.h \
+    $${SOURCE_ROOT}/IByteStream.h \
+    $${SOURCE_ROOT}/AboutApplicationWidget.h \
+    $${SOURCE_ROOT}/SingleInstanceGuard.h \
+    $${SOURCE_ROOT}/QActionSetDefs.h \
+    $${SOURCE_ROOT}/ApplicationStrings.h \
+    $${SOURCE_ROOT}/Version.h \
+    $${SOURCE_ROOT}/win32_getopt.h
 
 FORMS += \
-        forms/MainWindow.ui \
-        forms/AboutApplicationWidget.ui
+    $${FORMS_ROOT}/MainWindow.ui \
+    $${FORMS_ROOT}/AboutApplicationWidget.ui
 
 RESOURCES += \
-    resources/icons.qrc \
-    resources/translations.qrc
+    $${RESOURCES_ROOT}/icons.qrc
 
 

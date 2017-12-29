@@ -1,1 +1,0 @@
-install-qserialterminal-cmake.sh

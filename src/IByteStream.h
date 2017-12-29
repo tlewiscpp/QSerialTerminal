@@ -1,5 +1,5 @@
 /***********************************************************************
-*    ibytestream.h:                                                    *
+*    IByteStream.h:                                                    *
 *    IByteStream, base class for simple read and write operations      *
 *    Copyright (c) 2017 Tyler Lewis                                    *
 ************************************************************************
@@ -19,9 +19,29 @@
 #ifndef CPPSERIALPORT_IBYTESTREAM_H
 #define CPPSERIALPORT_IBYTESTREAM_H
 
+#if defined(_MSC_VER)
+#    if defined(SHARED_LIBRARY_BUILD)
+	/* define DLLBUILD when building the DLL */
+#        define CPPSERIALPORT_API __declspec(dllexport)
+#    else
+#        define CPPSERIALPORT_API __declspec(dllimport)
+#    endif
+#else
+#    define CPPSERIALPORT_API
+#endif
+
 #include <string>
 #include <sstream>
 #include <mutex>
+
+#if defined(_WIN32)
+#    ifndef PATH_MAX
+#        define PATH_MAX MAX_PATH
+#    endif
+#    define ssize_t int
+#else
+
+#endif //defined(_WIN32)
 
 namespace CppSerialPort {
 
@@ -31,63 +51,61 @@ public:
     IByteStream();
     virtual ~IByteStream() = default;
 
-    virtual int read() = 0;
-    virtual ssize_t write(int) = 0;
+	virtual char read() = 0;
+	virtual ssize_t write(char) = 0;
+	virtual ssize_t write(const char *, size_t) = 0;
 
-    virtual std::string portName() const = 0;
-    virtual bool isOpen() const = 0;
-    virtual void openPort() = 0;
-    virtual void closePort() = 0;
-    virtual void flushRx() = 0;
-    virtual void flushTx() = 0;
+	virtual std::string portName() const = 0;
+	virtual bool isOpen() const = 0;
+	virtual void openPort() = 0;
+	virtual void closePort() = 0;
+	virtual void flushRx() = 0;
+	virtual void flushTx() = 0;
 
-    bool available();
-    int peek();
-    void setReadTimeout(int timeout);
-    int readTimeout() const;
+	bool available();
+	int peek();
+	virtual void setReadTimeout(int timeout);
+	int readTimeout() const;
 
-    std::string lineEnding() const;
-    void setLineEnding(const std::string &str);
-    void setLineEnding(char c);
+	virtual void setWriteTimeout(int timeout);
+	int writeTimeout() const;
 
-    virtual ssize_t writeLine(const std::string &str);
+	std::string lineEnding() const;
+	void setLineEnding(const std::string &str);
+	void setLineEnding(char chr);
 
-    virtual std::string readLine(bool *timeout = nullptr);
-    virtual std::string readUntil(const std::string &until, bool *timeout = nullptr);
-    virtual std::string readUntil(char until, bool *timeout = nullptr);
+	virtual ssize_t writeLine(const std::string &str);
+
+	std::string readLine(bool *timeout = nullptr);
+	std::string readUntil(const std::string &until, bool *timeout = nullptr);
+	std::string readUntil(char until, bool *timeout = nullptr);
 
 protected:
-    virtual void putBack(int c) = 0;
+	virtual void putBack(char c) = 0;
 
-    bool endsWith (const std::string &fullString, const std::string &ending);
-
-    template<typename T> static inline std::string toStdString(const T &t) {
+	static bool fileExists(const std::string &filePath);
+	static inline bool endsWith (const std::string &fullString, const std::string &ending) {
+        return ( (fullString.length() < ending.length()) ? false : std::equal(ending.rbegin(), ending.rend(), fullString.rbegin()) );
+    }
+	template<typename T> static inline std::string toStdString(const T &t) {
         return dynamic_cast<std::ostringstream &>(std::ostringstream{""} << t).str();
     }
 
-    static inline std::string vaToStdString() {
-        return "";
-    }
+	static const int DEFAULT_READ_TIMEOUT;
+	static const int DEFAULT_WRITE_TIMEOUT;
+	static uint64_t getEpoch();
 
-    template <typename First, typename ...Args> static inline std::string vaToStdString(First first, Args ...args) {
-        return toStdString(first) + vaToStdString(args...);
-    }
-
-    static bool fileExists(const std::string &filePath);
 
 private:
     int m_readTimeout;
+    int m_writeTimeout;
     std::string m_lineEnding;
     std::mutex m_writeMutex;
 
-    static uint64_t getEpoch();
-
 
     static const char *DEFAULT_LINE_ENDING;
-    static const int DEFAULT_READ_TIMEOUT;
 
     ssize_t write(const std::string &str);
-
 };
 
 } //namespace CppSerialPort

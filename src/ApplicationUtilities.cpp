@@ -3,16 +3,31 @@
 #include "ApplicationSettings.h"
 #include "ApplicationStrings.h"
 #include <QDateTime>
-
+#include <QtCore/QCoreApplication>
 
 namespace ApplicationUtilities
 {
 
-    static QString installDirectory{""};
     static QString programSettingsDirectory{""};
     static QString logFileName{""};
-    static QString configurationFilePath{""};
-    static QString userConfigurationFilePath{""};
+
+bool verboseLogging{false};
+static QString PID{""};
+static QString processUUID{""};
+
+
+void exitApplication(const std::string &why, int exitCode)
+{
+    LOG_INFO() << QString{R"(Exiting application for reason: "%1" (exit code: %2))"}.arg(why.c_str(), QS_NUMBER(exitCode));
+    _Exit(exitCode);
+}
+
+QString getPID() {
+    if (PID.isEmpty()) {
+        PID = QS_NUMBER(QCoreApplication::applicationPid());
+    }
+    return PID;
+}
 
     std::string stripLineEndings(std::string str)
     {
@@ -32,42 +47,9 @@ namespace ApplicationUtilities
         return str;
     }
 
-    QString getUserConfigurationFilePath()
-    {
-        if (!userConfigurationFilePath.isEmpty()) {
-            return userConfigurationFilePath;
-        }
-        QString settingsDirectory{getProgramSettingsDirectory()};
-    #if defined(_WIN32)
-        return QString{settingsDirectory + "config\\settings.xml"};
-    #else
-        return QString{settingsDirectory + "config/settings.xml"};
-    #endif
-
-    }
-
     std::string nWhitespace(size_t howMuch)
     {
         return std::string(howMuch, ' ');
-    }
-
-    QString getConfigurationFilePath()
-    {
-        if (!configurationFilePath.isEmpty()) {
-            return configurationFilePath;
-        }
-    #if defined(_WIN32)
-        QString testString{getInstallDirectory() + "config\\settings.xml"};
-    #else
-        QString testString{getInstallDirectory() + "config/settings.xml"};
-    #endif
-        if (QFile(testString).exists()) {
-            //Systemwide settings
-            configurationFilePath = testString;
-        } else {
-            configurationFilePath = testString;
-        }
-        return configurationFilePath;
     }
 
 
@@ -96,18 +78,6 @@ namespace ApplicationUtilities
 
     }
 
-    QString getInstallDirectory()
-    {
-    #if defined(_WIN32)
-        if (QSysInfo::windowsVersion() > QSysInfo::WinVersion::WV_VISTA) {
-            return (QString{"C:\\Program Files (x86)\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
-        } else {
-            return (QString{"C:\\"} + GlobalSettings::PROGRAM_LONG_NAME + "\\");
-        }
-    #else
-        return (QString{"/opt/"} + GlobalSettings::PROGRAM_LONG_NAME + "/");
-    #endif
-    }
 
     QString getOSVersion()
     {
@@ -341,14 +311,6 @@ namespace ApplicationUtilities
         return randomDevice->drawNumber(low, high);
     }
 
-    void logString(const std::string &str) { std::cout << str << std::endl; }
-    std::string toString(const std::string &str) { return str; }
-    std::string toString(const char *str) { return static_cast<std::string>(str); }
-
-    QString toQString(const std::string &convert) { return QString::fromStdString(convert); }
-    QString toQString(const char *convert) { return QString::fromStdString(static_cast<std::string>(convert)); }
-    QString toQString(const QString &convert) { return convert; }
-
     int roundIntuitively(double numberToRound)
     {
         double tempContainer{numberToRound - static_cast<int>(numberToRound)};
@@ -357,53 +319,6 @@ namespace ApplicationUtilities
         } else {
             return static_cast<int>(numberToRound);
         }
-    }
-
-    std::string getPadding(size_t howMuch, char padChar)
-    {
-        std::string returnString{""};
-        for (size_t i = 0; i < howMuch; i++) {
-            returnString += padChar;
-        }
-        return returnString;
-    }
-
-    std::string getPadding(size_t howMuch, const char *padString)
-    {
-        std::string returnString{""};
-        for (size_t i = 0; i < howMuch; i++) {
-            returnString += padString;
-        }
-        return returnString;
-    }
-
-    std::string getPadding(size_t howMuch, const std::string &padString)
-    {
-        std::string returnString{""};
-        for (size_t i = 0; i < howMuch; i++) {
-            returnString += padString;
-        }
-        return returnString;
-    }
-
-    int stringToInt(const std::string &str)
-    {
-        std::string copyString{""};
-        std::copy_if(str.begin(), str.end(), std::back_inserter(copyString), [](char c) -> bool { return std::isdigit(c); });
-        if (std::all_of(copyString.begin(), copyString.end(), [](char c) -> bool { return c == '0'; })) {
-            return 0;
-        }
-        int returnValue{atoi(copyString.c_str())};
-        if (!returnValue) {
-            throw std::runtime_error("");
-        } else {
-            return returnValue;
-        }
-    }
-
-    int stringToInt(const char *str)
-    {
-        return stringToInt(std::string{str});
     }
 
     bool endsWith(const std::string &stringToCheck, const std::string &matchString)
@@ -474,7 +389,7 @@ namespace ApplicationUtilities
    {
        std::string copyString{value};
        std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
-       return (copyString == "true" ? true : false);
+       return copyString == "true";
    }
 
    QString boolToQString(bool value)
@@ -557,4 +472,145 @@ namespace ApplicationUtilities
        auto nixPathCount = std::count_if(copyString.begin(), copyString.end(), [](char c) { return c == '/'; });
        return windowsPathCount > nixPathCount;
    }
+#if !defined(_MSC_VER)
+std::string buildShortOptions(option *longOptions, size_t numberOfLongOptions)
+{
+    std::string returnString{""};
+    for (size_t i = 0; i < numberOfLongOptions; i++) {
+        option *currentOption{longOptions + i};
+        if (currentOption->val == 0) {
+            continue;
+        }
+        returnString += static_cast<char>(currentOption->val);
+        if (currentOption->has_arg == required_argument) {
+            returnString += ':';
+        }
+    }
+    return returnString;
+}
+#endif //!defined(_MSC_VER)
+
+std::vector<std::string> split(const std::string &inputString, char delimiter)
+{
+    std::istringstream stringStream{inputString};
+    std::string item{""};
+    std::vector<std::string> returnVector{};
+    while(std::getline(stringStream, item, delimiter)) {
+        returnVector.push_back(item);
+    }
+    return returnVector;
+}
+
+std::string dataBitsToString(CppSerialPort::DataBits dataBits) {
+    switch (dataBits) {
+        case CppSerialPort::DataBits::DataFive:  return "5";
+        case CppSerialPort::DataBits::DataSix:   return "6";
+        case CppSerialPort::DataBits::DataSeven: return "7";
+        case CppSerialPort::DataBits::DataEight: return "8";
+    }
+    Q_UNREACHABLE();
+}
+
+std::string stopBitsToString(CppSerialPort::StopBits stopBits) {
+#if defined(_WIN32)
+    switch (stopBits) {
+        case CppSerialPort::StopBits::StopOne:     return "1";
+        case CppSerialPort::StopBits::StopOneFive: return "1.5";
+        case CppSerialPort::StopBits::StopTwo:     return "2";
+    }
+#else
+    switch (stopBits) {
+        case CppSerialPort::StopBits::StopOne:     return "1";
+        case CppSerialPort::StopBits::StopTwo:     return "2";
+    }
+#endif
+    Q_UNREACHABLE();
+}
+
+std::string parityToString(CppSerialPort::Parity parity) {
+#if defined(_WIN32)
+    switch (parity) {
+        case CppSerialPort::Parity::ParityEven:  return "Even";
+        case CppSerialPort::Parity::ParityOdd:   return "Odd";
+        case CppSerialPort::Parity::ParityNone:  return "None";
+        case CppSerialPort::Parity::ParitySpace: return "Space";
+        case CppSerialPort::Parity::ParityMark:  return "Mark";
+    }
+#else
+    switch (parity) {
+        case CppSerialPort::Parity::ParityEven:  return "Even";
+        case CppSerialPort::Parity::ParityOdd:   return "Odd";
+        case CppSerialPort::Parity::ParityNone:  return "None";
+        case CppSerialPort::Parity::ParitySpace: return "Space";
+    }
+#endif //defined(_WIN32)
+    Q_UNREACHABLE();
+}
+
+std::string flowControlToString(CppSerialPort::FlowControl flowControl) {
+    switch (flowControl) {
+        case CppSerialPort::FlowControl::FlowOff:      return "Off";
+        case CppSerialPort::FlowControl::FlowHardware: return "Hardware";
+        case CppSerialPort::FlowControl::FlowXonXoff:  return "XonXoff";
+    }
+    Q_UNREACHABLE();
+
+}
+
+std::string baudRateToString(CppSerialPort::BaudRate baudRate) {
+#if defined(_WIN32)
+    switch (baudRate) {
+        case CppSerialPort::BaudRate::Baud110:    return "110";
+        case CppSerialPort::BaudRate::Baud300:    return "300";
+        case CppSerialPort::BaudRate::Baud600:    return "600";
+        case CppSerialPort::BaudRate::Baud1200:   return "1200";
+        case CppSerialPort::BaudRate::Baud2400:   return "2400";
+        case CppSerialPort::BaudRate::Baud4800:   return "4800";
+        case CppSerialPort::BaudRate::Baud9600:   return "9600";
+        case CppSerialPort::BaudRate::Baud19200:  return "19200";
+        case CppSerialPort::BaudRate::Baud38400:  return "38400";
+        case CppSerialPort::BaudRate::Baud57600:  return "57600";
+        case CppSerialPort::BaudRate::Baud115200: return "115200";
+        case CppSerialPort::BaudRate::Baud128000: return "128000";
+        case CppSerialPort::BaudRate::Baud256000: return "256000";
+    }
+#else
+    switch (baudRate) {
+        case CppSerialPort::BaudRate::Baud50:      return "50";
+        case CppSerialPort::BaudRate::Baud75:      return "75";
+        case CppSerialPort::BaudRate::Baud110:     return "110";
+        case CppSerialPort::BaudRate::Baud134:     return "134";
+        case CppSerialPort::BaudRate::Baud150:     return "150";
+        case CppSerialPort::BaudRate::Baud200:     return "200";
+        case CppSerialPort::BaudRate::Baud300:     return "300";
+        case CppSerialPort::BaudRate::Baud600:     return "600";
+        case CppSerialPort::BaudRate::Baud1200:    return "1200";
+        case CppSerialPort::BaudRate::Baud1800:    return "1800";
+        case CppSerialPort::BaudRate::Baud2400:    return "2400";
+        case CppSerialPort::BaudRate::Baud4800:    return "4800";
+        case CppSerialPort::BaudRate::Baud9600:    return "9600";
+        case CppSerialPort::BaudRate::Baud19200:   return "19200";
+        case CppSerialPort::BaudRate::Baud38400:   return "38400";
+        case CppSerialPort::BaudRate::Baud57600:   return "57600";
+        case CppSerialPort::BaudRate::Baud115200:  return "115200";
+        case CppSerialPort::BaudRate::Baud230400:  return "230400";
+        case CppSerialPort::BaudRate::Baud460800:  return "460800";
+        case CppSerialPort::BaudRate::Baud500000:  return "500000";
+        case CppSerialPort::BaudRate::Baud576000:  return "576000";
+        case CppSerialPort::BaudRate::Baud921600:  return "921600";
+        case CppSerialPort::BaudRate::Baud1000000: return "1000000";
+        case CppSerialPort::BaudRate::Baud1152000: return "1152000";
+        case CppSerialPort::BaudRate::Baud1500000: return "1500000";
+        case CppSerialPort::BaudRate::Baud2000000: return "2000000";
+        case CppSerialPort::BaudRate::Baud2500000: return "2500000";
+        case CppSerialPort::BaudRate::Baud3000000: return "3000000";
+        case CppSerialPort::BaudRate::Baud3500000: return "3500000";
+        case CppSerialPort::BaudRate::Baud4000000: return "4000000";
+    }
+#endif //defined(_WIN32)
+    Q_UNREACHABLE();
+
+
+}
+
 }

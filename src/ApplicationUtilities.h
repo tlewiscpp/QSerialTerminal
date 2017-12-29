@@ -1,5 +1,5 @@
-#ifndef TRMIDOUBLECHECKBOX_APPLICATONUTILITIES_H
-#define TRMIDOUBLECHECKBOX_APPLICATONUTILITIES_H
+#ifndef QSERIALTERMINAL_APPLICATONUTILITIES_H
+#define QSERIALTERMINAL_APPLICATONUTILITIES_H
 
 #include <iostream>
 #include <sstream>
@@ -17,36 +17,39 @@
 #include <QCryptographicHash>
 #include <QString>
 
+#if !defined(_MSC_VER)
+#    include  <getopt.h>
+#endif //!defined(_MSC_VER)
+
+#include "SerialPort.h"
+
 class QFile;
 class QByteArray;
 
 namespace ApplicationUtilities
 {
-std::string stripLineEndings(std::string str);
-    QString getUserConfigurationFilePath();
-    QString getConfigurationFilePath();
-    void regenerateSystemwideSettingsFile(const QString &systemSettingsFilePath);
+    std::string stripLineEndings(std::string str);
     QString getProgramSettingsDirectory();
     QString getInstallDirectory();
     void checkOrCreateProgramSettingsDirectory();
     QString getLogFilePath();
     QString getLogFileName();
-
     QString getOSVersion();
     QString getBuildArchitecture();
     QString getCurrentArchitecture();
-    bool containsSeparator(const char *testString);
-    std::pair<int, int> tryParseDimensions(const std::string &maybeDimensions);
-    std::pair<int, int> tryParseDimensions(const char *maybeDimensions);
     std::string nWhitespace(size_t howMuch);
 
+    extern bool verboseLogging;
+    void exitApplication(const std::string &reason, int exitCode);
 
+QString getPID();
 
     class Random
     {
     public:
         Random() = default;
-        Random(std::mt19937::result_type seed);
+
+        explicit Random(std::mt19937::result_type seed);
         int drawNumber(int min, int max);
 
     private:
@@ -56,79 +59,16 @@ std::string stripLineEndings(std::string str);
     int randomBetween(int lowLimit, int highLimit, bool lowInclusive = false, bool highInclusive = false);
 
     void logString(const std::string &str);
-
-    template<typename T>
-    std::string toString(const T &convert)
-    {
-        std::string returnString{""};
-        std::stringstream transfer;
-        transfer << convert;
-        transfer >> returnString;
-        return returnString;
-    }
-
-
-    std::string toString(const std::string &str);
-    std::string toString(const char *str);
     std::string getPadding(size_t howMuch, char padChar);
     std::string getPadding(size_t howMuch, const char *padString);
     std::string getPadding(size_t howMuch, const std::string &padString);
-
-    template <typename T>
-    QString toQString(const T &convert) { return QString::fromStdString(toString(convert)); }
-    QString toQString(const std::string &convert);
-    QString toQString(const char *convert);
-    QString toQString(const QString &convert);
 
     int roundIntuitively(double numberToRound);
     bool endsWith(const std::string &stringToCheck, const std::string &matchString);
     bool endsWith(const std::string &stringToCheck, char matchChar);
 
-    template<typename Container>
-    bool isSwitch(const std::string &switchToCheck, const Container &switches) {
-        std::string copyString{switchToCheck};
-        std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
-        for (auto &it : switches) {
-            if ((copyString == static_cast<std::string>(it)) &&
-                (copyString.length() == static_cast<std::string>(it).length()) &&
-                (copyString.find(static_cast<std::string>(it)) == 0)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    template<typename Container>
-    bool isSwitch(const char *switchToCheck, const Container &switches) {
-        return isSwitch(static_cast<std::string>(switchToCheck), switches);
-    }
-
-    template<typename Container>
-    bool isEqualsSwitch(const std::string &switchToCheck, const Container &switches) {
-        std::string copyString{switchToCheck};
-        std::transform(copyString.begin(), copyString.end(), copyString.begin(), ::tolower);
-        for (auto &it : switches) {
-            std::string copySwitch{static_cast<std::string>(it) + "="};
-            if ((copyString.find(static_cast<std::string>(it) + "=") == 0)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    template<typename Container>
-    bool isEqualsSwitch(const char *switchToCheck, const Container &switches) {
-        return isEqualsSwitch(static_cast<std::string>(switchToCheck), switches);
-    }
-
-
     template <typename T>
-    std::string toStdString(const T &rhs)
-    {
-        std::stringstream stringStream{};
-        stringStream << rhs;
-        return stringStream.str();
-    }
+    std::string toStdString(const T &rhs);
 
     /*snprintf style*/
     template<typename ... Args>
@@ -266,6 +206,31 @@ std::string stripLineEndings(std::string str);
     std::string stripFromString(const std::string &stringToStrip, char whatToStrip);
     std::string stripAllFromString(const std::string &stringToStrip, const std::string &whatToStrip);
     std::string stripAllFromString(const std::string &stringToStrip, char whatToStrip);
+
+#if !defined(_MSC_VER)
+std::string buildShortOptions(option *longOptions, size_t numberOfLongOptions);
+#endif //!defined(_MSC_VER)
+
+std::vector<std::string> split(const std::string &inputString, char delimiter);
+
+std::string dataBitsToString(CppSerialPort::DataBits dataBits);
+std::string stopBitsToString(CppSerialPort::StopBits stopBits);
+std::string parityToString(CppSerialPort::Parity parity);
+std::string flowControlToString(CppSerialPort::FlowControl flowControl);
+std::string baudRateToString(CppSerialPort::BaudRate baudRate);
+
+
+template <typename T> inline std::string toStdString(const T &t) {
+    return dynamic_cast<std::ostringstream &>(std::ostringstream{} << t).str();
 }
 
-#endif //TRMIDOUBLECHECKBOX_APPLICATONUTILITIES_H
+template<> inline std::string toStdString(const CppSerialPort::BaudRate &baudRate) { return baudRateToString(baudRate); }
+template<> inline std::string toStdString(const CppSerialPort::StopBits &stopBits) { return stopBitsToString(stopBits); }
+template<> inline std::string toStdString(const CppSerialPort::Parity &parity) { return parityToString(parity); }
+template<> inline std::string toStdString(const CppSerialPort::FlowControl &flowControl) { return flowControlToString(flowControl); }
+template<> inline std::string toStdString(const CppSerialPort::DataBits &dataBits) { return dataBitsToString(dataBits); }
+
+
+}
+
+#endif //QSERIALTERMINAL_APPLICATONUTILITIES_H

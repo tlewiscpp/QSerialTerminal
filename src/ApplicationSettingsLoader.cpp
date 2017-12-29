@@ -13,6 +13,7 @@ ApplicationSettingsLoader::ApplicationSettingsLoader(QObject *parent) :
 
 void ApplicationSettingsLoader::saveApplicationSettings(const ApplicationSettings &settings)
 {
+    (void)settings;
     QSettings settingsSaver;
     settingsSaver.sync();
     LOG_INFO() << "Successfully saved (valid) application settings";

@@ -1,5 +1,5 @@
-#ifndef TRMIDOUBLECHECKBOX_GLOBALDEFINITIONS_H
-#define TRMIDOUBLECHECKBOX_GLOBALDEFINITIONS_H
+#ifndef QSERIALTERMINAL_GLOBALDEFINITIONS_H
+#define QSERIALTERMINAL_GLOBALDEFINITIONS_H
 
 #include <QDebug>
 #include <QString>
@@ -11,8 +11,8 @@
 #ifndef LOG_INFO
 #    define LOG_INFO(x) qInfo(x)
 #endif
-#ifndef LOG_WARNING
-#    define LOG_WARNING(x) qWarning(x)
+#ifndef LOG_WARN
+#    define LOG_WARN(x) qWarning(x)
 #endif
 #ifndef LOG_CRITICAL
 #    define LOG_CRITICAL(x) qCritical(x)
@@ -33,7 +33,5 @@
 #    endif
 #endif
 
-extern void exitApplication(const std::string &why, int errorCode);
 
-
-#endif // TRMIDOUBLECHECKBOX_GLOBALDEFINITIONS_H
+#endif // QSERIALTERMINAL_GLOBALDEFINITIONS_H

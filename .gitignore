@@ -12,7 +12,8 @@
 
 .idea/
 cmake-build-debug/
-
+.vs/
+.vscode/
 # Qt-es
 
 /.qmake.cache

@@ -8,6 +8,14 @@
 
 namespace ApplicationStrings
 {
+const char * const ACTION_INDEX_PROPERTY_TAG{"Index"};
+const char * const PARITY_ACTION_KEY{"Parity"};
+const char * const BAUD_RATE_ACTION_KEY{"BaudRate"};
+const char * const STOP_BITS_ACTION_KEY{"StopBits"};
+const char * const DATA_BITS_ACTION_KEY{"DataBits"};
+const char * const FLOW_CONTROL_ACTION_KEY{"FlowControl"};
+const char * const LINE_ENDING_ACTION_KEY{"LineEnding"};
+const char * const PORT_NAME_ACTION_KEY{"PortName"};
 const char * const QUIT_PROMPT_STRING{"Are you sure you want to quit?"};
 const char * const QUIT_PROMPT_WINDOW_TITLE_STRING{"Quit QSerialTerminal?"};
 const char * const INVALID_SETTINGS_DETECTED_STRING{"Invalid settings detected, please reselect serial port settings: "};
@@ -19,7 +27,7 @@ const char * const MAIN_WINDOW_STYLESHEET{ "" };
 const char * const BLUE_COLOR_STRING{"blue"};
 const char * const RED_COLOR_STRING{"red"};
 const char * const LICENSE_PATH{":/licenses/licenses/LICENSE"};
-const char * const ACTION_INDEX_PROPERTY_TAG{"Index"};
+const char * const LICENSE_PATH_KEY{"LicensePath"};
 
 const char * const TERMINAL_RECEIVE_BASE_STRING{"Rx << "};
 const char * const TERMINAL_TRANSMIT_BASE_STRING{"Tx >> "};

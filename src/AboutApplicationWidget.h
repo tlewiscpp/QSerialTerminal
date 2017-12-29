@@ -1,5 +1,5 @@
-#ifndef QSERIALTERMINAL_ABOUTAPPLICATIONWIDGET_H
-#define QSERIALTERMINAL_ABOUTAPPLICATIONWIDGET_H
+#ifndef TRMIDOUBLECHECKBOX_ABOUTAPPLICATIONWIDGET_H
+#define TRMIDOUBLECHECKBOX_ABOUTAPPLICATIONWIDGET_H
 
 namespace Ui {
     class AboutApplicationWidget;
@@ -7,6 +7,7 @@ namespace Ui {
 
 #include <memory>
 #include <QWidget>
+#include <QtWidgets/QTextEdit>
 
 class QDesktopWidget;
 
@@ -14,8 +15,13 @@ class AboutApplicationWidget : public QWidget
 {
     Q_OBJECT
 public:
-    AboutApplicationWidget(QWidget *parent = nullptr);
-    ~AboutApplicationWidget();
+    explicit AboutApplicationWidget(QWidget *parent = nullptr);
+    ~AboutApplicationWidget() override;
+
+    AboutApplicationWidget(const AboutApplicationWidget &rhs) = delete;
+    AboutApplicationWidget(AboutApplicationWidget &&rhs) = delete;
+    AboutApplicationWidget &operator=(const AboutApplicationWidget &rhs) = delete;
+    AboutApplicationWidget &operator=(AboutApplicationWidget &&rhs) = delete;
 
 signals:
     void aboutToClose();
@@ -24,15 +30,19 @@ signals:
 public:
     void closeEvent(QCloseEvent *ce) override;
 
-private slots:
+    int addLicenseTab(const QString &licenseName, const QString &licensePath);
+
+protected:
     void onLicenseButtonClicked(bool checked);
     void onCloseButtonClicked(bool checked);
 private:
-    std::unique_ptr<Ui::AboutApplicationWidget> m_ui;
+    Ui::AboutApplicationWidget *m_ui;
     int m_licenseHiddenHeight;
+    std::map<std::string, QTextEdit *> m_licenseTabs;
 
     void populateLicenseText();
     void clearLicenseText();
+
 };
 
-#endif //QSERIALTERMINAL_ABOUTAPPLICATIONWIDGET_H
+#endif //TRMIDOUBLECHECKBOX_ABOUTAPPLICATIONWIDGET_H
