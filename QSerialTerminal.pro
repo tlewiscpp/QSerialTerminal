@@ -41,8 +41,7 @@ SOURCES += \
     $${SOURCE_ROOT}/SerialPort.cpp \
     $${SOURCE_ROOT}/IByteStream.cpp \
     $${SOURCE_ROOT}/SingleInstanceGuard.cpp \
-    $${SOURCE_ROOT}/AboutApplicationWidget.cpp \
-    src/win32_getopt.cpp
+    $${SOURCE_ROOT}/AboutApplicationWidget.cpp
 
 HEADERS += \
     $${SOURCE_ROOT}/GlobalDefinitions.h \
@@ -58,8 +57,7 @@ HEADERS += \
     $${SOURCE_ROOT}/SingleInstanceGuard.h \
     $${SOURCE_ROOT}/QActionSetDefs.h \
     $${SOURCE_ROOT}/ApplicationStrings.h \
-    $${SOURCE_ROOT}/Version.h \
-    $${SOURCE_ROOT}/win32_getopt.h
+    $${SOURCE_ROOT}/Version.h
 
 FORMS += \
     $${FORMS_ROOT}/MainWindow.ui \

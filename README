@@ -6,11 +6,10 @@ To install (Linux):
 Open up a terminal shell and clone the source:  
     git clone https://github.com/tlewiscpp/QSerialTerminal
 
-Run the install script with the target installation directory as an argument (the directory will be created if it does not exist):
-	./install-qminesweeper.sh ~/QMineSweeperBuild/
+Run one of the two scripts with the target installation directory as an argument (the directory will be created if it does not exist):
+	./install-cmake.sh ~/QSerialTerminalBuild/
+	or
+	./install-qmake.sh ~/QSerialTerminalBuild/
 
-Note that the install-qminesweeper.sh script is a symlink to one of the two build system scripts (install-qminesweeper-cmake.sh and install-qminesweeper-qmake.sh), which invoke their respective build systems. These can be called directly is one is desired over the other.
-
-To install (Windows):
-
-Coming soon! (Sorry Windows users)
+To build and install (Windows):
+Install Tortoisegit and Qt. See DEVEL-WINDOWS.txt for details

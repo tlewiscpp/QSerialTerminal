@@ -1,0 +1,68 @@
+====================
+Required disk space:
+====================
+Qt:
+Buid directory:
+
+
+==========================================
+Getting the source and contribute changes:
+==========================================
+Download and install tortoisegit from here:
+https://code.google.com/p/tortoisegit/wiki/Download
+
+https://github.com/tlewiscpp/QSerialTerminal
+Go to the git repository of QSerialTerminal, create an account, and login. Next click "fork" at the top-left, then click @yourusername. Now the fork is created. Next press the button "Clone or download" from the top-left, and copy the URL. 
+
+create a new folder somewhere on your hard disk.
+right-click the folder, choose "Git Clone..."
+enter the copied URL into the line "URL:" and press OK, it should be something like this:
+https://github.com/yourusername/QSerialTerminal.git
+Now the folder "QSerialTerminal" appears.
+
+Right-click on the folder, and choose TortoiseGit->Create branch. Now choose a fun name, for instance "devel-guide" and press OK.
+Right-click on the folder, and choose TortoiseGit->Switch/Checkout. From the pull down menu, choose "devel-guide" and press OK, and the close.
+
+When you have edited or added files, right-click on the folder, choose commit -> devel-guide.
+You will be asked to enter information why you made the changes. This information is stored locally on your computer.
+Next, publish the changes you have made to github by right-click, and push. You will be asked for your github password. Now the changes are transferred to your version on github.
+
+Finally, login to github, navigate to your fork of QSerialTerminal, and click "New pull request"
+Provide a meaningful summary and description, then click "Save". Now the developers are notified of your changes.
+
+===========
+Getting Qt:
+===========
+http://www.qt.io/download-open-source/
+http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+welcome-> next
+qt account -> leave all empty, skip
+qt setup -> next
+installation folder: c:\qt -> next
+select components: qt 5.10.0, deselect all, select minGW 5.3.0 32 bit -> next
+select components: tools-> MinGW 5.3.0
+license Agreement: agree -> next
+start menu shortcuts -> next
+install
+installation finished -> next -> launch
+
+======================
+Debug QSerialTerminal
+======================
+Start Qt creator, open project,  browse to QSerialTerminal\QSerialTerminal.pro and then choose open
+configure project
+debug->start debugging->start debugging (F5)
+
+===============================
+Build a stand-alone executable:
+===============================
+Start Qt creator, open project,  browse to QSerialTerminal\QSerialTerminal.pro and then choose open
+At the left, choose Project-> choose Release from the "Edit build configuration" pull down menu.
+Then choose build->run Now the program is compiled in release mode
+Next select build-QSerialTerminal-Desktop_Qt_5_10_0_MinGW_32bit-Release\release\QSerialTerminal.exe and drop it on C:\Qt\5.10.0\mingw53_32\bin\windeployqt.exe Now almost all needed files are copied into the folder with QSerialTerminal.exe.
+manually copy the following files from C:\Qt\5.10.0\mingw53_32\bin to build-QSerialTerminal-Desktop_Qt_5_10_0_MinGW_32bit-Release\release\ :
+libgcc_s_dw2-1.dll
+libwinpthread-1.dll
+libstdc++-6.dll
+
+Optional: remove the .cpp .h and .o files from build-QSerialTerminal-Desktop_Qt_5_10_0_MinGW_32bit-Release\release\
