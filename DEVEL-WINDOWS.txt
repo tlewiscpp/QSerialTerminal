@@ -25,10 +25,12 @@ Right-click on the folder, and choose TortoiseGit->Switch/Checkout. From the pul
 
 When you have edited or added files, right-click on the folder, choose commit -> devel-guide.
 You will be asked to enter information why you made the changes. This information is stored locally on your computer.
-Next, publish the changes you have made to github by right-click, and push. You will be asked for your github password. Now the changes are transferred to your version on github.
+Next, publish the changes you have made to github by right-click, and push and ok. You will be asked for your github password. Now the changes are transferred to your version on github. Click close
 
 Finally, login to github, navigate to your fork of QSerialTerminal, and click "New pull request"
-Provide a meaningful summary and description, then click "Save". Now the developers are notified of your changes.
+On the right choose "compare: devel-guide" from the pull down menu.
+Click "Create pull request"
+Provide a meaningful summary and description, then click "Create pull request". Now the developers are notified of your changes.
 
 ===========
 Getting Qt:
