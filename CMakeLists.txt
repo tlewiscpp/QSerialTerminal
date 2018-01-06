@@ -12,12 +12,16 @@ if (POLICY CMP0071)
     cmake_policy(SET CMP0071 NEW)
 endif()
 
-
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
 if (WIN32)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+		set(WIN_COMPILER "MSVC")
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		set(WIN_COMPILER "MINGW")
+	endif()
     if (NOT WIN_COMPILER)
         message(FATAL_ERROR "Please specify -DWIN_COMPILER=MSVC or -DWIN_COMPILER=MINGW")
     endif()
@@ -144,17 +148,43 @@ set (${PROJECT_NAME}_TRANSLATION_TEMPLATES
 
 qt5_wrap_ui (${PROJECT_NAME}_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
 
-add_executable(${PROJECT_NAME}
-        ${${PROJECT_NAME}_SOURCE_FILES}
-        ${${PROJECT_NAME}_HEADER_FILES}
-        ${${PROJECT_NAME}_FORMS}
-        ${${PROJECT_NAME}_RESOURCES})
+if (WIN32)
+	add_executable(${PROJECT_NAME}
+			WIN32
+			${${PROJECT_NAME}_SOURCE_FILES}
+			${${PROJECT_NAME}_HEADER_FILES}
+			${${PROJECT_NAME}_FORMS}
+			${${PROJECT_NAME}_RESOURCES_RCC}
+			resources/${PROJECT_NAME}.rc)
+
+
+	if (WIN_COMPILER STREQUAL "MSVC")
+		add_custom_command(TARGET ${PROJECT_NAME}
+				POST_BUILD
+				COMMAND "${QT_ROOT}/${QT_MSVC_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+	elseif(WIN_COMPILER STREQUAL "MINGW")
+		add_custom_command(TARGET ${PROJECT_NAME}
+				POST_BUILD
+				COMMAND "${QT_ROOT}/${QT_MINGW_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+
+	endif()
+
+	target_link_libraries(${PROJECT_NAME} Shlwapi)
+else()
+	add_executable(${PROJECT_NAME}
+			${${PROJECT_NAME}_SOURCE_FILES}
+			${${PROJECT_NAME}_HEADER_FILES}
+			${${PROJECT_NAME}_FORMS}
+			${${PROJECT_NAME}_RESOURCES_RCC})
+
+	target_link_libraries (${PROJECT_NAME}
+			pthread)
+endif()
+
+qt5_use_modules(${PROJECT_NAME} ${QT_LIBRARY_LIST})
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
-
-
-qt5_use_modules(${PROJECT_NAME} ${QT_LIBRARY_LIST})
 
 #if (WIN32)
 #    target_link_libraries(${PROJECT_NAME} ${QT_LIBRARY_LIST})
@@ -162,7 +192,19 @@ qt5_use_modules(${PROJECT_NAME} ${QT_LIBRARY_LIST})
 #    target_link_libraries(${PROJECT_NAME} pthread ${QT_LIBRARY_LIST})
 #endif()
 if (WIN32)
-    target_link_libraries(${PROJECT_NAME} Shlwapi)
 else()
     target_link_libraries(${PROJECT_NAME} pthread)
+endif()
+
+if (WIN32)
+	if (WIN_COMPILER STREQUAL "MSVC")
+		add_custom_command(TARGET ${PROJECT_NAME}
+				POST_BUILD
+				COMMAND "${QT_ROOT}/${QT_MSVC_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+	elseif(WIN_COMPILER STREQUAL "MINGW")
+		add_custom_command(TARGET ${PROJECT_NAME}
+				POST_BUILD
+				COMMAND "${QT_ROOT}/${QT_MINGW_VERSION}/bin/windeployqt.exe" ARGS "${CMAKE_BINARY_DIR}/")
+
+	endif()
 endif()

@@ -21,7 +21,7 @@
 
 #if defined(_MSC_VER)
 #    if defined(SHARED_LIBRARY_BUILD)
-	/* define DLLBUILD when building the DLL */
+	    /* define DLLBUILD when building the DLL */
 #        define CPPSERIALPORT_API __declspec(dllexport)
 #    else
 #        define CPPSERIALPORT_API __declspec(dllimport)
@@ -87,9 +87,33 @@ protected:
 	static inline bool endsWith (const std::string &fullString, const std::string &ending) {
         return ( (fullString.length() < ending.length()) ? false : std::equal(ending.rbegin(), ending.rend(), fullString.rbegin()) );
     }
+	static inline bool endsWith(const std::string &fullString, char ending) {
+		return ((fullString.length() > 0) && (fullString.back() == ending));
+	}
+	static inline bool startsWith(const std::string &fullString, const std::string &start) {
+		return ((fullString.length() < start.length()) ? false : std::equal(start.begin(), start.end(), fullString.begin()));
+	}
+	static inline bool startsWith(const std::string &fullString, char start) {
+		return ((fullString.length() > 0) && (fullString.front() == start));
+	}
 	template<typename T> static inline std::string toStdString(const T &t) {
         return dynamic_cast<std::ostringstream &>(std::ostringstream{""} << t).str();
     }
+	static inline std::string stripLineEndings(const std::string &input) {
+		std::string str{ input };
+		if (endsWith(str, "\r\n")) {
+			str.pop_back();
+			str.pop_back();
+		} else if (endsWith(str, "\n\r")) {
+			str.pop_back();
+			str.pop_back();
+		} else if (endsWith(str, "\r")) {
+			str.pop_back();
+		} else if (endsWith(str, "\n")) {
+			str.pop_back();
+		}
+		return str;
+	}
 
 	static const int DEFAULT_READ_TIMEOUT;
 	static const int DEFAULT_WRITE_TIMEOUT;
@@ -101,6 +125,7 @@ private:
     int m_writeTimeout;
     std::string m_lineEnding;
     std::mutex m_writeMutex;
+	std::mutex m_readMutex;
 
 
     static const char *DEFAULT_LINE_ENDING;

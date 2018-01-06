@@ -31,7 +31,7 @@ namespace ApplicationUtilities
     std::string stripLineEndings(std::string str);
     QString getProgramSettingsDirectory();
     QString getInstallDirectory();
-    void checkOrCreateProgramSettingsDirectory();
+    void checkOrCreateProgramLogDirectory();
     QString getLogFilePath();
     QString getLogFileName();
     QString getOSVersion();

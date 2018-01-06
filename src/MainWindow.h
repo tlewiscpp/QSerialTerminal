@@ -2,6 +2,9 @@
 #define QSERIALTERMINAL_MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLabel>
+#include <QTimer>
+#include <QAction>
 
 #include <vector>
 #include <sstream>
@@ -11,15 +14,13 @@
 #include <list>
 #include <future>
 #include <memory>
-#include <QLabel>
-#include <QTimer>
+#include <unordered_set>
 
-#include "IByteStream.h"
-#include "SerialPort.h"
 #include "AboutApplicationWidget.h"
 #include "QActionSetDefs.h"
-#include <QAction>
 #include <functional>
+
+#include "SerialPort.h"
 
 class QDesktopWidget;
 class QCloseEvent;
@@ -158,17 +159,11 @@ private:
     void addNewLineEndingItem(const std::string &lineEnding);
 
     CppSerialPort::BaudRate getSelectedBaudRate();
-
     CppSerialPort::StopBits getSelectedStopBits();
-
     CppSerialPort::FlowControl getSelectedFlowControl();
-
     CppSerialPort::DataBits getSelectedDataBits();
-
     std::string getSelectedPortName();
-
-    CppSerialPort::Parity getSelectedParity();
-
+	CppSerialPort::Parity getSelectedParity();
     static std::unordered_set<QAction *>::iterator findInQActionSet(QActionSet *qActionSet, const QString &key);
 
     void setBaudRate(QAction *action);

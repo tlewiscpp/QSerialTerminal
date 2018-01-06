@@ -26,6 +26,68 @@
 #include "IByteStream.h"
 #include <unordered_set>
 
+#include <type_traits>
+
+
+//Thanks to Jarod42
+//https://stackoverflow.com/a/30561530/4791654
+//Used to allow only 1 constructor definition to encompass
+//all permutations of DataBits, StopBits, etc...
+
+namespace std {
+    template< bool B, class T, class F > using conditional_t = typename conditional<B,T,F>::type;
+    template< bool B, class T = void > using enable_if_t = typename enable_if<B,T>::type;
+}
+
+namespace PermutedConstructor 
+{
+
+    template <typename T, typename... Ts> struct has_T;
+
+    template <typename T> struct has_T<T> : std::false_type {};
+
+    template <typename T, typename... Ts> struct has_T<T, T, Ts...> : std::true_type {};
+
+    template <typename T, typename Tail, typename... Ts>
+    struct has_T<T, Tail, Ts...> : has_T<T, Ts...> {};
+
+    template <typename T, typename... Ts>
+    const T& get_or_default_impl(std::true_type,
+                                 const std::tuple<Ts...>& t,
+                                 const T&)
+    {
+        return std::get<T>(t);
+    }
+
+    template <typename T, typename... Ts>
+    const T& get_or_default_impl(std::false_type,
+                                 const std::tuple<Ts...>&,
+                                 const T& default_value)
+    {
+        return default_value;
+    }
+
+    template <typename T1, typename T2> struct is_included;
+
+    template <typename... Ts>
+    struct is_included<std::tuple<>, std::tuple<Ts...>> : std::true_type {};
+
+    template <typename T, typename... Ts, typename ... Ts2>
+    struct is_included<std::tuple<T, Ts...>, std::tuple<Ts2...>> :
+        std::conditional_t<has_T<T, Ts2...>::value,
+                          is_included<std::tuple<Ts...>, std::tuple<Ts2...>>,
+                          std::false_type> {};
+
+}
+
+template <typename T, typename... Ts>
+const T& get_or_default(const std::tuple<Ts...>& t,
+                        const T& default_value = T{})
+{
+    return PermutedConstructor::get_or_default_impl<T>(PermutedConstructor::has_T<T, Ts...>{}, t, default_value);
+}
+
+
 
 namespace CppSerialPort {
 
@@ -133,31 +195,33 @@ enum class BaudRate {
 class SerialPort : public IByteStream
 {
 public:
-    explicit SerialPort(const std::string &name);
-    SerialPort(const std::string &name, BaudRate baudRate);
-    SerialPort(const std::string &name, BaudRate baudRate, DataBits dataBits);
-    SerialPort(const std::string &name, BaudRate baudRate, StopBits stopBits);
-    SerialPort(const std::string &name, BaudRate baudRate, DataBits dataBits, Parity parity);
-    SerialPort(const std::string &name, BaudRate baudRate, StopBits stopBits, Parity parity);
-    SerialPort(const std::string &name, BaudRate baudRate, DataBits dataBits, StopBits stopBits, Parity parity);
-    SerialPort(const std::string &name, BaudRate baudRate, StopBits stopBits, DataBits dataBits, Parity parity);
-	SerialPort(const std::string &name, BaudRate baudRate, DataBits dataBits, StopBits stopBits, Parity parity, FlowControl flowControl);
-	SerialPort(const std::string &name, BaudRate baudRate, StopBits stopBits, DataBits dataBits, Parity parity, FlowControl flowControl);
+	SerialPort(const std::string &name, 
+    BaudRate baudRate = DEFAULT_BAUD_RATE, 
+    DataBits dataBits = DEFAULT_DATA_BITS, 
+    StopBits stopBits = DEFAULT_STOP_BITS, 
+    Parity parity = DEFAULT_PARITY, 
+    FlowControl flowControl = DEFAULT_FLOW_CONTROL, 
+    const std::string &lineEnding = DEFAULT_LINE_ENDING);
 
-
-    SerialPort(const std::string &name, DataBits dataBits);
-    SerialPort(const std::string &name, DataBits dataBits, StopBits stopBits);
-    SerialPort(const std::string &name, DataBits dataBits, StopBits stopBits, Parity parity);
-    SerialPort(const std::string &name, DataBits dataBits, Parity parity);
-    SerialPort(const std::string &name, StopBits stopBits);
-    SerialPort(const std::string &name, StopBits stopBits, Parity parity);
-    SerialPort(const std::string &name, Parity parity);
-
-    friend inline bool operator==(const SerialPort &lhs, const SerialPort &rhs) {
-        (void)lhs;
-        (void)rhs;
-        return false;
-    }
+    //Thanks to Jarod42
+    //https://stackoverflow.com/a/30561530/4791654
+    //Used to allow only 1 constructor definition to encompass
+    //all permutations of DataBits, StopBits, etc...
+    template <typename ... Ts,
+              typename std::enable_if_t<
+                  PermutedConstructor::is_included<std::tuple<Ts...>,
+                  std::tuple<const std::string &, BaudRate, DataBits, StopBits, Parity, FlowControl, const std::string &>>::value>* = nullptr>    
+    SerialPort(const Ts&... ts) :
+        SerialPort{
+            get_or_default<const std::string&>(std::tie(ts...)),
+            get_or_default<BaudRate>(std::tie(ts...)),
+            get_or_default<DataBits>(std::tie(ts...)),
+            get_or_default<StopBits>(std::tie(ts...)),
+            get_or_default<Parity>(std::tie(ts...)),
+            get_or_default<FlowControl>(std::tie(ts...)),
+            get_or_default<const std::string &>(std::tie(ts...))
+        }
+    {}
 
     SerialPort(SerialPort &&other) = delete;
     SerialPort &operator=(const SerialPort &rhs) = delete;
@@ -165,12 +229,12 @@ public:
     SerialPort(const SerialPort &other) = delete;
 	~SerialPort() override;
 
+    //IByteStream interface
 	void openPort() override;
     void closePort() override;
     char read() override;
     void setReadTimeout(int timeout) override;
 
-public:
     std::string portName() const override;
     bool isOpen() const override;
 
@@ -198,7 +262,6 @@ public:
     Parity parity() const;
     FlowControl flowControl() const;
 
-
     static const StopBits DEFAULT_STOP_BITS;
     static const Parity DEFAULT_PARITY;
     static const BaudRate DEFAULT_BAUD_RATE;
@@ -208,7 +271,6 @@ public:
 
     static std::unordered_set<std::string> availableSerialPorts();
     static bool isValidSerialPortName(const std::string &serialPortName);
-
     static const long DEFAULT_RETRY_COUNT;
 
 private:
@@ -232,8 +294,6 @@ private:
     static const std::vector<std::string> SERIAL_PORT_NAMES;
     void putBack(char c) override;
 
-    int getFileDescriptor() const;
-
 	static int getLastError();
 	static std::string getErrorString(int errorCode);
 
@@ -250,9 +310,11 @@ private:
     static const int constexpr NUMBER_OF_POSSIBLE_SERIAL_PORTS{256*9};
     termios m_portSettings;
     termios m_oldPortSettings;
+	int getFileDescriptor() const;
 #endif
     void applyPortSettings();
-        modem_status_t getModemStatus() const; };
+    modem_status_t getModemStatus() const; 
+};
 
 } //namespace CppSerialPort
 

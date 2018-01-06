@@ -212,83 +212,62 @@ QString getPID() {
         return QSysInfo::currentCpuArchitecture();
     }
 
-    void checkOrCreateProgramSettingsDirectory()
-    {
-        QString settings{getProgramSettingsDirectory()};
-        QDir settingsDirectory{settings};
-        std::vector<QString> toLogInfo{};
-        if (settingsDirectory.exists()) {
-            toLogInfo.push_back(QString{"Detected settings directory at %1"}.arg(settings));
-        } else {
-            if (settingsDirectory.mkpath(".")) {
-                toLogInfo.push_back(QString{"Settings directory not found, created new directory at %1"}.arg(settings));
-            } else {
-                throw std::runtime_error(QString{"Settings directory not found, and one could not be created at %1"}.arg(settings).toStdString());
-            }
-        }
-#if defined(_WIN32)
-        settings = settings + "log\\";
-#else
-        settings = QString{"/tmp/"} + GlobalSettings::PROGRAM_NAME;
-#endif
-        settingsDirectory = QDir{settings};
-        if (settingsDirectory.exists()) {
-            toLogInfo.push_back(QString{"Detected log directory at %1"}.arg(settings));
-        } else {
-            if (settingsDirectory.mkpath(".")) {
-                toLogInfo.push_back(QString{"Log directory not found, created new directory at %1"}.arg(settings));
-            } else {
-                throw std::runtime_error(QString{"Log directory not found, and one could not be created at %1"}.arg(settings).toStdString());
-            }
-        }
-        for (auto &it : toLogInfo) {
-            LOG_INFO() << it;
-        }
-    }
-
-#if defined(_WIN32)
-    QString getLogFilePath()
-    {
-        if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
-            return QString{"%1log\\%2"}.arg(programSettingsDirectory, logFileName);
-        } else {
-            QString log{getLogFileName()};
-            QString settings{getProgramSettingsDirectory()};
-            return  QString{"%1log\\%2"}.arg(settings, log);
-        }
-    }
-#else
-    QString getLogFilePath()
-    {
-        if ((!programSettingsDirectory.isEmpty()) && (!logFileName.isEmpty())) {
-            return QString{"/tmp/%1/%2"}.arg(GlobalSettings::PROGRAM_NAME, logFileName);
-        } else {
-            QString log{getLogFileName()};
-            QString settings{getProgramSettingsDirectory()};
-            (void)settings;
-            return QString{"/tmp/%1/%2"}.arg(GlobalSettings::PROGRAM_NAME, logFileName);
-        }
-    }
-#endif
+	bool clearDirectoryOfFiles(const QString &directoryPath) {
+		QDir directory{ directoryPath };
+		if (!directory.exists()) {
+			return false;
+		}
+		directory.setNameFilters({ "*.*" });
+		directory.setFilter(QDir::Files);
+		for (auto &it : directory.entryList()) {
+			directory.remove(it);
+		}
+		return true;
+	}
 
 
-    QString getLogFileName()
-    {
-        if (logFileName.isEmpty()) {
-            QString currentDateTime{QDateTime::currentDateTime().toString()};
-            QString newDateTime{""};
-            for (const auto &it : currentDateTime) {
-                if ((it == ' ') || (it == ':')) {
-                    newDateTime += '-';
-                } else {
-                    newDateTime += it.toLower();
-                }
-            }
-            //logFileName = QString{"%1-%2.log"}.arg(newDateTime, QS_NUMBER(randomBetween(0, 60000)));
-            logFileName = QString{"%1.log"}.arg(newDateTime);
-        }
-        return logFileName;
-    }
+	void checkOrCreateProgramLogDirectory() {
+		std::vector<QString> toLogInfo{};
+		QString settings{ QDir::tempPath() + '/' + QCoreApplication::applicationName() };
+		QDir settingsDirectory{ settings };
+		if (settingsDirectory.exists()) {
+			clearDirectoryOfFiles(settings);
+			toLogInfo.push_back(QString{ "Detected log directory at %1" }.arg(settings));
+			toLogInfo.emplace_back("Cleared stale log entries");
+		} else {
+			if (settingsDirectory.mkpath(".")) {
+				toLogInfo.push_back(QString{ "Log directory not found, created new directory at %1" }.arg(settings));
+			} else {
+				throw std::runtime_error(QString{ "Log directory not found, and one could not be created at %1" }.arg(settings).toStdString());
+			}
+		}
+		for (auto &it : toLogInfo) {
+			LOG_INFO() << it;
+		}
+	}
+	QString getLogFilePath() {
+		if (logFileName.isEmpty()) {
+			QString log{ getLogFileName() };
+		}
+		return QString{ "%1/%2/%3" }.arg(QDir::tempPath(), QCoreApplication::applicationName(), logFileName);
+	}
+
+	QString getLogFileName() {
+		if (logFileName.isEmpty()) {
+			QString currentDateTime{ QDateTime::currentDateTime().toString() };
+			QString newDateTime{ "" };
+			for (const auto &it : currentDateTime) {
+				if ((it == ' ') || (it == ':')) {
+					newDateTime += '-';
+				} else {
+					newDateTime += it.toLower();
+				}
+			}
+			//logFileName = QString{"%1-%2.log"}.arg(newDateTime, QS_NUMBER(randomBetween(0, 60000)));
+			logFileName = QString{ "%1.log" }.arg(newDateTime);
+		}
+		return logFileName;
+		}
 
 
     static std::unique_ptr<Random> randomDevice = std::unique_ptr<Random>{new Random()};

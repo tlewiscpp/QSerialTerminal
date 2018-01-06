@@ -62,10 +62,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain(REMOTE_URL);
     QCoreApplication::setApplicationName(PROGRAM_LONG_NAME);
 
-    ApplicationUtilities::checkOrCreateProgramSettingsDirectory();
+    ApplicationUtilities::checkOrCreateProgramLogDirectory();
 
 #if defined(_MSC_VER)
-    for (int i = 0; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
         auto it = argv[i];
         if (strlen(it) <= 0) {
             continue;

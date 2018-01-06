@@ -15,10 +15,8 @@
 #include <QtWidgets/QStatusBar>
 #include <QLabel>
 
+#include "IByteStream.h"
 #include "SerialPort.h"
-
-
-using namespace CppSerialPort;
 
 const int MainWindow::CHECK_PORT_DISCONNECT_TIMEOUT{750};
 const int MainWindow::CHECK_PORT_RECEIVE_TIMEOUT{1};
@@ -413,16 +411,18 @@ void MainWindow::launchSerialReceiveAsync()
         return;
     }
     try {
+		bool resetNeeded{ false };
         if (!this->m_serialReceiveAsyncHandle) {
-           this->m_serialReceiveAsyncHandle = std::unique_ptr< std::future<std::string> >{new std::future<std::string>{std::async(std::launch::async,
-                                                                                        &MainWindow::checkSerialReceive,
-                                                                                        this)}};
+			resetNeeded = true;
         }
-        if (this->m_serialReceiveAsyncHandle->wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
-            appendReceivedString(this->m_serialReceiveAsyncHandle->get());
-            this->m_serialReceiveAsyncHandle = std::unique_ptr<std::future<std::string>>{new std::future<std::string>{std::async(std::launch::async,
-                                                                                          &MainWindow::checkSerialReceive,
-                                                                                          this)}};
+		if (this->m_serialReceiveAsyncHandle->wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+			appendReceivedString(this->m_serialReceiveAsyncHandle->get());
+			resetNeeded = true;
+		}
+		if (resetNeeded) {
+            this->m_serialReceiveAsyncHandle.reset(new std::future<std::string>{std::async(std::launch::async,
+                                                    &MainWindow::checkSerialReceive,
+                                                    this)});
         }
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;

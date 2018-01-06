@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>icons/qserialterminal.png</file>
+        <file>icons/QSerialTerminal.png</file>
     </qresource>
 </RCC>

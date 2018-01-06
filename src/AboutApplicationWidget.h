@@ -23,13 +23,13 @@ public:
     AboutApplicationWidget &operator=(const AboutApplicationWidget &rhs) = delete;
     AboutApplicationWidget &operator=(AboutApplicationWidget &&rhs) = delete;
 
+
 signals:
     void aboutToClose();
     void keyPressEvent(QKeyEvent *event) override;
 
 public:
     void closeEvent(QCloseEvent *ce) override;
-
     int addLicenseTab(const QString &licenseName, const QString &licensePath);
 
 protected:
