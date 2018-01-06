@@ -414,8 +414,7 @@ void MainWindow::launchSerialReceiveAsync()
 		bool resetNeeded{ false };
         if (!this->m_serialReceiveAsyncHandle) {
 			resetNeeded = true;
-        }
-		if (this->m_serialReceiveAsyncHandle->wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+		} else if (this->m_serialReceiveAsyncHandle->wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
 			appendReceivedString(this->m_serialReceiveAsyncHandle->get());
 			resetNeeded = true;
 		}

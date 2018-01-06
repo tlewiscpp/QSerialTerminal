@@ -112,11 +112,17 @@ void SerialPort::openPort()
 		throw std::runtime_error("CppSerialPort::SerialPort::openPort(): CreateFileA(LPCSTR, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE, HANDLE): Unable to open serial port " + this->portName() + ": error code " + toStdString(errorCode) + " (" + getErrorString(errorCode) + ')');
 	}
 
-    //Get full configuration
-    GetCommConfig(this->m_serialPortHandle, &this->m_portSettings, &this->m_portSettings.dwSize);
+    //Get full configuration)
+	if (!GetCommConfig(this->m_serialPortHandle, &this->m_portSettings, &this->m_portSettings.dwSize)) {
+		const auto errorCode = getLastError();
+		throw std::runtime_error("CppSerialPort::SerialPort::openPort(): GetCommConfig(HANDLE, LPCOMMCONFIG, LPDWORD): Unable to get current communication configuration for  " + this->portName() + ": error code " + toStdString(errorCode) + " (" + getErrorString(errorCode) + ')');
+	}
 
     //Get DCB settings
-    GetCommState(this->m_serialPortHandle, &(this->m_portSettings.dcb));
+	if (!GetCommState(this->m_serialPortHandle, &(this->m_portSettings.dcb))) {
+		const auto errorCode = getLastError();
+		throw std::runtime_error("CppSerialPort::SerialPort::openPort(): GetCommState(HANDLE, LPDCB): Unable to get current communication state for  " + this->portName() + ": error code " + toStdString(errorCode) + " (" + getErrorString(errorCode) + ')');
+	}
 
     /*set up parameters*/
     this->m_portSettings.dcb.fBinary=TRUE;
@@ -128,18 +134,17 @@ void SerialPort::openPort()
     this->m_fileStream = fopen(this->portName().c_str(), "r+");
     if (!this->m_fileStream) {
 		const auto errorCode = getLastError();
-        this->closePort();
 		throw std::runtime_error("CppSerialPort::SerialPort::openPort(): fopen(const char *, const char *): Unable to open FILE pointer for " + this->portName() + ": error code " + toStdString(errorCode) + " (" + getErrorString(errorCode) + ')');
     }
-    this->m_isOpen = true;
-
     if(flock(this->getFileDescriptor(), LOCK_EX | LOCK_NB) != 0) {
 		const auto errorCode = getLastError();
-        this->closePort();
 		throw std::runtime_error("CppSerialPort::SerialPort::openPort(): flock(int, int): Unable to lock serial port " + this->portName() + ": error code " + toStdString(errorCode) + " (" + getErrorString(errorCode) + ')');
 	}
 
-    tcgetattr(this->getFileDescriptor(), &this->m_oldPortSettings);
+	if (tcgetattr(this->getFileDescriptor(), &this->m_oldPortSettings) != 0) {
+		const auto errorCode = getLastError();
+		throw std::runtime_error("CppSerialPort::SerialPort::openPort(): tcgetattr(int, termios *): Unable to get current attributes for " + this->portName() + ": error code " + toStdString(errorCode) + " (" + getErrorString(errorCode) + ')');
+	}
     memset(&this->m_portSettings, 0, sizeof(this->m_portSettings));
     this->m_portSettings = this->m_oldPortSettings;
     cfmakeraw(&this->m_portSettings);
@@ -160,6 +165,7 @@ void SerialPort::openPort()
 
     this->enableDTR();
     this->enableRTS();
+	this->m_isOpen = true;
 }
 
 void SerialPort::setReadTimeout(int timeout)
