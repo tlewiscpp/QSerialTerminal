@@ -718,7 +718,7 @@ void SerialPort::setFlowControl(FlowControl flowControl)
 void SerialPort::applyPortSettings()
 {
 #if defined(_WIN32)
-    if (SetCommConfig(this->m_serialPortHandle, &this->m_portSettings, sizeof(COMMCONFIG) == 0)) {
+    if (SetCommConfig(this->m_serialPortHandle, &this->m_portSettings, sizeof(COMMCONFIG)) == 0) {
         const auto errorCode = getLastError();
         throw std::runtime_error("CppSerialPort::SerialPort::applyPortSettings(): SetCommConfig(HANDLE, COMMCONFIG, DWORD): Unable to apply serial port attributes for " + this->portName() + ": error code " + toStdString(errorCode) + " (" + getErrorString(errorCode) + ')');
     }
