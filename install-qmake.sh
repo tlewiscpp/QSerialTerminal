@@ -4,8 +4,8 @@
 ##########################################
 # install-qserialterminal-qmake.sh
 #
-# Intended to be a placeholder until 
-# I learn how to add a sudo make 
+# Intended to be a placeholder until
+# I learn how to add a sudo make
 # install/uninstall to CMake
 #
 ##########################################
@@ -56,7 +56,7 @@ function doInternetCheck() {
     if [[ -z "$internetCheck" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -95,7 +95,7 @@ function removeFile() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -107,7 +107,7 @@ function linkFile() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -119,7 +119,7 @@ function suLinkFile() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -131,7 +131,7 @@ function copyFile() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -143,7 +143,7 @@ function suCopyFile() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -155,7 +155,7 @@ function appendStringToFile() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -167,7 +167,7 @@ function changeDirectory() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -179,7 +179,7 @@ function createDirectory() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -191,7 +191,7 @@ function runGitClone() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -203,7 +203,7 @@ function runGitPullOrigin() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -215,7 +215,7 @@ function runCmake() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -227,7 +227,7 @@ function runQmake() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -239,7 +239,7 @@ function runMake() {
     if [[ "$?" -ne "0" ]]; then
         showFailure
         return 1
-    else 
+    else
         showSuccess
         return 0
     fi
@@ -255,12 +255,12 @@ function buildDependancy() {
 
 function retrieveDependancy() {
     dependancyDir="$buildDir/lib"
-    
+
     if ! [[ -d "$dependancyDir" ]]; then
         echo "$dependancyDir does NOT exist"
         createDirectory "$dependancyDir" || { echo "Failed to make dependancy lib directory, bailing out"; exit 1; }
     fi
-    
+
     if ! [[ -d "$dependancyDir/$dependancyRootName" ]]; then
         changeDirectory "$dependancyDir"  || { echo "Failed to enter dependancy lib directory, bailing out"; exit 1; }
         runGitClone "$dependancySource" || { echo "Failed to retrieve dependancy source, bailing out"; exit 1; }
@@ -273,7 +273,7 @@ function retrieveDependancy() {
 
 function generateDesktopFile() {
     copyFile "$utilityDir/$skeletonDesktopFileName" "$buildDir/$desktopFileName" || { echo "Failed to generate desktop file, bailing out"; exit 1; }
-    copyFile "$iconPath" "$buildDir/" || { echo "Failed to generate desktop file, bailing out"; exit 1; }  
+    copyFile "$iconPath" "$buildDir/" || { echo "Failed to generate desktop file, bailing out"; exit 1; }
     appendStringToFile "Exec=$buildDir$programName" "$buildDir/$desktopFileName" || { echo "Failed to generate desktop file, bailing out"; exit 1; }
     appendStringToFile "Icon=$buildDir$iconName" "$buildDir/$desktopFileName" || { echo "Failed to generate desktop file, bailing out"; exit 1; }
 }
@@ -314,15 +314,15 @@ copyFile "$buildDir/$desktopFileName" "$appDir" || { echo "Could not copy deskto
 suLinkFile "$buildDir/$programName" "$globalBinDir"  || { echo "Could not link file, bailing out"; exit 1; }
 
 installMessage="$programLongName Installed Successfully!"
-totalLength=${#installMessage} 
+totalLength=${#installMessage}
 
 echo
-for (( i=0; i<totalLength+4; i++ )); do  
+for (( i=0; i<totalLength+4; i++ )); do
    echo -n "*"
 done
 echo
 echo "**$installMessage**"
-for (( i=0; i<totalLength+4; i++ )); do  
+for (( i=0; i<totalLength+4; i++ )); do
    echo -n "*"
 done
 echo

@@ -106,6 +106,7 @@ endforeach(Qt5Package)
 set (SOURCE_ROOT src)
 
 set (${PROJECT_NAME}_SOURCE_FILES
+        ${SOURCE_ROOT}/ByteArray.cpp
         ${SOURCE_ROOT}/Main.cpp
         ${SOURCE_ROOT}/ApplicationSettings.cpp
         ${SOURCE_ROOT}/ApplicationSettingsLoader.cpp
@@ -119,6 +120,7 @@ set (${PROJECT_NAME}_SOURCE_FILES
         ${SOURCE_ROOT}/AboutApplicationWidget.cpp)
 
 set (${PROJECT_NAME}_HEADER_FILES
+        ${SOURCE_ROOT}/ByteArray.h
         ${SOURCE_ROOT}/GlobalDefinitions.h
         ${SOURCE_ROOT}/ApplicationSettings.h
         ${SOURCE_ROOT}/ApplicationSettingsLoader.h
@@ -186,11 +188,6 @@ qt5_use_modules(${PROJECT_NAME} ${QT_LIBRARY_LIST})
 target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
-#if (WIN32)
-#    target_link_libraries(${PROJECT_NAME} ${QT_LIBRARY_LIST})
-#else()
-#    target_link_libraries(${PROJECT_NAME} pthread ${QT_LIBRARY_LIST})
-#endif()
 if (WIN32)
 else()
     target_link_libraries(${PROJECT_NAME} pthread)
@@ -208,3 +205,12 @@ if (WIN32)
 
 	endif()
 endif()
+
+if(${CMAKE_SYSTEM_NAME} MATCHES Linux|.*BSD|DragonFly)
+    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+    install(DIRECTORY DESTINATION "$ENV{HOME}/Desktop")
+    install(FILES "${DESKTOP_FILE_LOCATION}" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
+    install(FILES "${DESKTOP_FILE_LOCATION}" DESTINATION "$ENV{HOME}/Desktop")
+    install(FILES "${ICON_FILE_LOCATION}" DESTINATION "${CMAKE_INSTALL_PREFIX}/share/pixmaps")
+endif()
+

@@ -21,7 +21,7 @@
 const int MainWindow::CHECK_PORT_DISCONNECT_TIMEOUT{750};
 const int MainWindow::CHECK_PORT_RECEIVE_TIMEOUT{1};
 const int MainWindow::NO_SERIAL_PORTS_CONNECTED_MESSAGE_TIMEOUT{5000};
-const int MainWindow::SERIAL_READ_TIMEOUT{500};
+const int MainWindow::SERIAL_READ_TIMEOUT{5000};
 const CppSerialPort::BaudRate MainWindow::DEFAULT_BAUD_RATE{CppSerialPort::BaudRate::Baud9600};
 const CppSerialPort::Parity MainWindow::DEFAULT_PARITY{CppSerialPort::Parity::ParityNone};
 const CppSerialPort::StopBits MainWindow::DEFAULT_STOP_BITS{CppSerialPort::StopBits::StopOne};

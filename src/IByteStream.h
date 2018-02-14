@@ -33,6 +33,7 @@
 #include <string>
 #include <sstream>
 #include <mutex>
+#include "ByteArray.h"
 
 #if defined(_WIN32)
 #    ifndef PATH_MAX
@@ -51,11 +52,11 @@ public:
     IByteStream();
     virtual ~IByteStream() = default;
 
-	virtual char read() = 0;
+	virtual char read(bool *timeout = nullptr) = 0;
 	virtual ssize_t write(char) = 0;
 	virtual ssize_t write(const char *, size_t) = 0;
 
-	virtual std::string portName() const = 0;
+    virtual std::string portName() const = 0;
 	virtual bool isOpen() const = 0;
 	virtual void openPort() = 0;
 	virtual void closePort() = 0;
@@ -70,49 +71,40 @@ public:
 	virtual void setWriteTimeout(int timeout);
 	int writeTimeout() const;
 
-	std::string lineEnding() const;
+	ByteArray lineEnding() const;
 	void setLineEnding(const std::string &str);
-	void setLineEnding(char chr);
+    void setLineEnding(const ByteArray &str);
+    void setLineEnding(char chr);
 
 	virtual ssize_t writeLine(const std::string &str);
+    virtual ssize_t writeLine(const ByteArray &byteArray);
+    virtual ssize_t write(const ByteArray &byteArray);
 
-	std::string readLine(bool *timeout = nullptr);
-	std::string readUntil(const std::string &until, bool *timeout = nullptr);
-	std::string readUntil(char until, bool *timeout = nullptr);
+    ByteArray readLine(bool *timeout = nullptr);
+	ByteArray readUntil(const ByteArray &until, bool *timeout = nullptr);
+    ByteArray readUntil(char until, bool *timeout = nullptr);
 
 protected:
 	virtual void putBack(char c) = 0;
 
 	static bool fileExists(const std::string &filePath);
-	static inline bool endsWith (const std::string &fullString, const std::string &ending) {
-        return ( (fullString.length() < ending.length()) ? false : std::equal(ending.rbegin(), ending.rend(), fullString.rbegin()) );
-    }
-	static inline bool endsWith(const std::string &fullString, char ending) {
-		return ((fullString.length() > 0) && (fullString.back() == ending));
-	}
-	static inline bool startsWith(const std::string &fullString, const std::string &start) {
-		return ((fullString.length() < start.length()) ? false : std::equal(start.begin(), start.end(), fullString.begin()));
-	}
-	static inline bool startsWith(const std::string &fullString, char start) {
-		return ((fullString.length() > 0) && (fullString.front() == start));
-	}
+
 	template<typename T> static inline std::string toStdString(const T &t) {
         return dynamic_cast<std::ostringstream &>(std::ostringstream{""} << t).str();
     }
+
 	static inline std::string stripLineEndings(const std::string &input) {
-		std::string str{ input };
-		if (endsWith(str, "\r\n")) {
-			str.pop_back();
-			str.pop_back();
-		} else if (endsWith(str, "\n\r")) {
-			str.pop_back();
-			str.pop_back();
-		} else if (endsWith(str, "\r")) {
-			str.pop_back();
-		} else if (endsWith(str, "\n")) {
-			str.pop_back();
+		ByteArray byteArray{input};
+		if (byteArray.endsWith("\r\n")) {
+            byteArray.popBack().popBack();
+		} else if (byteArray.endsWith("\n\r")) {
+            byteArray.popBack().popBack();
+		} else if (byteArray.endsWith("\r")) {
+            byteArray.popBack();
+		} else if (byteArray.endsWith("\n")) {
+            byteArray.popBack();
 		}
-		return str;
+		return byteArray.toString();
 	}
 
 	static const int DEFAULT_READ_TIMEOUT;
@@ -123,7 +115,7 @@ protected:
 private:
     int m_readTimeout;
     int m_writeTimeout;
-    std::string m_lineEnding;
+    ByteArray m_lineEnding;
     std::mutex m_writeMutex;
 	std::mutex m_readMutex;
 

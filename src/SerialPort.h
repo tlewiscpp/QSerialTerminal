@@ -195,7 +195,7 @@ enum class BaudRate {
 class SerialPort : public IByteStream
 {
 public:
-	SerialPort(const std::string &name, 
+    explicit SerialPort(const std::string &name,
     BaudRate baudRate = DEFAULT_BAUD_RATE, 
     DataBits dataBits = DEFAULT_DATA_BITS, 
     StopBits stopBits = DEFAULT_STOP_BITS, 
@@ -211,7 +211,7 @@ public:
               typename std::enable_if_t<
                   PermutedConstructor::is_included<std::tuple<Ts...>,
                   std::tuple<const std::string &, BaudRate, DataBits, StopBits, Parity, FlowControl, const std::string &>>::value>* = nullptr>    
-    SerialPort(const Ts&... ts) :
+    explicit SerialPort(const Ts&... ts) :
         SerialPort{
             get_or_default<const std::string&>(std::tie(ts...)),
             get_or_default<BaudRate>(std::tie(ts...)),
@@ -232,7 +232,7 @@ public:
     //IByteStream interface
 	void openPort() override;
     void closePort() override;
-    char read() override;
+    char read(bool *readTimeout) override;
     void setReadTimeout(int timeout) override;
 
     std::string portName() const override;
@@ -274,9 +274,9 @@ public:
     static const long DEFAULT_RETRY_COUNT;
 
 private:
-    std::string m_readBuffer;
+    ByteArray m_readBuffer;
     std::string m_portName;
-    int m_portNumber;
+    int m_portNumber{};
     BaudRate m_baudRate;
     StopBits m_stopBits;
     DataBits m_dataBits;
@@ -305,11 +305,11 @@ private:
     HANDLE m_serialPortHandle;
     COMMCONFIG m_portSettings;
 #else
-	FILE *m_fileStream;
+	FILE *m_fileStream{nullptr};
 	static const std::vector<const char *> AVAILABLE_PORT_NAMES_BASE;
     static const int constexpr NUMBER_OF_POSSIBLE_SERIAL_PORTS{256*9};
-    termios m_portSettings;
-    termios m_oldPortSettings;
+    termios m_portSettings{};
+    termios m_oldPortSettings{};
 	int getFileDescriptor() const;
 #endif
     void applyPortSettings();

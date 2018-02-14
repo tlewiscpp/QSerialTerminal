@@ -39,7 +39,7 @@
     #include <climits>
     #include <sys/file.h>
     #include <cerrno>
-
+    #include <sys/signal.h>
 #endif
 
 #include "SerialPort.h"
@@ -156,6 +156,7 @@ void SerialPort::openPort()
     this->m_portSettings.c_cflag |= (CLOCAL | CREAD);
 #endif
 
+	this->m_isOpen = true;
     this->setBaudRate(this->m_baudRate);
     this->setDataBits(this->m_dataBits);
     this->setStopBits(this->m_stopBits);
@@ -165,7 +166,6 @@ void SerialPort::openPort()
 
     this->enableDTR();
     this->enableRTS();
-	this->m_isOpen = true;
 }
 
 void SerialPort::setReadTimeout(int timeout)
@@ -236,12 +236,13 @@ std::string SerialPort::getErrorString(int errorCode) {
 	return IByteStream::stripLineEndings(errorString);
 }
 
-char SerialPort::read()
+char SerialPort::read(bool *readTimeout)
 {
 #if defined(_WIN32)
     if (!this->m_readBuffer.empty()) {
-        char returnValue{this->m_readBuffer.front()};
-        this->m_readBuffer = this->m_readBuffer.substr(1);
+        if (readTimeout) *readTimeout = false;
+        char returnValue{this->m_readBuffer[0]};
+        this->m_readBuffer = this->m_readBuffer.popFront();
         return returnValue;
     }
 
@@ -258,42 +259,40 @@ char SerialPort::read()
 
     DWORD readBytes{0};
 	DWORD maxBytes{ commStatus.cbInQue };
-    bool firstByte{false};
     if (commStatus.cbInQue == 0) {
         maxBytes = 1;
-        firstByte = true;
     }
 
     auto readResult = ReadFile(this->m_serialPortHandle, readStuff, maxBytes, &readBytes, nullptr);
     if (readResult == 0) {
 		const auto errorCode = getLastError();
 		std::cout << "ReadFile(HANDLE, LPVOID, DWORD, LPDWORD, LPDWORD) error: " << toStdString(errorCode) << " (" << getErrorString(errorCode) << ")" << std::endl;
-		return 0;
+		if (readTimeout) *readTimeout = true;
+        return 0;
 	}
 	if ( ( readBytes <= 0 ) || (readStuff[0] == '\0') ) {
+        if (readTimeout) *readTimeout = true;
 		return 0;
     }
-    this->m_readBuffer += std::string{readStuff};
-    if (firstByte) {
-        clearErrorsResult = ClearCommError(this->m_serialPortHandle, &commErrors, &commStatus);
-        if ( (clearErrorsResult != 0) && (commStatus.cbInQue != 0) ) {
-            readResult = ReadFile(this->m_serialPortHandle, readStuff, commStatus.cbInQue, &readBytes, nullptr);
-            if ((readResult != 0) && (readBytes > 0)) {
-                this->m_readBuffer += readStuff;
-            }
-        }
+    for (size_t i = 0; i < readBytes; i++) {
+        this->m_readBuffer += readStuff[i];
     }
-    char returnValue{this->m_readBuffer.front()};
-    this->m_readBuffer = this->m_readBuffer.substr(1);
-    return static_cast<int>(returnValue);
+    if (readTimeout) *readTimeout = false;
+    char returnValue{this->m_readBuffer[0]};
+    this->m_readBuffer = this->m_readBuffer.popFront();
+    return returnValue;
 #else
     if (!this->m_readBuffer.empty()) {
-        char returnValue{this->m_readBuffer.front()};
-        this->m_readBuffer = this->m_readBuffer.substr(1);
+        char returnValue{this->m_readBuffer[0]};
+        this->m_readBuffer.popFront();
+        if (readTimeout) {
+            *readTimeout = false;
+        }
         return returnValue;
     }
 
-    // Initialize file descriptor sets
+    //Use select() to wait for data to arrive
+    //At socket, then read and return
     fd_set read_fds{0, 0, 0};
     fd_set write_fds{0, 0, 0};
     fd_set except_fds{0, 0, 0};
@@ -308,23 +307,31 @@ char SerialPort::read()
     static char readStuff[SERIAL_PORT_BUFFER_MAX];
     memset(readStuff, '\0', SERIAL_PORT_BUFFER_MAX);
 
-    // Wait for input to become ready or until the time out; the first parameter is
-    // 1 more than the largest file descriptor in any of the sets
     if (select(this->getFileDescriptor() + 1, &read_fds, &write_fds, &except_fds, &timeout) == 1) {
         int bytesAvailable{0};
         ioctl(this->getFileDescriptor(), FIONREAD, &bytesAvailable);
         auto returnedBytes = fread(readStuff, sizeof(char), static_cast<size_t>(bytesAvailable), this->m_fileStream);
-        //auto returnedBytes = fread(&readValue, sizeof(char), 1, this->m_fileStream);
-        if ((returnedBytes <= 0) || (readStuff[0] == '\0')) {
+        if (returnedBytes <= 0) {
+            if (readTimeout) {
+                *readTimeout = true;
+            }
             return 0;
         }
-        this->m_readBuffer += std::string{readStuff};
-        char returnValue{this->m_readBuffer.front()};
-        this->m_readBuffer = this->m_readBuffer.substr(1);
+        for (size_t i = 0; i < returnedBytes; i++) {
+            this->m_readBuffer += readStuff[i];
+        }
+        char returnValue{this->m_readBuffer[0]};
+        this->m_readBuffer.popFront();
+        if (readTimeout) {
+            *readTimeout = false;
+        }
         return returnValue;
     }
+    if (readTimeout) {
+        *readTimeout = true;
+    }
     return 0;
-#endif
+#endif //defined(_WIN32)
 }
 
 ssize_t SerialPort::write(char c)
@@ -371,16 +378,22 @@ void SerialPort::closePort()
     if (!this->isOpen()) {
         return;
     }
+    try {
 #if defined(_WIN32)
-	CancelIo(this->m_serialPortHandle);
-    CloseHandle(this->m_serialPortHandle);
+        CancelIo(this->m_serialPortHandle);
+        CloseHandle(this->m_serialPortHandle);
 #else
-    this->m_portSettings = this->m_oldPortSettings;
-    this->applyPortSettings();
-    flock(this->getFileDescriptor(), LOCK_UN);
-    fclose(this->m_fileStream);
+        //TODO: Check error codes for these functions
+        std::memcpy(&this->m_portSettings, &this->m_oldPortSettings, sizeof(this->m_portSettings));
+        this->m_portSettings = this->m_oldPortSettings;
+        this->applyPortSettings();
+        flock(this->getFileDescriptor(), LOCK_UN);
+        fclose(this->m_fileStream);
 #endif
-	this->m_isOpen = false;
+        this->m_isOpen = false;
+    } catch (std::exception &e) {
+        this->m_isOpen = false;
+    }
 }
 
 modem_status_t SerialPort::getModemStatus() const
@@ -854,7 +867,7 @@ bool SerialPort::isValidSerialPortName(const std::string &serialPortName)
 void SerialPort::putBack(char c)
 {
     if (this->m_readBuffer.length() > 0) {
-        this->m_readBuffer.insert(this->m_readBuffer.begin(), static_cast<char>(c));
+        this->m_readBuffer = c + this->m_readBuffer;
     } else {
 #if !defined(_WIN32)
         ungetc(c, this->m_fileStream);
@@ -903,9 +916,10 @@ std::pair<int, std::string> SerialPort::getPortNameAndNumber(const std::string &
 #endif
 }
 
-SerialPort::~SerialPort() 
-{
-	this->closePort();
+SerialPort::~SerialPort() {
+    this->closePort();
 }
 
-} //namespace CppSerialPort
+}
+
+//namespace CppSerialPort
