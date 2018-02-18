@@ -26,7 +26,15 @@ const char * const SUCCESSFULLY_CLOSED_SERIAL_PORT_STRING{"Successfully closed s
 const char * const MAIN_WINDOW_STYLESHEET{ "" };
 const char * const BLUE_COLOR_STRING{"blue"};
 const char * const RED_COLOR_STRING{"red"};
+
+
 const char * const LICENSE_PATH{":/licenses/licenses/LICENSE"};
+const char * const MINGW_NAME{"MinGW"};
+const char * const MINGW_LICENSE_PATH{":/licenses/licenses/MinGW/LICENSE"};
+const char * const QT_NAME{"Qt"};
+const char * const QT_LICENSE_PATH{":/licenses/licenses/Qt/QT-GPLV3-LICENSE"};
+
+
 const char * const LICENSE_PATH_KEY{"LicensePath"};
 
 const char * const TERMINAL_RECEIVE_BASE_STRING{"Rx << "};

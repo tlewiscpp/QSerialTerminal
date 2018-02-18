@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/licenses">
         <file>licenses/LICENSE</file>
+        <file>licenses/MinGW/LICENSE</file>
+        <file>licenses/Qt/QT-GPLV3-LICENSE</file>
+        <file>licenses/CppSerialPort/LICENSE</file>
     </qresource>
 </RCC>

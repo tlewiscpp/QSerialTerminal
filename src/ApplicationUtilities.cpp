@@ -5,15 +5,37 @@
 #include <QDateTime>
 #include <QtCore/QCoreApplication>
 
-namespace ApplicationUtilities
-{
+#if defined(_WIN32)
+#    include <third-party/win32/getopt/getopt.h>
+#else
+#    include <getopt.h>
+#endif //defined(_WIN32)
 
-    static QString programSettingsDirectory{""};
-    static QString logFileName{""};
+namespace ApplicationUtilities  {
+
+static QString programSettingsDirectory{""};
+static QString logFileName{""};
 
 bool verboseLogging{false};
 static QString PID{""};
 static QString processUUID{""};
+
+
+std::string buildShortOptions(option *longOptions, size_t numberOfLongOptions)
+{
+    std::string returnString{""};
+    for (size_t i = 0; i < numberOfLongOptions; i++) {
+        option *currentOption{longOptions + i};
+        if (currentOption->val == 0) {
+            continue;
+        }
+        returnString += static_cast<char>(currentOption->val);
+        if (currentOption->has_arg == required_argument) {
+            returnString += ':';
+        }
+    }
+    return returnString;
+}
 
 
 void exitApplication(const std::string &why, int exitCode)
@@ -313,11 +335,6 @@ QString getPID() {
         return endsWith(stringToCheck, std::string{1, matchChar});
     }
 
-    std::string TStringFormat(const char *formatting)
-    {
-        return std::string{formatting};
-    }
-
     std::string stripFromString(const std::string &stringToStrip, const std::string &whatToStrip)
     {
         std::string returnString{stringToStrip};
@@ -451,23 +468,6 @@ QString getPID() {
        auto nixPathCount = std::count_if(copyString.begin(), copyString.end(), [](char c) { return c == '/'; });
        return windowsPathCount > nixPathCount;
    }
-#if !defined(_MSC_VER)
-std::string buildShortOptions(option *longOptions, size_t numberOfLongOptions)
-{
-    std::string returnString{""};
-    for (size_t i = 0; i < numberOfLongOptions; i++) {
-        option *currentOption{longOptions + i};
-        if (currentOption->val == 0) {
-            continue;
-        }
-        returnString += static_cast<char>(currentOption->val);
-        if (currentOption->has_arg == required_argument) {
-            returnString += ':';
-        }
-    }
-    return returnString;
-}
-#endif //!defined(_MSC_VER)
 
 std::vector<std::string> split(const std::string &inputString, char delimiter)
 {

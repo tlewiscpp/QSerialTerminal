@@ -27,9 +27,6 @@
      <property name="pixmap">
       <pixmap>../resources/QSerialTerminal.png</pixmap>
      </property>
-     <property name="scaledContents">
-      <bool>false</bool>
-     </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>

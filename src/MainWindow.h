@@ -16,7 +16,6 @@
 #include <memory>
 #include <unordered_set>
 
-#include "AboutApplicationWidget.h"
 #include "QActionSetDefs.h"
 #include <functional>
 
@@ -27,6 +26,7 @@ class QCloseEvent;
 class QSerialTerminalLineEdit;
 class ApplicationIcons;
 class QString;
+class AboutApplicationWidget;
 
 namespace Ui
 {

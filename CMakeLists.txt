@@ -16,6 +16,8 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+add_subdirectory(third-party/)
+
 if (WIN32)
     if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 		set(WIN_COMPILER "MSVC")
@@ -114,8 +116,6 @@ set (${PROJECT_NAME}_SOURCE_FILES
         ${SOURCE_ROOT}/ApplicationIcons.cpp
         ${SOURCE_ROOT}/QSerialTerminalLineEdit.cpp
         ${SOURCE_ROOT}/ApplicationUtilities.cpp
-        ${SOURCE_ROOT}/SerialPort.cpp
-        ${SOURCE_ROOT}/IByteStream.cpp
         ${SOURCE_ROOT}/SingleInstanceGuard.cpp
         ${SOURCE_ROOT}/AboutApplicationWidget.cpp)
 
@@ -128,12 +128,11 @@ set (${PROJECT_NAME}_HEADER_FILES
         ${SOURCE_ROOT}/ApplicationIcons.h
         ${SOURCE_ROOT}/QSerialTerminalLineEdit.h
         ${SOURCE_ROOT}/ApplicationUtilities.h
-        ${SOURCE_ROOT}/SerialPort.h
-        ${SOURCE_ROOT}/IByteStream.h
         ${SOURCE_ROOT}/AboutApplicationWidget.h
         ${SOURCE_ROOT}/SingleInstanceGuard.h
         ${SOURCE_ROOT}/QActionSetDefs.h
         ${SOURCE_ROOT}/ApplicationStrings.h
+        ${SOURCE_ROOT}/ProgramOption.h
         ${SOURCE_ROOT}/Version.h)
 
 set (${PROJECT_NAME}_FORMS
@@ -150,13 +149,13 @@ set (${PROJECT_NAME}_TRANSLATION_TEMPLATES
 
 qt5_wrap_ui (${PROJECT_NAME}_FORMS_MOC  ${${PROJECT_NAME}_FORMS})
 
-if (WIN32)
+if (WIN32 OR WIN64)
 	add_executable(${PROJECT_NAME}
 			WIN32
 			${${PROJECT_NAME}_SOURCE_FILES}
 			${${PROJECT_NAME}_HEADER_FILES}
 			${${PROJECT_NAME}_FORMS}
-			${${PROJECT_NAME}_RESOURCES_RCC}
+			${${PROJECT_NAME}_RESOURCES}
 			resources/${PROJECT_NAME}.rc)
 
 
@@ -171,15 +170,19 @@ if (WIN32)
 
 	endif()
 
-	target_link_libraries(${PROJECT_NAME} Shlwapi)
+	target_link_libraries(${PROJECT_NAME}
+            Shlwapi
+            CppSerialPort
+            getopt-win32)
 else()
 	add_executable(${PROJECT_NAME}
 			${${PROJECT_NAME}_SOURCE_FILES}
 			${${PROJECT_NAME}_HEADER_FILES}
 			${${PROJECT_NAME}_FORMS}
-			${${PROJECT_NAME}_RESOURCES_RCC})
+			${${PROJECT_NAME}_RESOURCES})
 
 	target_link_libraries (${PROJECT_NAME}
+            CppSerialPort
 			pthread)
 endif()
 
@@ -189,8 +192,9 @@ target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
 if (WIN32)
+    target_link_libraries(${PROJECT_NAME} getopt-win32 CppSerialPort)
 else()
-    target_link_libraries(${PROJECT_NAME} pthread)
+    target_link_libraries(${PROJECT_NAME} pthread CppSerialPort)
 endif()
 
 if (WIN32)

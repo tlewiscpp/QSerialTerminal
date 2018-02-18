@@ -13,6 +13,7 @@
 #include <QFile>
 #include <QLabel>
 #include <QPixmap>
+#include <QtCore/QDirIterator>
 
 AboutApplicationWidget::AboutApplicationWidget(QWidget *parent) :
     QWidget{parent},
@@ -33,13 +34,19 @@ AboutApplicationWidget::AboutApplicationWidget(QWidget *parent) :
     this->m_ui->lblProgramWebsite->setText(QString{
             R"(<html><head/><body><p><a href="%1"><span style=" text-decoration: underline; color:#007af4;">)" + QCoreApplication::applicationName() + " website</span></a></p></body></html>"}.arg(REMOTE_URL));
     this->m_ui->lblProgramWebsite->setOpenExternalLinks(true);
-    this->setWindowFlags(Qt::WindowStaysOnTopHint);
+    //this->setWindowFlags(Qt::WindowStaysOnTopHint);
 
-    this->m_ui->lblProgramIcon->setPixmap(applicationIcons->MAIN_WINDOW_ICON.pixmap(QSize{128, 128}));
+    if (this->m_ui->lblProgramIcon->pixmap() == nullptr) {
+        this->m_ui->lblProgramIcon->setPixmap(applicationIcons->MAIN_WINDOW_ICON.pixmap(QSize{128, 128}));
+    } else {
+        QPixmap tempPixmap{*this->m_ui->lblProgramIcon->pixmap()};
+        tempPixmap = tempPixmap.scaled(tempPixmap.size() * 0.5, Qt::KeepAspectRatio);
+        this->m_ui->lblProgramIcon->setPixmap(tempPixmap);
+    }
     this->connect(this->m_ui->btnLicense, &QPushButton::clicked, this, &AboutApplicationWidget::onLicenseButtonClicked);
     this->connect(this->m_ui->btnCloseDialog, &QPushButton::clicked, this, &AboutApplicationWidget::onCloseButtonClicked);
 
-    this->addLicenseTab(GlobalSettings::PROGRAM_NAME, ApplicationStrings::LICENSE_PATH);
+    this->addLicenseTab(QCoreApplication::applicationName(), ApplicationStrings::LICENSE_PATH);
     this->m_ui->twLicenses->setVisible(false);
 }
 
@@ -86,7 +93,8 @@ int AboutApplicationWidget::addLicenseTab(const QString &licenseName, const QStr
 void AboutApplicationWidget::populateLicenseText()
 {
     for (auto &it : this->m_licenseTabs) {
-        QFile licenseFile{it.second->property(ApplicationStrings::LICENSE_PATH_KEY).toString()};
+        std::string filePath{it.second->property(ApplicationStrings::LICENSE_PATH_KEY).toString().toStdString()};
+        QFile licenseFile{filePath.c_str()};
         if (!licenseFile.open(QIODevice::OpenModeFlag::ReadOnly)) {
             LOG_WARN() << QString{"Could not open license file %1"}.arg(it.second->property(ApplicationStrings::LICENSE_PATH_KEY).toString());
             continue;

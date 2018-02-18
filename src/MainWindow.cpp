@@ -17,6 +17,7 @@
 
 #include "IByteStream.h"
 #include "SerialPort.h"
+#include "AboutApplicationWidget.h"
 
 const int MainWindow::CHECK_PORT_DISCONNECT_TIMEOUT{750};
 const int MainWindow::CHECK_PORT_RECEIVE_TIMEOUT{1};
@@ -69,8 +70,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->m_ui->sendButton, &QPushButton::clicked, this, &MainWindow::onSendButtonClicked);
     connect(this->m_ui->sendBox, &QSerialTerminalLineEdit::returnPressed, this, &MainWindow::onReturnKeyPressed);
 
-    /* initialize all strings and stuff for the BoardResizeWindow */
-    this->m_aboutApplicationWidget->setWindowFlags(Qt::WindowStaysOnTopHint);
+    /* initialize all strings and stuff for the AboutApplicationWidget */
+    this->m_aboutApplicationWidget->addLicenseTab(QCoreApplication::applicationName(), ApplicationStrings::LICENSE_PATH);
+    this->m_aboutApplicationWidget->addLicenseTab(ApplicationStrings::MINGW_NAME, ApplicationStrings::MINGW_LICENSE_PATH);
+    this->m_aboutApplicationWidget->addLicenseTab(ApplicationStrings::QT_NAME, ApplicationStrings::QT_LICENSE_PATH);
+
+    //this->m_aboutApplicationWidget->setWindowFlags(Qt::WindowStaysOnTopHint);
     this->m_aboutApplicationWidget->setWindowTitle(MainWindow::tr(MAIN_WINDOW_TITLE));
     this->m_aboutApplicationWidget->setWindowIcon(applicationIcons->MAIN_WINDOW_ICON);
     this->connect(this->m_ui->actionAboutQSerialTerminal, &QAction::triggered, this, &MainWindow::onAboutQSerialTerminalActionTriggered);

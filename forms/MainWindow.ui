@@ -233,6 +233,11 @@
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>About</string>
     </property>

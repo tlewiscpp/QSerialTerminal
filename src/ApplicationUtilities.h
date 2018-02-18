@@ -22,6 +22,7 @@
 #endif //!defined(_MSC_VER)
 
 #include "SerialPort.h"
+#include "GlobalDefinitions.h"
 
 class QFile;
 class QByteArray;
@@ -88,11 +89,11 @@ QString getPID();
     int stringToInt(const char *str);
 
     /*Base case to break recursion*/
-    std::string TStringFormat(const char *formatting);
+    inline std::string TStringFormat(const char *formatting) { return formatting; }
 
     /*C# style String.Format()*/
     template <typename First, typename ... Args>
-    std::string TStringFormat(const char *formatting, First& first, Args& ... args)
+    std::string TStringFormat(const char *formatting, First& first, Args&& ... args)
     {
         /* Match exactly one opening brace, one or more numeric digit,
         * then exactly one closing brace, identifying a token */
@@ -125,7 +126,7 @@ QString getPID();
             int regexMatchNumericValue{0};
             try {
                 /*Convert the integer value between the opening and closing braces to an int to compare */
-                regexMatchNumericValue = stringToInt(returnString.substr(foundPosition + 1, (foundPosition + match.str().length())));
+                regexMatchNumericValue = STRING_TO_INT(returnString.substr(foundPosition + 1, (foundPosition + match.str().length())));
                 
                 /*Do not allow negative numbers, although this should never get picked up the regex anyway*/
                 if (regexMatchNumericValue < 0) {

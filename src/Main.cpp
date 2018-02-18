@@ -16,22 +16,37 @@
 #include "ApplicationUtilities.h"
 #include "ApplicationSettings.h"
 #include "SingleInstanceGuard.h"
+#include "ProgramOption.h"
 
 
-#if !defined(_MSC_VER)
+#if defined(_WIN32)
+#    include <third-party/win32/getopt/getopt.h>
+#   define PROGRAM_OPTION_COUNT 3
+#else
 #   include <csignal>
 #   include <unistd.h>
 #   include <getopt.h>
+#   define PROGRAM_OPTION_COUNT 3
+#endif //defined(_WIN32)
+
+
+static const ProgramOption verboseOption       {'e', "verbose", no_argument, "Enable verbose logging"};
+static const ProgramOption helpOption          {'h', "help", no_argument, "Display help text and exit"};
+static const ProgramOption versionOption       {'v', "version", no_argument, "Display version text and exit"};
+
+
+static std::array<const ProgramOption *, PROGRAM_OPTION_COUNT> programOptions{
+    &verboseOption,
+    &helpOption,
+    &versionOption
+};
 
 static struct option longOptions[]{
-	{ "verbose",        no_argument,       nullptr, 'e' },
-{ "help",           no_argument,       nullptr, 'h' },
-{ "version",        no_argument,       nullptr, 'v' },
-{ nullptr, 0, nullptr, 0 }
+	verboseOption.toPosixOption(),
+    helpOption.toPosixOption(),
+    versionOption.toPosixOption(),
+    { nullptr, 0, nullptr, 0 }
 };
-#endif //!defined(_MSC_VER)
-
-
 
 #define ARRAY_SIZE(x) sizeof(x)/sizeof(x[0])
 
@@ -63,48 +78,6 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName(PROGRAM_LONG_NAME);
 
     ApplicationUtilities::checkOrCreateProgramLogDirectory();
-
-#if defined(_MSC_VER)
-    for (int i = 1; i < argc; i++) {
-        auto it = argv[i];
-        if (strlen(it) <= 0) {
-            continue;
-        }
-        bool longOption{( (it[0] == '-') && (it[1] == '-') )};
-        bool shortOption{(it[0] == '-')};
-        if (longOption) {
-            auto newIt = std::string{it + 2};
-            if (newIt == "verbose") {
-                ApplicationUtilities::verboseLogging = true;
-                LOG_INFO() << "Setting LogLevel to verbose due to command line option";
-            } else if (newIt == "version") {
-                displayVersion();
-                exit(EXIT_SUCCESS);
-            } else if (newIt == "help") {
-                displayHelp();
-                exit(EXIT_SUCCESS);
-            } else {
-                LOG_WARN() << QString{"Invalid switch \"%1\" detected"}.arg(QString{it});
-            }
-        } else if (shortOption) {
-            auto newIt = std::string{it + 1};
-            if (newIt == "e") {
-                ApplicationUtilities::verboseLogging = true;
-                LOG_INFO() << "Setting LogLevel to verbose due to command line option";
-            } else if (newIt == "v") {
-                displayVersion();
-                exit(EXIT_SUCCESS);
-            } else if (newIt == "h") {
-                displayHelp();
-                exit(EXIT_SUCCESS);
-            } else {
-                LOG_WARN() << QString{"Invalid switch \"%1\" detected"}.arg(QString{it});
-            }
-        } else {
-            LOG_WARN() << QString{"Invalid switch \"%1\" detected"}.arg(QString{it});
-        }
-    }
-#else
     int optionIndex{0};
     int currentOption{0};
     opterr = 0;
@@ -126,7 +99,6 @@ int main(int argc, char *argv[])
                 break;
         };
     }
-#endif //defined(_MSC_VER)
     displayVersion();
     LOG_INFO() << QString{"Using log file %1"}.arg(ApplicationUtilities::getLogFilePath());
     LOG_INFO() << QString{"Current PID: %1"}.arg(ApplicationUtilities::getPID());
@@ -210,9 +182,9 @@ void displayHelp()
 {
     std::cout << QString{"Usage: %1 Option [=value]"}.arg(PROGRAM_NAME).toStdString() << std::endl;
     std::cout << "Options: " << std::endl;
-    std::cout << "    -h, --help: Display this help text" << std::endl;
-    std::cout << "    -v, --version: Display the version" << std::endl;
-    std::cout << "    -e, --verbose: Enable verbose logging" << std::endl;
+    for (const auto &it : programOptions) {
+        std::cout << "    -" << it->shortOption() << ", --" << it->longOption() << ": " << it->description() << std::endl;
+    }
 }
 
 void logToFile(const std::string &str, const std::string &filePath)
