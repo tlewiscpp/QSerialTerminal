@@ -335,7 +335,7 @@ void MainWindow::removeOldPortNameItem(const std::string &str) {
 }
 
 std::unordered_set<QAction *>::iterator MainWindow::findInQActionSet(QActionSet *qActionSet, const QString &key) {
-    QAction tempAction{};
+    QAction tempAction{nullptr};
     tempAction.setText(key);
     return qActionSet->find(&tempAction);
 }
