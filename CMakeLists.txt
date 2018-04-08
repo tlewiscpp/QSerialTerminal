@@ -1,8 +1,6 @@
 cmake_minimum_required (VERSION 3.1)
-set (PROJECT_NAME QSerialTerminal)
-project(${PROJECT_NAME} CXX)
+project(QSerialTerminal CXX)
 
-set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -209,6 +207,9 @@ if (WIN32)
 
 	endif()
 endif()
+
+set(DESKTOP_FILE_LOCATION "utility/${PROJECT_NAME}.desktop")
+set(ICON_FILE_LOCATION "utility/${PROJECT_NAME}.png")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES Linux|.*BSD|DragonFly)
     install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)

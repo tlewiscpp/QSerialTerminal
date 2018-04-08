@@ -1,3 +1,3 @@
 #!/bin/bash
 
-source install-cmake.sh
+source install-cmake.sh "$@"
