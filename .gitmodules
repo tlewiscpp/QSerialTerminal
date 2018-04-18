@@ -1,3 +1,0 @@
-[submodule "third-party/CppSerialPort/CppSerialPort"]
-	path = third-party/CppSerialPort/CppSerialPort
-	url = https://github.com/tlewiscpp/CppSerialPort
