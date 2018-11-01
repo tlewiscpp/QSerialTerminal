@@ -93,12 +93,10 @@ private:
     std::unordered_set<std::string> m_serialPortNames;
     std::mutex m_printToTerminalMutex;
     std::unique_ptr<std::future<std::string>> m_serialReceiveAsyncHandle;
-
     bool m_currentLinePushedIntoCommandHistory;
     std::vector<QString> m_commandHistory;
     unsigned int m_currentHistoryIndex;
     std::string m_lineEnding;
-
     QActionSet m_availableBaudRateActions;
     QActionSet m_availableParityActions;
     QActionSet m_availableStopBitsActions;
@@ -106,6 +104,8 @@ private:
     QActionSet m_availableFlowControlActions;
     QActionSet m_availablePortNamesActions;
     QActionSet m_availableLineEndingActions;
+    bool m_currentLineIsEmpty;
+
 
     void resetCommandHistory();
     void clearEmptyStringsFromCommandHistory();

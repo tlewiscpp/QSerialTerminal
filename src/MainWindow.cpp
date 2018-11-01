@@ -57,7 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_availableDataBitsActions{},
     m_availableFlowControlActions{},
     m_availablePortNamesActions{},
-    m_availableLineEndingActions{}
+    m_availableLineEndingActions{},
+    m_currentLineIsEmpty{true}
 {
 
     using namespace ApplicationStrings;
@@ -449,10 +450,16 @@ std::string MainWindow::checkSerialReceive()
 {
     if (this->m_byteStream) {
         bool timeout{false};
-        std::string returnString{this->m_byteStream->readLine(&timeout)};
+        //std::string returnString{this->m_byteStream->readLine(&timeout)};
+        char readChar{this->m_byteStream->read(&timeout)};
+        if ( (readChar != 0x00) && (!timeout) ) {
+            return std::string{readChar};
+        }
+        /*
         if (!returnString.empty()) {
             return returnString;
         }
+        */
     }
     return "";
 }
@@ -899,6 +906,7 @@ void MainWindow::openSerialPort()
     try {
         this->m_byteStream->openPort();
         this->m_ui->terminal->clear();
+        this->m_currentLineIsEmpty = true;
         this->m_ui->connectButton->setChecked(true);
         this->m_ui->sendButton->setEnabled(true);
         this->m_ui->actionDisconnect->setEnabled(true);
@@ -1005,11 +1013,18 @@ void MainWindow::printRxResult(const std::string &str)
 {
     using namespace ApplicationStrings;
     using namespace ApplicationUtilities;
-    if (!str.empty()) {
-        std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
-        this->m_ui->terminal->setTextColor(QColor(RED_COLOR_STRING));
-        this->m_ui->terminal->append(QString{"%1%2"}.arg(TERMINAL_RECEIVE_BASE_STRING, stripLineEndings(str).c_str()));
+    std::lock_guard<std::mutex> ioLock{this->m_printToTerminalMutex};
+    if (this->m_currentLineIsEmpty) {
+        this->m_ui->terminal->setTextColor(QColor{RED_COLOR_STRING});
+        this->m_ui->terminal->append(TERMINAL_RECEIVE_BASE_STRING);
+        this->m_currentLineIsEmpty = false;
     }
+    this->m_ui->terminal->append(stripLineEndings(str).c_str());
+    if (endsWith(str, this->m_lineEnding)) {
+        this->m_ui->terminal->append("\n");
+        this->m_currentLineIsEmpty = true;
+    }
+
 }
 
 void MainWindow::printTxResult(const std::string &str)
@@ -1108,6 +1123,7 @@ void MainWindow::onCtrlUPressed()
 void MainWindow::onCtrlGPressed()
 {
     this->m_ui->terminal->clear();
+    this->m_currentLineIsEmpty = true;
 }
 
 void MainWindow::onCtrlCPressed()
