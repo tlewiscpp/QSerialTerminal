@@ -1,10 +1,10 @@
-#include "AboutApplicationWidget.h"
+#include "AboutApplicationWidget.hpp"
 #include "ui_AboutApplicationWidget.h"
 
-#include "GlobalDefinitions.h"
-#include "ApplicationStrings.h"
-#include "ApplicationSettings.h"
-#include "ApplicationIcons.h"
+#include "GlobalDefinitions.hpp"
+#include "ApplicationStrings.hpp"
+#include "ApplicationSettings.hpp"
+#include "ApplicationIcons.hpp"
 
 #include <QDesktopWidget>
 #include <QDateTime>
@@ -18,7 +18,8 @@
 AboutApplicationWidget::AboutApplicationWidget(QWidget *parent) :
     QWidget{parent},
     m_ui{new Ui::AboutApplicationWidget{}},
-    m_licenseHiddenHeight{-1}
+    m_licenseHiddenHeight{-1},
+    m_licenseTabs{}
 {
 
     using namespace ApplicationStrings;

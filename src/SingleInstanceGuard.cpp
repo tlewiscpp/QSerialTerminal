@@ -1,4 +1,4 @@
-#include "SingleInstanceGuard.h"
+#include "SingleInstanceGuard.hpp"
 
 #include <QCryptographicHash>
 

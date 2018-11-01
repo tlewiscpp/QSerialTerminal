@@ -1,7 +1,7 @@
-#include "ApplicationSettingsLoader.h"
-#include "ApplicationStrings.h"
-#include "ApplicationSettings.h"
-#include "GlobalDefinitions.h"
+#include "ApplicationSettingsLoader.hpp"
+#include "ApplicationStrings.hpp"
+#include "ApplicationSettings.hpp"
+#include "GlobalDefinitions.hpp"
 
 #include <QSettings>
 

@@ -1,7 +1,7 @@
-#include "ApplicationUtilities.h"
-#include "GlobalDefinitions.h"
-#include "ApplicationSettings.h"
-#include "ApplicationStrings.h"
+#include "ApplicationUtilities.hpp"
+#include "GlobalDefinitions.hpp"
+#include "ApplicationSettings.hpp"
+#include "ApplicationStrings.hpp"
 #include <QDateTime>
 #include <QtCore/QCoreApplication>
 

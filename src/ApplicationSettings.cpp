@@ -1,4 +1,4 @@
-#include "ApplicationSettings.h"
+#include "ApplicationSettings.hpp"
 #include <string>
 
 namespace GlobalSettings

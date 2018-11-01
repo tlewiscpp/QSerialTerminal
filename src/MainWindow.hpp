@@ -15,11 +15,11 @@
 #include <future>
 #include <memory>
 #include <unordered_set>
-
-#include "QActionSetDefs.h"
 #include <functional>
 
-#include "SerialPort.h"
+#include "QActionSetDefs.hpp"
+
+#include <CppSerialPort/SerialPort.hpp>
 
 class QDesktopWidget;
 class QCloseEvent;
@@ -41,6 +41,10 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(const MainWindow &rhs) = delete;
+	MainWindow(MainWindow &&) = delete;
+	MainWindow &operator=(const MainWindow &) = delete;
+	MainWindow &operator=(MainWindow &&) = delete;
     ~MainWindow() override;
     void closeEvent(QCloseEvent *event) override;
 

@@ -1,7 +1,7 @@
 #ifndef TRMIDOUBLECHECKBOX_PROGRAMOPTION_H
 #define TRMIDOUBLECHECKBOX_PROGRAMOPTION_H
 
-#include "ApplicationUtilities.h"
+#include "ApplicationUtilities.hpp"
 
 using ApplicationUtilities::TStringFormat;
 

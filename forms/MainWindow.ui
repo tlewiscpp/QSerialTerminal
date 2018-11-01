@@ -442,7 +442,7 @@
   <customwidget>
    <class>QSerialTerminalLineEdit</class>
    <extends>QLineEdit</extends>
-   <header>src/QSerialTerminalLineEdit.h</header>
+   <header>src/QSerialTerminalLineEdit.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

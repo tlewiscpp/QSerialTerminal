@@ -1,11 +1,11 @@
-#include "MainWindow.h"
+#include "MainWindow.hpp"
 #include "ui_MainWindow.h"
 
-#include "ApplicationUtilities.h"
-#include "QSerialTerminalLineEdit.h"
-#include "ApplicationStrings.h"
-#include "ApplicationIcons.h"
-#include "GlobalDefinitions.h"
+#include "ApplicationUtilities.hpp"
+#include "QSerialTerminalLineEdit.hpp"
+#include "ApplicationStrings.hpp"
+#include "ApplicationIcons.hpp"
+#include "GlobalDefinitions.hpp"
 
 #include <QDesktopWidget>
 #include <QMessageBox>
@@ -15,9 +15,8 @@
 #include <QtWidgets/QStatusBar>
 #include <QLabel>
 
-#include "IByteStream.h"
-#include "SerialPort.h"
-#include "AboutApplicationWidget.h"
+#include <CppSerialPort/SerialPort.hpp>
+#include "AboutApplicationWidget.hpp"
 
 const int MainWindow::CHECK_PORT_DISCONNECT_TIMEOUT{750};
 const int MainWindow::CHECK_PORT_RECEIVE_TIMEOUT{1};
@@ -44,10 +43,23 @@ MainWindow::MainWindow(QWidget *parent) :
     m_statusBarLabel{new QLabel{""}},
     m_checkPortDisconnectTimer{new QTimer{}},
     m_checkSerialPortReceiveTimer{new QTimer{}},
+    m_byteStream{nullptr},
     m_serialPortNames{CppSerialPort::SerialPort::availableSerialPorts()},
+    m_printToTerminalMutex{},
+    m_serialReceiveAsyncHandle{nullptr},
     m_currentLinePushedIntoCommandHistory{false},
-    m_currentHistoryIndex{0}
+    m_commandHistory{},
+    m_currentHistoryIndex{0},
+    m_lineEnding{},
+    m_availableBaudRateActions{},
+    m_availableParityActions{},
+    m_availableStopBitsActions{},
+    m_availableDataBitsActions{},
+    m_availableFlowControlActions{},
+    m_availablePortNamesActions{},
+    m_availableLineEndingActions{}
 {
+
     using namespace ApplicationStrings;
     this->m_ui->setupUi(this);
 

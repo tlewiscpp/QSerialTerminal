@@ -9,14 +9,14 @@
 #    include <Windows.h>
 #endif //defined(_WIN32)
 
-#include "ApplicationIcons.h"
-#include "ApplicationStrings.h"
-#include "MainWindow.h"
-#include "GlobalDefinitions.h"
-#include "ApplicationUtilities.h"
-#include "ApplicationSettings.h"
-#include "SingleInstanceGuard.h"
-#include "ProgramOption.h"
+#include "ApplicationIcons.hpp"
+#include "ApplicationStrings.hpp"
+#include "MainWindow.hpp"
+#include "GlobalDefinitions.hpp"
+#include "ApplicationUtilities.hpp"
+#include "ApplicationSettings.hpp"
+#include "SingleInstanceGuard.hpp"
+#include "ProgramOption.hpp"
 
 
 #if defined(_WIN32)

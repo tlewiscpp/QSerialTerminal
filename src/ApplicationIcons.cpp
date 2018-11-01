@@ -1,4 +1,4 @@
-#include "ApplicationIcons.h"
+#include "ApplicationIcons.hpp"
 
 ApplicationIcons *applicationIcons{nullptr};
 

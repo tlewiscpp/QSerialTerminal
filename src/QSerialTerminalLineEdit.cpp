@@ -1,4 +1,4 @@
-#include "QSerialTerminalLineEdit.h"
+#include "QSerialTerminalLineEdit.hpp"
 
 QSerialTerminalLineEdit::QSerialTerminalLineEdit(QWidget *parent) :
     QLineEdit{parent}
