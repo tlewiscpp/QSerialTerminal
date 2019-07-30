@@ -539,19 +539,32 @@ std::string flowControlToString(CppSerialPort::FlowControl flowControl) {
 std::string baudRateToString(CppSerialPort::BaudRate baudRate) {
 #if defined(_WIN32)
     switch (baudRate) {
-        case CppSerialPort::BaudRate::Baud110:    return "110";
-        case CppSerialPort::BaudRate::Baud300:    return "300";
-        case CppSerialPort::BaudRate::Baud600:    return "600";
-        case CppSerialPort::BaudRate::Baud1200:   return "1200";
-        case CppSerialPort::BaudRate::Baud2400:   return "2400";
-        case CppSerialPort::BaudRate::Baud4800:   return "4800";
-        case CppSerialPort::BaudRate::Baud9600:   return "9600";
-        case CppSerialPort::BaudRate::Baud19200:  return "19200";
-        case CppSerialPort::BaudRate::Baud38400:  return "38400";
-        case CppSerialPort::BaudRate::Baud57600:  return "57600";
-        case CppSerialPort::BaudRate::Baud115200: return "115200";
-        case CppSerialPort::BaudRate::Baud128000: return "128000";
-        case CppSerialPort::BaudRate::Baud256000: return "256000";
+        case CppSerialPort::BaudRate::Baud110:     return "110";
+        case CppSerialPort::BaudRate::Baud300:     return "300";
+        case CppSerialPort::BaudRate::Baud600:     return "600";
+        case CppSerialPort::BaudRate::Baud1200:    return "1200";
+        case CppSerialPort::BaudRate::Baud2400:    return "2400";
+        case CppSerialPort::BaudRate::Baud4800:    return "4800";
+        case CppSerialPort::BaudRate::Baud9600:    return "9600";
+        case CppSerialPort::BaudRate::Baud19200:   return "19200";
+        case CppSerialPort::BaudRate::Baud38400:   return "38400";
+        case CppSerialPort::BaudRate::Baud57600:   return "57600";
+        case CppSerialPort::BaudRate::Baud115200:  return "115200";
+        case CppSerialPort::BaudRate::Baud128000:  return "128000";
+        case CppSerialPort::BaudRate::Baud256000:  return "256000";
+        case CppSerialPort::BaudRate::Baud230400:  return "230400";
+        case CppSerialPort::BaudRate::Baud460800:  return "460800";
+        case CppSerialPort::BaudRate::Baud500000:  return "500000";
+        case CppSerialPort::BaudRate::Baud576000:  return "576000";
+        case CppSerialPort::BaudRate::Baud921600:  return "921600";
+        case CppSerialPort::BaudRate::Baud1000000: return "1000000";
+        case CppSerialPort::BaudRate::Baud1152000: return "1152000";
+        case CppSerialPort::BaudRate::Baud1500000: return "1500000";
+        case CppSerialPort::BaudRate::Baud2000000: return "2000000";
+        case CppSerialPort::BaudRate::Baud2500000: return "2500000";
+        case CppSerialPort::BaudRate::Baud3000000: return "3000000";
+        case CppSerialPort::BaudRate::Baud3500000: return "3500000";
+        case CppSerialPort::BaudRate::Baud4000000: return "4000000";
     }
 #else
     switch (baudRate) {

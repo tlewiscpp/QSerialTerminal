@@ -451,15 +451,10 @@ std::string MainWindow::checkSerialReceive()
     if (this->m_byteStream) {
         bool timeout{false};
         //std::string returnString{this->m_byteStream->readLine(&timeout)};
-        char readChar{this->m_byteStream->read(&timeout)};
-        if ( (readChar != 0x00) && (!timeout) ) {
-            return std::string{readChar};
+        auto lineRead = this->m_byteStream->readLine(&timeout);
+        if (lineRead.empty()) {
+            return lineRead.toString();
         }
-        /*
-        if (!returnString.empty()) {
-            return returnString;
-        }
-        */
     }
     return "";
 }
