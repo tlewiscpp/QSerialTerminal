@@ -452,7 +452,7 @@ std::string MainWindow::checkSerialReceive()
         bool timeout{false};
         //std::string returnString{this->m_byteStream->readLine(&timeout)};
         auto lineRead = this->m_byteStream->readLine(&timeout);
-        if (lineRead.empty()) {
+        if (!lineRead.empty()) {
             return lineRead.toString();
         }
     }
