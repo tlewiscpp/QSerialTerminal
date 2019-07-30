@@ -212,23 +212,23 @@ void globalLogHandler(QtMsgType type, const QMessageLogContext &context, const Q
             if (!ApplicationUtilities::verboseLogging) {
                 return;
             }
-            logContext = "{  Debug }: ";
+            logContext = "[D]: ";
             outputStream = &std::cout;
             break;
         case QtInfoMsg:
-            logContext = "{  Info  }: ";
+            logContext = "[I]: ";
             outputStream = &std::clog;
             break;
         case QtWarningMsg:
-            logContext = "{  Warn  }: ";
+            logContext = "[W]: ";
             outputStream = &std::cout;
             break;
         case QtCriticalMsg:
-            logContext = "{Critical}: ";
+            logContext = "[C]: ";
             outputStream = &std::cerr;
             break;
         case QtFatalMsg:
-            logContext = "{  Fatal }: ";
+            logContext = "[F]: ";
             outputStream = &std::cerr;
     }
     QString logMessage{""};
